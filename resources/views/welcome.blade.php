@@ -73,6 +73,13 @@
         filter: grayscale(100%);
         opacity: 0.6;
         transition: all 0.4s ease;
+
+        /* TAMBAH KOD BARU INI DI BAWAHNYA */
+.logo-item:hover img {
+    filter: grayscale(0%); /* Tukar jadi berwarna semula */
+    opacity: 1;            /* Terangkan gambar */
+    transform: scale(1.1); /* Besarkan sikit logo (optional) */
+}
     }
 </style>
 
