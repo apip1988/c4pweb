@@ -70,7 +70,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-xs btn-outline-info" onclick='editCalon({!! json_encode($s) !!})'><i class="fas fa-edit"></i> EDIT</button>
+                                    <button type="button" class="btn btn-xs btn-outline-info" onclick='editCalon(@json($s))'><i class="fas fa-edit"></i> EDIT</button>
                                     <a href="{{ url('/admin/kompetensi/delete/'.$s->id) }}" class="btn btn-xs btn-outline-danger" onclick="return confirm('Padam?')"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
@@ -88,7 +88,7 @@
         <div class="modal-content" style="border-radius: 15px;">
             <div class="modal-header bg-info text-white"><h5 class="modal-title font-weight-bold small">KEMASKINI MAKLUMAT & KEPUTUSAN</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
             <form action="{{ url('/admin/kompetensi/update') }}" method="POST">
-                {{ csrf_field() }}
+                @csrf
                 <div class="modal-body small">
                     <input type="hidden" name="id" id="edit-id">
                     <div class="form-group"><label class="font-weight-bold">Nama Calon</label><input type="text" name="nama" id="edit-nama" class="form-control text-uppercase"></div>
