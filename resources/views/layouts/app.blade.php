@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Portal Perkhidmatan PPP</title>
+    <title>Cawangan Perkhidmatan PPP</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -157,6 +157,8 @@
                                 <li><a href="https://www.bless.gov.my/bless/action/login?show" style="color: #3051a0; font-weight: bold;" target="_blank">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" style="color: #3051a0; font-weight: bold;" target="_blank">MyCPD</a></li>
                                 <li><a href="https://p3s.moh.gov.my/login" style="color: #3051a0; font-weight: bold;" target="_blank">P3S</a></li>
+                                <li><a href="#" style="color: #3051a0; font-weight: bold;" target="_blank">PHC</a></li>
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" style="color: #3051a0; font-weight: bold;" target="_blank">Triage</a></li>
                             </ul>
                         </li>
 
