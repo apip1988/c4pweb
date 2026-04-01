@@ -78,7 +78,7 @@
 
 <div class="hero-section shadow-sm">
     <div class="container">
-        <h1 class="display-4 font-weight-bold">PORTAL PERKHIDMATAN PPP</h1>
+        <h1 class="display-4 font-weight-bold">CAWANGAN PERKHIDMATAN PPP</h1>
         <div class="mt-4">
             <a href="{{ url('/dashboard') }}" class="btn btn-warning btn-lg px-5 font-weight-bold shadow rounded-pill">LIHAT DASHBOARD STATISTIK</a>
         </div>
@@ -178,13 +178,13 @@
                     @endphp
                     @foreach($logos as $logo)
                     <div class="logo-item">
-                        <img src="{{ asset('img/logo/'.$logo['img']) }}" alt="Logo">
+                        <img src="{{ asset('img/Logo/'.$logo['img']) }}" alt="Logo">
                         <span class="tooltip-text">{{ $logo['name'] }}</span>
                     </div>
                     @endforeach
                     @foreach($logos as $logo)
                     <div class="logo-item">
-                        <img src="{{ asset('img/logo/'.$logo['img']) }}" alt="Logo">
+                        <img src="{{ asset('img/Logo/'.$logo['img']) }}" alt="Logo">
                         <span class="tooltip-text">{{ $logo['name'] }}</span>
                     </div>
                     @endforeach
