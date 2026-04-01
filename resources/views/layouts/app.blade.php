@@ -79,11 +79,11 @@
                             <a href="{{ url('/') }}">UTAMA ▾</a>
                             <ul class="dropdown-content" style="left: 0; right: auto;">
                                 {{-- Guna url('/#id') supaya boleh scroll dari halaman mana pun --}}
-                                <li><a href="{{ url('/section-visi') }}">Visi, Misi, Objektif & Motto</a></li>
-                                <li><a href="{{ url('/section-organisasi') }}">Carta Organisasi</a></li>
-                                <li><a href="{{ url('/section-fungsi') }}">Carta Fungsi Utama</a></li>
-                                <li><a href="{{ url('/section-rakan') }}">Rakan Kolaborasi</a></li>
-                                <li><a href="{{ url('/section-kerjaya') }}">Laluan Kerjaya</a></li>
+                                <li><a href="{{ url('/#section-visi') }}">Visi, Misi, Objektif & Motto</a></li>
+                                <li><a href="{{ url('/#section-organisasi') }}">Carta Organisasi</a></li>
+                                <li><a href="{{ url('/#section-fungsi') }}">Carta Fungsi Utama</a></li>
+                                <li><a href="{{ url('/#section-rakan') }}">Rakan Kolaborasi</a></li>
+                                <li><a href="{{ url('/#section-kerjaya') }}">Laluan Kerjaya</a></li>
                             </ul>
                         </li>
                         
