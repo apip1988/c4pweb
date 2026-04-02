@@ -113,7 +113,7 @@
                                 <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
                                 <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
-                                <li><a href="#" target="_blank">PHC</a></li>
+                                <li><a href="https://phcmalaysia.com/phcals/" target="_blank">PHC</a></li>
                                 <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank">Triage</a></li>
                             </ul>
                         </li>
