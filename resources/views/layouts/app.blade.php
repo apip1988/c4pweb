@@ -16,48 +16,135 @@
 
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-top: 70px; /* Jarak supaya content tak sorok bawah nav sticky */ }
         [id^="section-"] { scroll-margin-top: 100px; }
         
-        .nav-custom { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; }
-        .nav-custom > li { position: relative; }
-        .nav-custom > li > a { display: block; padding: 15px 15px; text-decoration: none; color: #444; font-weight: bold; font-size: 13px; transition: 0.3s; }
+        /* Navigasi Utama */
+        #top-nav {
+            background: #fff; 
+            border-bottom: 3px solid #3051a0; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            width: 100%; 
+            position: fixed; /* Jadikan sticky kekal */
+            top: 0; 
+            z-index: 9999;
+        }
+
+        .nav-container {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 10px 15px;
+        }
+
+        .nav-custom { 
+            list-style: none; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            align-items: center; 
+        }
+
+        .nav-custom > li > a { 
+            display: block; 
+            padding: 15px 12px; 
+            text-decoration: none; 
+            color: #444; 
+            font-weight: bold; 
+            font-size: 13px; 
+            transition: 0.3s; 
+        }
+
         .nav-custom > li > a:hover { color: #3051a0; }
 
+        /* Dropdown Desktop */
         .dropdown-custom:hover .dropdown-content { display: block; }
         .dropdown-content {
             display: none; position: absolute; background-color: #fff;
             min-width: 250px; box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
             z-index: 9999; list-style: none; padding: 10px 0;
-            border-top: 3px solid #3051a0; right: 0;
+            border-top: 3px solid #3051a0;
         }
         .dropdown-content li a { color: #555; padding: 10px 20px; display: block; text-decoration: none; font-size: 13px; font-weight: 500; }
         .dropdown-content li a:hover { background-color: #f8f9fa; color: #3051a0; }
-        .dropdown-content .header { padding: 8px 20px; font-weight: bold; color: #3051a0; font-size: 12px; background: #f1f4f9; margin-top: 5px; border-left: 4px solid #3051a0; }
+        .dropdown-content .header { padding: 8px 20px; font-weight: bold; color: #3051a0; font-size: 12px; background: #f1f4f9; border-left: 4px solid #3051a0; }
+
+        /* Butang Mobile Toggler */
+        .mobile-toggler {
+            display: none;
+            background: none;
+            border: 2px solid #3051a0;
+            color: #3051a0;
+            font-size: 20px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* RESPONSIVE UNTUK MOBILE */
+        @media (max-width: 992px) {
+            body { padding-top: 60px; }
+            .mobile-toggler { display: block; }
+
+            .nav-custom {
+                display: none; /* Sorok menu asal */
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #fff;
+                border-bottom: 3px solid #3051a0;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-custom.active { display: flex; } /* Tunjuk bila klik butang */
+
+            .nav-custom > li { width: 100%; border-bottom: 1px solid #eee; }
+            .nav-custom > li > a { padding: 15px 20px; width: 100%; }
+
+            /* Dropdown Mobile */
+            .dropdown-content {
+                position: static;
+                display: none;
+                width: 100%;
+                box-shadow: none;
+                border-top: none;
+                background: #fdfdfd;
+                padding-left: 20px;
+            }
+            .dropdown-custom.active .dropdown-content { display: block; }
+        }
     </style>
 </head>
 <body>
     <div id="app">
-        <header id="top-nav" style="background: #fff; border-bottom: 3px solid #3051a0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999;">
-            <div class="container" style="display: flex; align-items: center; justify-content: space-between; padding: 5px 15px;">
+        <header id="top-nav">
+            <div class="container nav-container">
                 
                 <div style="font-size: 20px; font-weight: bold; color: #3051a0;">
                     <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">PORTAL PPP</a>
                 </div>
 
-                <nav>
+                <button class="mobile-toggler" id="mobile-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <nav id="nav-menu">
                     <ul class="nav-custom">
                         @guest
                             <li><a href="{{ route('login') }}"><i class="fas fa-sign-in-alt"></i> LOG MASUK</a></li>
                         @else
                             <li class="dropdown-custom">
-                                <a href="#" style="color: #3051a0; font-weight: bold;">
-                                    <i class="fas fa-user-circle"></i> {{ Auth::user()->name }} ▾
+                                <a href="javascript:void(0)" class="drop-trigger">
+                                    <i class="fas fa-user-circle"></i> {{ Auth::user()->name }} <i class="fas fa-caret-down ml-1"></i>
                                 </a>
-                                <ul class="dropdown-content" style="right: 0; left: auto;">
+                                <ul class="dropdown-content">
                                     @if(Auth::user()->role == 'ADMIN')
-                                        <li class="header" style="background: #fff0f0; border-left: 4px solid #dc3545; color: #3051a0;">PENTADBIRAN</li>
-                                        <li><a href="{{ url('/admin/dashboard') }}" style="font-weight: bold; color: #3051a0;"><i class="fas fa-user-shield"></i> Dashboard Admin</a></li>
+                                        <li class="header">PENTADBIRAN</li>
+                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield"></i> Dashboard Admin</a></li>
                                         <div class="dropdown-divider"></div>
                                     @endif
                                     <li class="header">AKAUN</li>
@@ -75,10 +162,8 @@
                         @endguest
 
                         <li class="dropdown-custom">
-                            {{-- Gunakan url('/') supaya butang UTAMA sentiasa balik ke Home --}}
-                            <a href="{{ url('/') }}">UTAMA ▾</a>
-                            <ul class="dropdown-content" style="left: 0; right: auto;">
-                                {{-- Guna url('/#id') supaya boleh scroll dari halaman mana pun --}}
+                            <a href="javascript:void(0)" class="drop-trigger">UTAMA <i class="fas fa-caret-down ml-1"></i></a>
+                            <ul class="dropdown-content">
                                 <li><a href="{{ url('/#section-visi') }}">Visi, Misi, Objektif & Motto</a></li>
                                 <li><a href="{{ url('/#section-organisasi') }}">Carta Organisasi</a></li>
                                 <li><a href="{{ url('/#section-fungsi') }}">Carta Fungsi Utama</a></li>
@@ -90,16 +175,16 @@
                         <li><a href="{{ url('/dashboard') }}">DASHBOARD</a></li>
 
                         <li class="dropdown-custom">
-                            <a href="#">DIREKTORI ▾</a>
-                            <ul class="dropdown-content" style="left: 0; right: auto;">
+                            <a href="javascript:void(0)" class="drop-trigger">DIREKTORI <i class="fas fa-caret-down ml-1"></i></a>
+                            <ul class="dropdown-content">
                                 <li><a href="{{ url('/direktori/carian-ppp') }}">Carian PPP</a></li>
                                 <li><a href="{{ route('direktori.carta-organisasi') }}">Carta Organisasi</a></li>
                             </ul>
                         </li>
 
                         <li class="dropdown-custom">
-                            <a href="#">e-PUSAT ▾</a>
-                            <ul class="dropdown-content" style="left: 0; right: auto;">
+                            <a href="javascript:void(0)" class="drop-trigger">e-PUSAT <i class="fas fa-caret-down ml-1"></i></a>
+                            <ul class="dropdown-content">
                                 <li><a href="#" style="color: #3051a0; font-weight: bold;">e-CREDENTIAL</a></li>
                                 <li><a href="#" style="color: #3051a0; font-weight: bold;">e-PEPERIKSAAN</a></li>
                                 <li class="header">e-KOMPETENSI</li>
@@ -130,5 +215,32 @@
             @yield('content')
         </main>
     </div>
+
+    <script>
+        $(document).ready(function() {
+            // Toggle Menu Utama di Mobile
+            $('#mobile-btn').click(function() {
+                $('.nav-custom').toggleClass('active');
+                // Tukar ikon bila buka/tutup
+                $(this).find('i').toggleClass('fa-bars fa-times');
+            });
+
+            // Toggle Dropdown di Mobile (Bila klik trigger)
+            $('.drop-trigger').click(function(e) {
+                if ($(window).width() <= 992) {
+                    e.preventDefault();
+                    $(this).parent('.dropdown-custom').toggleClass('active');
+                }
+            });
+
+            // Tutup menu bila klik link (untuk mobile)
+            $('.nav-custom a').not('.drop-trigger').click(function() {
+                if ($(window).width() <= 992) {
+                    $('.nav-custom').removeClass('active');
+                    $('#mobile-btn').find('i').addClass('fa-bars').removeClass('fa-times');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
