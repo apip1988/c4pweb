@@ -233,7 +233,7 @@
                                     <a href="javascript:void(0)" class="sub-trigger menu-biru">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
                                         <li><a href="https://phcmalaysia.com/phcals/" target="_blank">Dashboard</a></li>
-                                        <li><a href="#">Latihan</a></li>
+                                        <li><a href="#">Kursus</a></li>
                                         <li><a href="#">Aktiviti</a></li>
                                         <li><a href="#">Rujukan</a></li>
                                         <li><a href="#">Hubungi</a></li>
