@@ -69,7 +69,7 @@
         .dropdown-content li a:hover { background-color: #f8f9fa; color: #3051a0; }
         .dropdown-content .header { padding: 8px 20px; font-weight: bold; color: #3051a0; font-size: 12px; background: #f1f4f9; border-left: 4px solid #3051a0; }
 
-        /* --- SUBMENU FLYOUT BOX (NEW) --- */
+        /* --- SUBMENU FLYOUT BOX --- */
         .has-submenu { position: relative; }
         .has-submenu:hover > .submenu-box { display: block; }
         .submenu-box {
@@ -85,6 +85,9 @@
             padding: 5px 0;
             z-index: 10000;
         }
+
+        /* Warna Biru Khas untuk Menu e-Pusat */
+        .menu-biru { color: #3051a0 !important; font-weight: bold !important; }
 
         .mobile-toggler {
             display: none;
@@ -200,11 +203,11 @@
                         <li class="dropdown-custom">
                             <a href="javascript:void(0)" class="drop-trigger">e-PUSAT <i class="fas fa-caret-down ml-1"></i></a>
                             <ul class="dropdown-content">
-                                <li><a href="#" style="color: #3051a0; font-weight: bold;">e-CREDENTIAL</a></li>
-                                <li><a href="#" style="color: #3051a0; font-weight: bold;">e-PEPERIKSAAN</a></li>
+                                <li><a href="#" class="menu-biru">e-CREDENTIAL</a></li>
+                                <li><a href="#" class="menu-biru">e-PEPERIKSAAN</a></li>
                                 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)" class="sub-trigger">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <a href="javascript:void(0)" class="sub-trigger menu-biru">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
                                         <li><a href="{{ url('/kompetensi/permohonan') }}" style="color: #dc3545; font-weight: bold;">Borang Permohonan Baru</a></li>
                                         <li><a href="{{ url('/kompetensi/tempat') }}">Semak Tempat</a></li>
@@ -212,16 +215,22 @@
                                     </ul>
                                 </li>
 
-                                <li class="header">e-KPI</li>
-                                <li><a href="#">Laporan</a></li>
-                                <li><a href="#">Pengisian</a></li>
-                                <li><a href="#" style="color: #3051a0; font-weight: bold;">e-BOOK</a></li>
-                                <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank">BLESS</a></li>
-                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
-                                <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
+                                <li class="has-submenu">
+                                    <a href="javascript:void(0)" class="sub-trigger menu-biru">e-KPI <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        <li><a href="#">Laporan</a></li>
+                                        <li><a href="#">Pengisian</a></li>
+                                    </ul>
+                                </li>
+
+                                <li><a href="{{ url('/ebook') }}" class="menu-biru">e-RUJUKAN</a></li>
+                                
+                                <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank" class="menu-biru">BLESS</a></li>
+                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru">MyCPD</a></li>
+                                <li><a href="https://p3s.moh.gov.my/login" target="_blank" class="menu-biru">P3S</a></li>
                                 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)" class="sub-trigger">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <a href="javascript:void(0)" class="sub-trigger menu-biru">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
                                         <li><a href="https://phcmalaysia.com/phcals/" target="_blank">Dashboard</a></li>
                                         <li><a href="#">Latihan</a></li>
@@ -231,7 +240,7 @@
                                     </ul>
                                 </li>
 
-                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank">Triage</a></li>
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank" class="menu-biru">TRIAGE</a></li>
                             </ul>
                         </li>
 
@@ -264,7 +273,7 @@
                 }
             });
 
-            // Toggle Sub-box di Mobile (NEW)
+            // Toggle Sub-box di Mobile
             $('.sub-trigger').click(function(e) {
                 if ($(window).width() <= 992) {
                     e.preventDefault();
