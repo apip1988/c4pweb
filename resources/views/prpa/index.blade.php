@@ -77,11 +77,11 @@
                 </a>
             </div>
             <div class="col-md-4 mb-3">
-                <a href="#" class="btn-menu shadow-sm">
-                    <i class="fas fa-certificate"></i>
-                    <span class="font-weight-bold">Semak Keputusan & Cetak Slip</span>
-                </a>
-            </div>
+    <a href="{{ route('prpa.semak.borang') }}" class="btn-menu shadow-sm">
+        <i class="fas fa-search-plus"></i>
+        <span class="font-weight-bold">Semak Keputusan</span>
+    </a>
+</div>
         </div>
     </div>
 

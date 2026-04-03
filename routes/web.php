@@ -115,3 +115,11 @@ Route::get('/home', function() {
 Route::get('/prpa', function () {
     return view('prpa.index');
 });
+
+// Halaman Borang Semakan
+Route::get('/prpa/semak-keputusan', function () {
+    return view('prpa.semak_keputusan');
+})->name('prpa.semak.borang');
+
+// Proses Semakan (Hala ke Controller)
+Route::get('/prpa/hasil-keputusan', 'PrpaController@proses_semak')->name('prpa.semak.hasil');
