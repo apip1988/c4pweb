@@ -230,15 +230,15 @@
                                 <li><a href="https://p3s.moh.gov.my/login" target="_blank" class="menu-biru">P3S</a></li>
                                 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)" class="sub-trigger menu-biru">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
-                                    <ul class="submenu-box">
-                                        <li><a href="https://phcmalaysia.com/phcals/" target="_blank">Dashboard</a></li>
-                                        <li><a href="#">Kursus</a></li>
-                                        <li><a href="#">Aktiviti</a></li>
-                                        <li><a href="#">Rujukan</a></li>
-                                        <li><a href="#">Hubungi</a></li>
-                                    </ul>
-                                </li>
+    <a href="javascript:void(0)" class="sub-trigger menu-biru">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+    <ul class="submenu-box">
+        <li><a href="{{ url('/prpa#prpa-dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url('/prpa#prpa-kursus') }}">Kursus</a></li>
+        <li><a href="{{ url('/prpa#prpa-aktiviti') }}">Aktiviti</a></li>
+        <li><a href="{{ url('/prpa#prpa-rujukan') }}">Rujukan</a></li>
+        <li><a href="{{ url('/prpa#prpa-hubungi') }}">Hubungi</a></li>
+    </ul>
+</li>
 
                                 <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank" class="menu-biru">TRIAGE</a></li>
                             </ul>
