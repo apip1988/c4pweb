@@ -159,9 +159,10 @@
                 <div class="card card-custom p-4 d-flex flex-row align-items-center shadow-sm border-left" style="border-left: 5px solid #28a745 !important;">
                     <i class="fas fa-user-circle fa-3x text-primary mr-3"></i>
                     <div>
-                        <p class="mb-0 font-weight-bold">En. Sekretariat Satu</p>
-                        <p class="mb-0 small text-muted">Sekretariat PRPA Kebangsaan</p>
-                        <p class="mb-0 small font-weight-bold text-success mt-1"><i class="fas fa-phone-alt mr-1"></i>03-8883 xxxx</p>
+                        <p class="mb-0 font-weight-bold">En. Mohd Faris bin Abdul Rashid</p>
+                        <p class="mb-0 small text-muted">Pen. Peg. Perubatan U10</p>
+                        <p class="mb-0 small font-weight-bold text-success mt-1"><i class="fas fa-phone-alt mr-1"></i>03-8883 1517</p>
+                        <p class="mb-0 small font-weight-bold text-info mt-1"><i class="fas fa-envelope mr-1"></i>mdfaris@moh.gov.my</p>
                     </div>
                 </div>
             </div>
@@ -169,9 +170,10 @@
                 <div class="card card-custom p-4 d-flex flex-row align-items-center shadow-sm border-left" style="border-left: 5px solid #28a745 !important;">
                     <i class="fas fa-user-circle fa-3x text-primary mr-3"></i>
                     <div>
-                        <p class="mb-0 font-weight-bold">Pn. Sekretariat Dua</p>
-                        <p class="mb-0 small text-muted">Sekretariat PRPA Kebangsaan</p>
-                        <p class="mb-0 small font-weight-bold text-success mt-1"><i class="fas fa-phone-alt mr-1"></i>03-8883 xxxx</p>
+                        <p class="mb-0 font-weight-bold">En. Muhammad Romzi bin Husain</p>
+                        <p class="mb-0 small text-muted">Penolong Pegawai Perubatan U7</p>
+                        <p class="mb-0 small font-weight-bold text-success mt-1"><i class="fas fa-phone-alt mr-1"></i>03-8883 1386</p>
+                        <p class="mb-0 small font-weight-bold text-info mt-1"><i class="fas fa-envelope mr-1"></i>muhammad.romzi@moh.gov.my</p>
                     </div>
                 </div>
             </div>
