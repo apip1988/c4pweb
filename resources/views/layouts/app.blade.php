@@ -16,16 +16,15 @@
 
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-top: 70px; /* Jarak supaya content tak sorok bawah nav sticky */ }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-top: 70px; }
         [id^="section-"] { scroll-margin-top: 100px; }
         
-        /* Navigasi Utama */
         #top-nav {
             background: #fff; 
             border-bottom: 3px solid #3051a0; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
             width: 100%; 
-            position: fixed; /* Jadikan sticky kekal */
+            position: fixed; 
             top: 0; 
             z-index: 9999;
         }
@@ -58,7 +57,8 @@
         .nav-custom > li > a:hover { color: #3051a0; }
 
         /* Dropdown Desktop */
-        .dropdown-custom:hover .dropdown-content { display: block; }
+        .dropdown-custom { position: relative; }
+        .dropdown-custom:hover > .dropdown-content { display: block; }
         .dropdown-content {
             display: none; position: absolute; background-color: #fff;
             min-width: 250px; box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
@@ -69,7 +69,23 @@
         .dropdown-content li a:hover { background-color: #f8f9fa; color: #3051a0; }
         .dropdown-content .header { padding: 8px 20px; font-weight: bold; color: #3051a0; font-size: 12px; background: #f1f4f9; border-left: 4px solid #3051a0; }
 
-        /* Butang Mobile Toggler */
+        /* --- SUBMENU FLYOUT BOX (NEW) --- */
+        .has-submenu { position: relative; }
+        .has-submenu:hover > .submenu-box { display: block; }
+        .submenu-box {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            background: #fff;
+            min-width: 220px;
+            box-shadow: 5px 8px 16px rgba(0,0,0,0.1);
+            border-left: 3px solid #3051a0;
+            list-style: none;
+            padding: 5px 0;
+            z-index: 10000;
+        }
+
         .mobile-toggler {
             display: none;
             background: none;
@@ -81,13 +97,12 @@
             cursor: pointer;
         }
 
-        /* RESPONSIVE UNTUK MOBILE */
         @media (max-width: 992px) {
             body { padding-top: 60px; }
             .mobile-toggler { display: block; }
 
             .nav-custom {
-                display: none; /* Sorok menu asal */
+                display: none;
                 flex-direction: column;
                 position: absolute;
                 top: 100%;
@@ -100,13 +115,12 @@
                 box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             }
 
-            .nav-custom.active { display: flex; } /* Tunjuk bila klik butang */
+            .nav-custom.active { display: flex; }
 
             .nav-custom > li { width: 100%; border-bottom: 1px solid #eee; }
             .nav-custom > li > a { padding: 15px 20px; width: 100%; }
 
-            /* Dropdown Mobile */
-            .dropdown-content {
+            .dropdown-content, .submenu-box {
                 position: static;
                 display: none;
                 width: 100%;
@@ -115,7 +129,8 @@
                 background: #fdfdfd;
                 padding-left: 20px;
             }
-            .dropdown-custom.active .dropdown-content { display: block; }
+            .dropdown-custom.active > .dropdown-content,
+            .has-submenu.active > .submenu-box { display: block; }
         }
     </style>
 </head>
@@ -187,10 +202,16 @@
                             <ul class="dropdown-content">
                                 <li><a href="#" style="color: #3051a0; font-weight: bold;">e-CREDENTIAL</a></li>
                                 <li><a href="#" style="color: #3051a0; font-weight: bold;">e-PEPERIKSAAN</a></li>
-                                <li class="header">e-KOMPETENSI</li>
-                                <li><a href="{{ url('/kompetensi/semak') }}">Semak Keputusan</a></li>
-                                <li><a href="{{ url('/kompetensi/tempat') }}">Semak Tempat</a></li>
-                                <li><a href="{{ url('/kompetensi/permohonan') }}" style="color: #dc3545; font-weight: bold;">Borang Permohonan Baru</a></li>
+                                
+                                <li class="has-submenu">
+                                    <a href="javascript:void(0)" class="sub-trigger">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        <li><a href="{{ url('/kompetensi/permohonan') }}" style="color: #dc3545; font-weight: bold;">Borang Permohonan Baru</a></li>
+                                        <li><a href="{{ url('/kompetensi/tempat') }}">Semak Tempat</a></li>
+                                        <li><a href="{{ url('/kompetensi/semak') }}">Semak Keputusan</a></li>
+                                    </ul>
+                                </li>
+
                                 <li class="header">e-KPI</li>
                                 <li><a href="#">Laporan</a></li>
                                 <li><a href="#">Pengisian</a></li>
@@ -198,7 +219,18 @@
                                 <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
                                 <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
-                                <li><a href="https://phcmalaysia.com/phcals/" target="_blank">PHC</a></li>
+                                
+                                <li class="has-submenu">
+                                    <a href="javascript:void(0)" class="sub-trigger">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        <li><a href="https://phcmalaysia.com/phcals/" target="_blank">Dashboard</a></li>
+                                        <li><a href="#">Latihan</a></li>
+                                        <li><a href="#">Aktiviti</a></li>
+                                        <li><a href="#">Rujukan</a></li>
+                                        <li><a href="#">Hubungi</a></li>
+                                    </ul>
+                                </li>
+
                                 <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank">Triage</a></li>
                             </ul>
                         </li>
@@ -221,11 +253,10 @@
             // Toggle Menu Utama di Mobile
             $('#mobile-btn').click(function() {
                 $('.nav-custom').toggleClass('active');
-                // Tukar ikon bila buka/tutup
                 $(this).find('i').toggleClass('fa-bars fa-times');
             });
 
-            // Toggle Dropdown di Mobile (Bila klik trigger)
+            // Toggle Dropdown di Mobile
             $('.drop-trigger').click(function(e) {
                 if ($(window).width() <= 992) {
                     e.preventDefault();
@@ -233,8 +264,16 @@
                 }
             });
 
-            // Tutup menu bila klik link (untuk mobile)
-            $('.nav-custom a').not('.drop-trigger').click(function() {
+            // Toggle Sub-box di Mobile (NEW)
+            $('.sub-trigger').click(function(e) {
+                if ($(window).width() <= 992) {
+                    e.preventDefault();
+                    $(this).parent('.has-submenu').toggleClass('active');
+                }
+            });
+
+            // Tutup menu bila klik link
+            $('.nav-custom a').not('.drop-trigger, .sub-trigger').click(function() {
                 if ($(window).width() <= 992) {
                     $('.nav-custom').removeClass('active');
                     $('#mobile-btn').find('i').addClass('fa-bars').removeClass('fa-times');
