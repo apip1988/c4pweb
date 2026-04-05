@@ -13,17 +13,12 @@
                 
                 <div class="card-body p-4">
                     <form action="{{ route('prpa.semak.hasil') }}" method="GET">
-                        <div class="form-group mb-4">
-                            <label class="small font-weight-bold text-secondary text-uppercase">No. Kad Pengenalan:</label>
-                            <input type="text" name="ic_nombor" class="form-control form-control-lg bg-light border-0 shadow-sm text-center" 
-                                   placeholder="880101105069" required maxlength="12" 
-                                   style="letter-spacing: 1px; font-weight: bold; font-size: 1.1rem;">
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg btn-block shadow rounded-pill font-weight-bold">
-                            SEMAK
-                        </button>
-                    </form>
+    <div class="form-group">
+        <label>Masukkan No. Kad Pengenalan (Tanpa -)</label>
+        <input type="text" name="ic_number" class="form-control" placeholder="Contoh: 881011035069" required>
+    </div>
+    <button type="submit" class="btn btn-success btn-block">SEMAK SEKARANG</button>
+</form>
                 </div>
             </div>
             
