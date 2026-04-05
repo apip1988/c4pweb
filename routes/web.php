@@ -126,6 +126,10 @@ Route::get('/prpa/semak-keputusan', function () {
 Route::get('/prpa/hasil-keputusan', 'PrpaController@proses_semak')->name('prpa.semak.hasil');
 
 //soalan PRPA//
-Route::get('/phcals/exam', 'PhcalsExamController@index')->middleware('auth');
-Route::post('/phcals/submit', 'PhcalsExamController@submit')->name('phcals.submit');
-Route::get('/phcals/history', 'PhcalsExamController@history')->name('phcals.history')->middleware('auth');
+// Pastikan guna susunan ini
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/phcals/exam', 'PhcalsExamController@index');
+    Route::post('/phcals/submit', 'PhcalsExamController@submit')->name('phcals.submit');
+    Route::get('/phcals/history', 'PhcalsExamController@history')->name('phcals.history');
+    Route::get('/phcals/review/{id}', 'PhcalsExamController@review')->name('phcals.review');
+});
