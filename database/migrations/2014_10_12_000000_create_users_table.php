@@ -7,34 +7,41 @@ use Illuminate\Database\Migrations\Migration;
 class CreateUsersTable extends Migration
 {
     /**
-     * Run the migrations.
-     *
-     * @return void
+     * Bina Table Users (Pendaftaran Utama)
      */
-    public function up(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->string('ic_number', 12)->unique()->after('email');
-        $table->string('phone_number')->nullable()->after('ic_number');
-        $table->string('no_lpp')->nullable()->after('phone_number');
-        $table->string('sektor')->nullable()->after('no_lpp');
-        $table->string('ptj_sekarang')->nullable()->after('sektor');
-        $table->date('tarikh_lantikan')->nullable()->after('ptj_sekarang');
-        $table->string('role')->default('USER')->after('tarikh_lantikan');
-    });
-}
+    public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
 
-public function down(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn(['ic_number', 'phone_number', 'no_lpp', 'sektor', 'ptj_sekarang', 'tarikh_lantikan', 'role']);
-    });
-}
+            // Kolum Tambahan yang Afif perlukan
+            $table->string('ic_number', 12)->unique()->nullable();
+            $table->string('phone_number')->nullable();
+            $table->string('no_lpp')->nullable();
+            $table->string('sektor')->nullable();
+            $table->string('ptj_sekarang')->nullable();
+            $table->date('tarikh_lantikan')->nullable();
+            
+            // Kolum Pendidikan (Untuk PHCALS & Kompetensi)
+            $table->string('edu_diploma')->default('TIADA');
+            $table->string('edu_ijazah')->default('TIADA');
+            $table->string('edu_master')->default('TIADA');
+            $table->string('edu_post_basic')->default('TIADA');
+            $table->string('edu_phd')->default('TIADA');
+
+            $table->string('role')->default('USER'); // ADMIN atau USER
+            
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
 
     /**
-     * Reverse the migrations.
-     *
-     * @return void
+     * Padam Table jika Rollback
      */
     public function down()
     {
