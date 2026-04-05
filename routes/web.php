@@ -124,3 +124,7 @@ Route::get('/prpa/semak-keputusan', function () {
 
 // Proses Semakan (Hala ke Controller)
 Route::get('/prpa/hasil-keputusan', 'PrpaController@proses_semak')->name('prpa.semak.hasil');
+
+//soalan PRPA//
+Route::get('/phcals/exam', 'PhcalsExamController@index')->middleware('auth');
+Route::post('/phcals/submit', 'PhcalsExamController@submit')->name('phcals.submit');
