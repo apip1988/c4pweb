@@ -17,8 +17,9 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
+        // Jika user sudah login (Authenticated), hantar mereka ke Laman Utama
         if (Auth::guard($guard)->check()) {
-            return redirect('/');
+            return redirect('/'); 
         }
 
         return $next($request);
