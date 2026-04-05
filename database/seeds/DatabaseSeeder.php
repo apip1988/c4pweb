@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-       $this->call(PhcalsQuestionSeeder::class); // $this->call(UsersTableSeeder::class);
+        // Kita guna nama class dalam bentuk 'string' untuk lebih selamat
+        $this->call('PhcalsQuestionSeeder');
     }
 }
