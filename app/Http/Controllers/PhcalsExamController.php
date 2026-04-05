@@ -65,4 +65,12 @@ public function history()
     return view('phcals.history', compact('results'));
 }
 
+public function review($id)
+{
+    // Ambil data result bersama maklumat user
+    $result = \App\PhcalsResult::with('user')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+    
+    return view('phcals.review', compact('result'));
+}
+
 }
