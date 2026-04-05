@@ -67,9 +67,11 @@ public function history()
 
 public function review($id)
 {
-    // Ambil data result bersama maklumat user
-    $result = \App\PhcalsResult::with('user')->where('id', $id)->where('user_id', auth()->id())->firstOrFail();
-    
+    // Cari result, kalau tak jumpa dia akan keluar 404
+    $result = \App\PhcalsResult::where('id', $id)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+
     return view('phcals.review', compact('result'));
 }
 

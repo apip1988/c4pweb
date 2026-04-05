@@ -19,8 +19,8 @@ class PhcalsResult extends Model
     /**
      * Hubungkan dengan User (Optional tapi bagus untuk ada)
      */
-    public function user()
+   public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\User::class, 'user_id');
     }
 }
