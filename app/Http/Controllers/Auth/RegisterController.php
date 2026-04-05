@@ -20,7 +20,7 @@ class RegisterController extends Controller
         if (auth()->user()->role == 'ADMIN') {
             return '/';
         }
-        return '/user/dashboard'; 
+        return '/'; 
     }
 
     public function __construct()
