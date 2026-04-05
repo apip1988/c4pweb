@@ -10,7 +10,9 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    // Default redirect jika tidak masuk ke fungsi authenticated
+    /**
+     * Default redirect jika tidak masuk ke fungsi authenticated
+     */
     protected $redirectTo = '/';
 
     public function __construct()
@@ -23,23 +25,24 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        // Jika User adalah ADMIN, hantar ke Dashboard Admin
+        // 1. Jika User adalah ADMIN, hantar ke Dashboard Admin
         if ($user->role == 'ADMIN') {
             return redirect('/admin/dashboard');
         }
 
-        // Jika User biasa, hantar ke Dashboard User
-        return redirect('/user/dashboard');
+        // 2. Jika User BIASA, hantar ke Laman UTAMA (Sesuai permintaan Afif)
+        return redirect('/');
     }
 
-    // Tambah/Tukar fungsi logout dalam LoginController jika perlu
-public function logout(Request $request)
-{
-    $this->guard()->logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+    /**
+     * Fungsi Logout: Hantar balik ke UTAMA
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    return redirect('/'); // Ini akan hantar Afif balik ke halaman UTAMA
-}
-
+        return redirect('/'); 
+    }
 }
