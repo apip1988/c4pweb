@@ -1,17 +1,18 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\PhcalsQuestion; // Pastikan huruf besar kecil betul
+use Illuminate\Support\Facades\DB;
 
 class PhcalsQuestionSeeder extends Seeder
 {
     public function run()
     {
-        // Guna DB truncate kalau model tak jumpa
-        \DB::table('phcals_questions')->truncate();
+        // Kosongkan table soalan
+        DB::table('phcals_questions')->truncate();
 
+        // Masukkan 50 soalan dummy
         for ($i = 1; $i <= 50; $i++) {
-            \DB::table('phcals_questions')->insert([
+            DB::table('phcals_questions')->insert([
                 'set_number' => 1,
                 'question_text' => "Ini adalah Soalan Dummy PHCALS No. $i. Apakah tindakan anda?",
                 'ans_a' => "Pilihan Jawapan A bagi soalan $i",
