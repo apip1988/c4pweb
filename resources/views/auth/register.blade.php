@@ -1,4 +1,3 @@
-<h1>SAYA DAH TUKAR KOD LA!</h1>
 @extends('layouts.app')
 
 @section('content')
