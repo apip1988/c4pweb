@@ -25,8 +25,44 @@ class PhcalsExamController extends Controller
     }
 
     public function submit(Request $request)
-    {
-        // Logik kira markah akan kita buat selepas ni
-        return "Jawapan anda telah diterima!";
+{
+    $userAnswers = $request->input('answers'); // Ambil jawapan dari form
+    $totalQuestions = 50;
+    $correctCount = 0;
+
+    if ($userAnswers) {
+        foreach ($userAnswers as $questionId => $answer) {
+            // Check jawapan betul dalam database
+            $question = \App\PhcalsQuestion::find($questionId);
+            if ($question && $question->correct_answer == $answer) {
+                $correctCount++;
+            }
+        }
     }
+
+    // Kira Peratus
+    $score = ($correctCount / $totalQuestions) * 100;
+
+    // Simpan dalam Table phcals_results
+    \App\PhcalsResult::create([
+        'user_id' => auth()->user()->id,
+        'set_number' => 1,
+        'score' => $score,
+        'correct_count' => $correctCount,
+        'start_time' => session('exam_start_time'),
+        'end_time' => now(),
+    ]);
+
+    // Hantar user ke halaman keputusan
+    return redirect()->route('phcals.history')->with('status', 'Ujian selesai! Sila semak keputusan anda.');
+}
+public function history()
+{
+    $results = \App\PhcalsResult::where('user_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+    return view('phcals.history', compact('results'));
+}
+
 }

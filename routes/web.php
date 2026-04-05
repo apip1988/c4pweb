@@ -128,3 +128,4 @@ Route::get('/prpa/hasil-keputusan', 'PrpaController@proses_semak')->name('prpa.s
 //soalan PRPA//
 Route::get('/phcals/exam', 'PhcalsExamController@index')->middleware('auth');
 Route::post('/phcals/submit', 'PhcalsExamController@submit')->name('phcals.submit');
+Route::get('/phcals/history', 'PhcalsExamController@history')->name('phcals.history')->middleware('auth');
