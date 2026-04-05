@@ -33,8 +33,10 @@
                         </td>
                         <td>
                             @if($res->score == 100)
-                                <button class="btn btn-sm btn-info">Review</button>
-                                <button class="btn btn-sm btn-success">Cetak Sijil</button>
+                                <a href="{{ url('/phcals/review/'.$res->id) }}" class="btn btn-sm btn-info text-white shadow-sm">
+    <i class="fas fa-search"></i> Review
+</a>
+                                
                             @else
                                 <a href="{{ url('/phcals/exam') }}" class="btn btn-sm btn-warning">Ulang Ujian</a>
                             @endif
