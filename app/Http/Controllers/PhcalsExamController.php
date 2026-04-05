@@ -67,12 +67,18 @@ public function history()
 
 public function review($id)
 {
-    // Cari result, kalau tak jumpa dia akan keluar 404
+    // Guna Full Path \App\PhcalsResult supaya dia tak sesat
     $result = \App\PhcalsResult::where('id', $id)
-                ->where('user_id', auth()->id())
-                ->firstOrFail();
+                ->where('user_id', \Auth::id())
+                ->first();
 
-    return view('phcals.review', compact('result'));
+    if (!$result) {
+        return "Ralat: Rekod ujian tidak dijumpai atau anda tiada akses.";
+    }
+
+    $user = \App\User::find($result->user_id);
+
+    return view('phcals.review', compact('result', 'user'));
 }
 
 }
