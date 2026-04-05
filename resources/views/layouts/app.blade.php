@@ -16,7 +16,7 @@
 
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-top: 80px; } /* Tambah padding sikit */
+        body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; padding-top: 80px; }
         [id^="section-"] { scroll-margin-top: 100px; }
         
         #top-nav {
@@ -37,7 +37,7 @@
             text-decoration: none; 
             color: #444; 
             font-weight: bold; 
-            font-size: 12px; /* Kecilkan sikit supaya muat banyak menu */
+            font-size: 12px; 
             transition: 0.3s; 
             text-transform: uppercase;
         }
@@ -55,7 +55,7 @@
         }
         .dropdown-content li a { color: #555; padding: 10px 20px; display: block; text-decoration: none; font-size: 13px; font-weight: 500; }
         .dropdown-content li a:hover { background-color: #f8f9fa; color: #3051a0; }
-        .dropdown-content .header { padding: 8px 20px; font-weight: bold; color: #3051a0; font-size: 11px; background: #f1f4f9; border-left: 4px solid #3051a0; }
+        .dropdown-content .header { padding: 8px 20px; font-weight: bold; color: #3051a0; font-size: 11px; background: #f1f4f9; border-left: 4px solid #3051a0; text-transform: uppercase; }
 
         /* Flyout Submenu */
         .has-submenu { position: relative; }
@@ -69,7 +69,6 @@
         .menu-biru { color: #3051a0 !important; font-weight: bold !important; }
         .mobile-toggler { display: none; background: none; border: 2px solid #3051a0; color: #3051a0; font-size: 20px; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
-        /* Responsive Mobile */
         @media (max-width: 992px) {
             .mobile-toggler { display: block; }
             .nav-custom {
@@ -110,8 +109,9 @@
                         </li>
 
                         <li class="dropdown-custom">
-                            <a href="javascript:void(0)">e-PUSAT <i class="fas fa-caret-down"></i></a>
+                            <a href="javascript:void(0)" class="menu-biru">e-PUSAT <i class="fas fa-caret-down"></i></a>
                             <ul class="dropdown-content">
+                                <li class="header">Modul Dalaman</li>
                                 <li><a href="#" class="menu-biru">e-CREDENTIAL</a></li>
                                 <li><a href="#" class="menu-biru">e-PEPERIKSAAN</a></li>
                                 
@@ -120,11 +120,19 @@
                                     <ul class="submenu-box">
                                         @auth
                                             <li><a href="{{ url('/kompetensi/permohonan') }}" class="text-danger font-weight-bold">Borang Permohonan Baru</a></li>
-                                        @else
-                                            <li><a href="{{ route('login') }}" class="text-muted italic small">Login untuk Mohon</a></li>
                                         @endauth
                                         <li><a href="{{ url('/kompetensi/tempat') }}">Semak Tempat</a></li>
                                         <li><a href="{{ url('/kompetensi/semak') }}">Semak Keputusan</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="has-submenu">
+                                    <a href="javascript:void(0)" class="menu-biru">e-KPI <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        <li><a href="#">Laporan (Awam)</a></li>
+                                        @auth
+                                            <li><a href="#">Pengisian KPI</a></li>
+                                        @endauth
                                     </ul>
                                 </li>
 
@@ -140,11 +148,18 @@
                                 </li>
 
                                 <li><a href="{{ url('/ebook') }}" class="menu-biru">e-RUJUKAN</a></li>
+
+                                <li class="header">Sistem Luar & Pautan</li>
+                                <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank" class="menu-biru">BLESS</a></li>
+                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru">MyCPD</a></li>
+                                <li><a href="https://p3s.moh.gov.my/login" target="_blank" class="menu-biru">P3S</a></li>
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank" class="menu-biru">TRIAGE</a></li>
                             </ul>
                         </li>
 
                         <li><a href="#">AMOTeX</a></li>
                         <li><a href="#">JURNAL</a></li>
+                        <li><a href="{{ url('/hubungi') }}">HUBUNGI</a></li>
 
                         @guest
                             <li><a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm ml-2 py-1 px-3" style="border-radius:20px;">LOG MASUK</a></li>
@@ -159,7 +174,7 @@
                                         <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield"></i> Dashboard Admin</a></li>
                                     @endif
                                     <li class="header">AKAUN SAYA</li>
-                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card"></i> Profil Profil</a></li>
+                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card"></i> Profil Saya</a></li>
                                     <li>
                                         <a href="{{ route('logout') }}" class="text-danger font-weight-bold" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <i class="fas fa-power-off"></i> LOGOUT
@@ -181,13 +196,11 @@
 
     <script>
         $(document).ready(function() {
-            // Mobile Menu
             $('#mobile-btn').click(function() {
                 $('.nav-custom').toggleClass('active');
                 $(this).find('i').toggleClass('fa-bars fa-times');
             });
 
-            // Dropdown Click (Mobile)
             if ($(window).width() <= 992) {
                 $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
                     e.preventDefault();
