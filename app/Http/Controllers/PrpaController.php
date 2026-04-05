@@ -8,29 +8,26 @@ use Illuminate\Support\Facades\DB; // Wajib ada untuk guna database
 class PrpaController extends Controller
 {
     public function proses_semak(Request $request)
-    {
-        // 1. Ambil IC dari input borang semakan
-        $ic = $request->ic_nombor;
+{
+    $ic = $request->ic_nombor;
 
-        // 2. Cari keputusan yang paling TERBARU (Latest) dalam table
-        // Pastikan nama table Afif betul (contoh: phcals_results)
-        $data = DB::table('phcals_results')
-                    ->where('ic_number', $ic)
-                    ->orderBy('created_at', 'desc')
-                    ->first();
+    // Cari keputusan terbaru berserta data User (Guna Join)
+    $data = DB::table('phcals_results')
+                ->join('users', 'phcals_results.user_id', '=', 'users.id') // Ambil data dari table users
+                ->select('phcals_results.*', 'users.name') // Ambil semua data result + Nama dari user
+                ->where('phcals_results.ic_number', $ic)
+                ->orderBy('phcals_results.created_at', 'desc')
+                ->first();
 
-        // 3. Kalau IC tak wujud dalam database
-        if (!$data) {
-            return redirect()->back()->with('error', 'Maaf, rekod keputusan bagi No. IC ' . $ic . ' tidak dijumpai.');
-        }
-
-        // 4. Ambil SEJARAH (History) semua percubaan IC tersebut
-        $history = DB::table('phcals_results')
-                    ->where('ic_number', $ic)
-                    ->orderBy('created_at', 'asc')
-                    ->get();
-
-        // 5. Hantar data ke page hasil_keputusan.blade.php
-        return view('prpa.hasil_keputusan', compact('data', 'history'));
+    if (!$data) {
+        return redirect()->back()->with('error', 'Maaf, rekod No. IC ' . $ic . ' tidak dijumpai.');
     }
+
+    $history = DB::table('phcals_results')
+                ->where('ic_number', $ic)
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+    return view('prpa.hasil_keputusan', compact('data', 'history'));
+}
 }
