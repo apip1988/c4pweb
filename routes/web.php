@@ -79,6 +79,11 @@ Route::group(['middleware' => ['auth']], function () {
 
     /* --- 🔐 KHAS UNTUK ADMIN SAHAJA --- */
     Route::group(['prefix' => 'admin'], function() {
+        // Pengurusan User (Hanya Admin)
+Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('admin.users.index');
+Route::post('/users/update-role/{id}', [App\Http\Controllers\UserController::class, 'updateRole'])->name('admin.users.updateRole');
+Route::get('/users/delete/{id}', [App\Http\Controllers\UserController::class, 'destroy'])->name('admin.users.destroy');
+
         // Admin Dashboard
         Route::get('/dashboard', [KompetensiController::class, 'admin_dashboard'])->name('admin.dashboard');
         
