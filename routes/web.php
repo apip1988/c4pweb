@@ -115,7 +115,7 @@ Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index
 // Admin Page (Letak dalam group admin)
 Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::get('/admin/rujukan/upload', [RujukanController::class, 'create'])->name('admin.rujukan.create');
-    Route::post('/admin/rujukan/store', [RujukanController::class, 'store'])->name('admin.rujukan.store');
+    Route::post('/admin/rujukan/store', [App\Http\Controllers\RujukanController::class, 'store'])->name('admin.rujukan.store');
     Route::get('/admin/rujukan/delete/{id}', [RujukanController::class, 'destroy'])->name('admin.rujukan.destroy');
 });
 });
