@@ -68,28 +68,35 @@
         <h5 class="font-weight-bold mb-4" style="color: var(--mint-dark);">
             <i class="fas fa-folder-open mr-2"></i>Carian Dokumen Credentialing
         </h5>
-        <form class="row">
-            <div class="col-md-5 mb-3">
-                <label class="small font-weight-bold">Disiplin</label>
-                <select class="form-control form-control-lg" style="border-radius: 10px;">
-                    <option>-- Pilih Disiplin --</option>
-                    @foreach($disciplines as $d) <option>{{ $d }}</option> @endforeach
-                </select>
-            </div>
-            <div class="col-md-5 mb-3">
-                <label class="small font-weight-bold">Nama Dokumen</label>
-                <select class="form-control form-control-lg" style="border-radius: 10px; font-size: 0.9rem;">
-    <option value="">-- Pilih Disiplin --</option>
-    @foreach($disciplines as $d)
-        <option value="{{ $d }}">{{ $d }}</option>
-    @endforeach
-</select>
-            </div>
-            <div class="col-md-2 mb-3">
-                <label>&nbsp;</label>
-                <button type="submit" class="btn btn-mint btn-lg btn-block shadow-sm">CARI</button>
-            </div>
-        </form>
+        <form action="{{ route('credentialing.index') }}" method="GET" class="row">
+    <div class="col-md-5 mb-3">
+        <label class="small font-weight-bold">Pilih Disiplin</label>
+        <select name="discipline" class="form-control form-control-lg" style="border-radius: 10px;">
+            <option value="ALL">-- Semua Disiplin --</option>
+            @foreach($disciplines as $d) 
+                <option value="{{ $d }}" {{ request('discipline') == $d ? 'selected' : '' }}>{{ $d }}</option> 
+            @endforeach
+        </select>
+    </div>
+
+    <div class="col-md-5 mb-3">
+        <label class="small font-weight-bold">Jenis Dokumen</label>
+        <select name="document_type" class="form-control form-control-lg" style="border-radius: 10px; font-size: 0.9rem;">
+            <option value="ALL">-- Semua Jenis Dokumen --</option>
+            <option value="Borang Credentialing" {{ request('document_type') == 'Borang Credentialing' ? 'selected' : '' }}>Borang Credentialing</option>
+            <option value="Borang Recredentialing" {{ request('document_type') == 'Borang Recredentialing' ? 'selected' : '' }}>Borang Recredentialing</option>
+            <option value="Carta Alir" {{ request('document_type') == 'Carta Alir' ? 'selected' : '' }}>Carta Alir</option>
+            <option value="Kriteria" {{ request('document_type') == 'Kriteria' ? 'selected' : '' }}>Kriteria</option>
+            <option value="Log Book" {{ request('document_type') == 'Log Book' ? 'selected' : '' }}>Log Book</option>
+        </select>
+    </div>
+
+    <div class="col-md-2 mb-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary btn-lg btn-block shadow-sm" style="border-radius: 10px;">
+            <i class="fas fa-search"></i> CARI
+        </button>
+    </div>
+</form>
         @if(isset($results) && count($results) > 0)
 <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 15px; border-top: 5px solid var(--mint-main) !important;">
     <h6 class="font-weight-bold mb-3 text-secondary">Hasil Carian:</h6>

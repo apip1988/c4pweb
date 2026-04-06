@@ -13,7 +13,6 @@ class CredentialingController extends Controller
         // 1. Senarai Disiplin Afif
         $disciplines = [
             'Peri-Operative Care',
-            'Intensive Care Nursing',
             'Emergency Medicine & Trauma Services (AMO & Nurses)',
             'Emergency Medicine & Trauma Services (Lecturer & Clinical Instructor)',
             'Ophthalmology',
