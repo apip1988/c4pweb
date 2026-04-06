@@ -100,4 +100,24 @@ public function store(Request $request)
     }
 }
 
+public function destroy($id)
+{
+    $doc = \App\CredentialingDocument::find($id);
+
+    if ($doc) {
+        // 1. Padam fail fizikal dari folder uploads
+        $filePath = public_path($doc->file_path);
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        // 2. Padam rekod dari database
+        $doc->delete();
+
+        return back()->with('success', 'Dokumen dan fail fizikal berjaya dipadam!');
+    }
+
+    return back()->with('error', 'Dokumen tidak dijumpai.');
+}
+
 }

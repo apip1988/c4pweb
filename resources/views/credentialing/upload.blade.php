@@ -38,6 +38,41 @@
                 <button type="submit" class="btn btn-success px-5">SIMPAN & UPLOAD</button>
                 <a href="{{ route('credentialing.index') }}" class="btn btn-link">Kembali ke Portal</a>
             </form>
+            <hr class="my-5">
+
+<h5 class="font-weight-bold text-danger mb-3">Senarai Dokumen Sedia Ada</h5>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover bg-white">
+        <thead class="thead-light">
+            <tr>
+                <th>Disiplin</th>
+                <th>Tajuk Dokumen</th>
+                <th class="text-center">Tindakan</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $allDocs = \App\CredentialingDocument::orderBy('created_at', 'desc')->get(); @endphp
+            @foreach($allDocs as $item)
+            <tr>
+                <td><small>{{ $item->discipline }}</small></td>
+                <td>{{ $item->title }}</td>
+                <td class="text-center">
+                    <a href="{{ route('credentialing.destroy', $item->id) }}" 
+                       class="btn btn-sm btn-outline-danger" 
+                       onclick="return confirm('Adakah anda pasti nak padam dokumen ini?')">
+                        <i class="fas fa-trash"></i> Padam
+                    </a>
+                </td>
+            </tr>
+            @endforeach
+            @if($allDocs->isEmpty())
+            <tr>
+                <td colspan="3" class="text-center text-muted">Tiada dokumen dijumpai.</td>
+            </tr>
+            @endif
+        </tbody>
+    </table>
+</div>
         </div>
     </div>
 </div>

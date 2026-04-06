@@ -93,5 +93,6 @@ Route::group(['middleware' => ['auth']], function () {
         // 🟢 Pengurusan Credentialing (Hanya Admin Boleh Upload)
         Route::get('/credentialing/upload', [CredentialingController::class, 'create'])->name('credentialing.create');
         Route::post('/credentialing/store', [CredentialingController::class, 'store'])->name('credentialing.store');
+        Route::get('/credentialing/delete/{id}', [CredentialingController::class, 'destroy'])->name('credentialing.destroy');
     });
 });
