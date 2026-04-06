@@ -31,4 +31,15 @@ class PrpaController extends Controller
         // 3. Hantar data ke view hasil keputusan
         return view('prpa.hasil_keputusan', compact('user', 'results'));
     }
+
+    public function showQuiz($id)
+{
+    // Jika user pilih Set 1, kita panggil view soalan tadi
+    if ($id == 1) {
+        return view('prpa.quiz1'); // Pastikan nama fail blade soalan Afif betul
+    }
+
+    // Jika set lain, hantar balik ke page utama dengan mesej
+    return redirect()->route('prpa.index')->with('error', 'Set soalan ini belum tersedia.');
+}
 }

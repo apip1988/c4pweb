@@ -118,4 +118,9 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
     Route::post('/admin/rujukan/store', [App\Http\Controllers\RujukanController::class, 'store'])->name('admin.rujukan.store');
     Route::get('/admin/rujukan/delete/{id}', [RujukanController::class, 'destroy'])->name('admin.rujukan.destroy');
 });
+
+// Laluan untuk buka soalan PHCALS (Set 1)
+Route::get('/prpa/quiz/1', function () {
+    return view('phcals.exam'); // Ini akan panggil fail resources/views/phcals/exam.blade.php
+})->name('quiz.phcals');
 });
