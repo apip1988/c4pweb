@@ -52,7 +52,7 @@
             min-width: 250px; box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
             z-index: 9999; list-style: none; padding: 10px 0;
             border-top: 3px solid #3051a0;
-            right: 0; /* Align to right for user profile */
+            right: 0;
         }
         .dropdown-content li a { color: #555; padding: 10px 20px; display: block; text-decoration: none; font-size: 13px; font-weight: 500; }
         .dropdown-content li a:hover { background-color: #f8f9fa; color: #3051a0; }
@@ -135,6 +135,7 @@
                                 </li>
 
                                 <li><a href="{{ route('rujukan.index') }}" class="menu-biru">e-RUJUKAN</a></li>
+                                
                                 <li><a href="https://www.bless.gov.my/" target="_blank" class="menu-biru small">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru small">MyCPD</a></li>
                             </ul>
@@ -152,16 +153,16 @@
                                 </a>
                                 <ul class="dropdown-content">
                                     @if(in_array(Auth::user()->role, ['ADMIN', 'SUPER ADMIN']))
-    <li class="header">PENTADBIRAN ({{ Auth::user()->role }})</li>
-    <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
-    
-    @if(Auth::user()->role == 'SUPER ADMIN')
-        <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan Pengguna</a></li>
-    @endif
-    
-    <li><a href="{{ route('credentialing.create') }}"><i class="fas fa-file-upload mr-2 text-primary"></i> Urus Credentialing</a></li>
-    <hr class="my-1">
-@endif
+                                        <li class="header">PENTADBIRAN ({{ Auth::user()->role }})</li>
+                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
+                                        
+                                        @if(Auth::user()->role == 'SUPER ADMIN')
+                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan Pengguna</a></li>
+                                        @endif
+                                        
+                                        <li><a href="{{ route('credentialing.create') }}"><i class="fas fa-file-upload mr-2 text-primary"></i> Pengurusan Dokumen</a></li>
+                                        <hr class="my-1">
+                                    @endif
 
                                     <li class="header">AKAUN SAYA</li>
                                     <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card mr-2 text-secondary"></i> Profil Saya</a></li>
@@ -191,7 +192,6 @@
                 $(this).find('i').toggleClass('fa-bars fa-times');
             });
 
-            // Handle dropdowns for mobile devices
             if ($(window).width() <= 992) {
                 $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
                     e.preventDefault();
