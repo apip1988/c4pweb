@@ -67,7 +67,6 @@
             border-left: 3px solid #3051a0; list-style: none; padding: 5px 0; z-index: 10000;
         }
 
-        .menu-biru { color: #3051a0 !important; font-weight: bold !important; }
         .mobile-toggler { display: none; background: none; border: 2px solid #3051a0; color: #3051a0; font-size: 20px; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
         @media (max-width: 992px) {
@@ -110,13 +109,13 @@
                         </li>
 
                         <li class="dropdown-custom">
-                            <a href="javascript:void(0)" class="menu-biru">e-PUSAT <i class="fas fa-caret-down"></i></a>
+                            <a href="javascript:void(0)">e-PUSAT <i class="fas fa-caret-down"></i></a>
                             <ul class="dropdown-content" style="left: 0;">
                                 <li><a href="{{ route('credentialing.index') }}">e-Credentialing</a></li>
-                                <li><a href="#" class="menu-biru text-muted">e-PEPERIKSAAN (Akan Datang)</a></li>
+                                <li><a href="#" class="text-muted">e-PEPERIKSAAN (Akan Datang)</a></li>
                                 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)" class="menu-biru">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <a href="javascript:void(0)">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
                                         @auth
                                             <li><a href="{{ url('/kompetensi/permohonan') }}" class="text-danger font-weight-bold">Borang Permohonan Baru</a></li>
@@ -127,17 +126,21 @@
                                 </li>
 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)" class="menu-biru">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <a href="javascript:void(0)">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
                                         <li><a href="{{ url('/prpa/semak-keputusan') }}">Semak Keputusan</a></li>
                                         <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>
                                     </ul>
                                 </li>
 
-                                <li><a href="{{ route('rujukan.index') }}" class="menu-biru">e-RUJUKAN</a></li>
+                                <li><a href="{{ route('rujukan.index') }}">e-RUJUKAN</a></li>
                                 
-                                <li><a href="https://www.bless.gov.my/" target="_blank" class="menu-biru small">BLESS</a></li>
-                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru small">MyCPD</a></li>
+                                <li><a href="https://www.bless.gov.my/" target="_blank" class="small">BLESS</a></li>
+                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="small">MyCPD</a></li>
+
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts" target="_blank" class="small">TRIAGE EMTS</a></li>
+                                <li><a href="https://p3s.moh.gov.my/login" target="_blank" class="small">P3S</a></li>
+                                <li><a href="https://hq.moh.gov.my/bpkk/" target="_blank" class="small">BPKK</a></li>
                             </ul>
                         </li>
 
@@ -148,7 +151,7 @@
                             <li><a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm ml-2 py-1 px-3" style="border-radius:20px;">LOG MASUK</a></li>
                         @else
                             <li class="dropdown-custom">
-                                <a href="javascript:void(0)" class="menu-biru">
+                                <a href="javascript:void(0)">
                                     <i class="fas fa-user-circle"></i> {{ strtoupper(explode(' ', Auth::user()->name)[0]) }} <i class="fas fa-caret-down"></i>
                                 </a>
                                 <ul class="dropdown-content">
