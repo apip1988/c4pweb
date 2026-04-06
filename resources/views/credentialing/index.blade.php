@@ -50,6 +50,14 @@
     .badge-upcoming { background-color: #fff9c4; color: #f57f17; border: 1px solid #fbc02d; }
 </style>
 
+<div class="container text-right mb-2">
+    @if(auth()->check() && auth()->user()->role == 'ADMIN')
+        <a href="{{ route('credentialing.create') }}" class="btn btn-sm btn-dark rounded-pill px-3">
+            <i class="fas fa-lock mr-1"></i> Urus & Muat Naik Dokumen
+        </a>
+    @endif
+</div>
+
 <div class="header-box text-center">
     <h2 class="font-weight-bold text-uppercase">Portal e-Credentialing</h2>
     <p class="opacity-75">Cawangan Perkhidmatan Penolong Pegawai Perubatan</p>

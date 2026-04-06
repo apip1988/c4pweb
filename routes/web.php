@@ -8,7 +8,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\PrpaController;
-use App\Http\Controllers\PhcalsExamController; // Pastikan ini ada
+use App\Http\Controllers\PhcalsExamController;
+use App\Http\Controllers\CredentialingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,9 @@ Route::get('/prpa', function () { return view('prpa.index'); });
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak_keputusan'); })->name('prpa.semak.borang');
 Route::get('/prpa/hasil-keputusan', [PrpaController::class, 'proses_semak'])->name('prpa.semak.hasil');
 
+// --- Modul Credentialing (Carian Public) ---
+Route::get('/credentialing', [CredentialingController::class, 'index'])->name('credentialing.index');
+
 // --- Auth Routes ---
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [LoginController::class, 'login']);
@@ -50,7 +54,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
 /*
 |--------------------------------------------------------------------------
-| 2. LALUAN WAJIB LOGIN (AUTH GROUP) - SEMUA LETAK SINI
+| 2. LALUAN WAJIB LOGIN (AUTH GROUP)
 |--------------------------------------------------------------------------
 */
 Route::group(['middleware' => ['auth']], function () {
@@ -62,7 +66,7 @@ Route::group(['middleware' => ['auth']], function () {
         return (auth()->user()->role == 'ADMIN') ? redirect()->route('admin.dashboard') : redirect()->route('user.dashboard');
     });
 
-    // Modul PHCALS (Exam) - GABUNG SINI
+    // Modul PHCALS (Exam)
     Route::get('/phcals/exam', [PhcalsExamController::class, 'index'])->name('phcals.exam');
     Route::post('/phcals/submit', [PhcalsExamController::class, 'submit'])->name('phcals.submit');
     Route::get('/phcals/history', [PhcalsExamController::class, 'history'])->name('phcals.history');
@@ -73,28 +77,21 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/kompetensi/hantar-permohonan', [KompetensiController::class, 'hantar_permohonan']);
     Route::match(['get', 'post'], '/kompetensi/hantar-emel', [KompetensiController::class, 'hantar_emel_penempatan'])->name('kompetensi.hantar_emel');
 
-    /* --- KHAS UNTUK ADMIN --- */
+    /* --- 🔐 KHAS UNTUK ADMIN SAHAJA --- */
     Route::group(['prefix' => 'admin'], function() {
+        // Admin Dashboard
         Route::get('/dashboard', [KompetensiController::class, 'admin_dashboard'])->name('admin.dashboard');
+        
+        // Pengurusan Kompetensi
         Route::get('/kompetensi/senarai-permohonan', [KompetensiController::class, 'admin_senarai_permohonan'])->name('admin.permohonan');
         Route::post('/permohonan/update-status', [KompetensiController::class, 'update_status_permohonan'])->name('admin.update_status');
         Route::get('/kompetensi/pengurusan', [KompetensiController::class, 'admin_index'])->name('admin.kompetensi.index');
         Route::post('/kompetensi/store', [KompetensiController::class, 'store']);
         Route::post('/kompetensi/update', [KompetensiController::class, 'update_calon']);
         Route::get('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy']);
+
+        // 🟢 Pengurusan Credentialing (Hanya Admin Boleh Upload)
+        Route::get('/credentialing/upload', [CredentialingController::class, 'create'])->name('credentialing.create');
+        Route::post('/credentialing/store', [CredentialingController::class, 'store'])->name('credentialing.store');
     });
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| CREDENTIALING
-|--------------------------------------------------------------------------
-*/
-// Cara BARU (Lebih Tepat)
-Route::get('/credentialing', [App\Http\Controllers\CredentialingController::class, 'index'])->name('credentialing.index');
-
-//Admin Upload Credentialing Document//
-// Tambah dalam group middleware auth
-Route::get('/admin/credentialing/upload', [App\Http\Controllers\CredentialingController::class, 'create'])->name('credentialing.create');
-Route::post('/admin/credentialing/store', [App\Http\Controllers\CredentialingController::class, 'store'])->name('credentialing.store');
