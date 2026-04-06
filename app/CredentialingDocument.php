@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class CredentialingDocument extends Model
 {
-    //
+    protected $guarded = []; //
 }
