@@ -49,7 +49,7 @@
         <table class="table table-borderless w-75">
             <tr>
                 <td width="30%">NAMA</td>
-                <td>: <strong>{{ strtoupper($result->user->name) }}</strong></td>
+                <td>: <strong>{{ $result->user->name }}</strong></td>
             </tr>
             <tr>
                 <td>NO. K/P</td>

@@ -82,6 +82,29 @@
                 <button type="submit" class="btn btn-mint btn-lg btn-block shadow-sm">CARI</button>
             </div>
         </form>
+        @if(isset($results) && count($results) > 0)
+<div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 15px; border-top: 5px solid var(--mint-main) !important;">
+    <h6 class="font-weight-bold mb-3 text-secondary">Hasil Carian:</h6>
+    <div class="list-group">
+        @foreach($results as $res)
+        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0 mb-2 shadow-sm" style="border-radius: 10px;">
+            <div>
+                <i class="fas fa-file-pdf text-danger mr-3 fa-lg"></i>
+                <span class="font-weight-bold">{{ $res['title'] }}</span>
+                <br><small class="text-muted ml-5">Dikemaskini pada: {{ $res['updated_at'] }}</small>
+            </div>
+            <a href="{{ asset('uploads/credentialing/'.$res['file_name']) }}" class="btn btn-sm btn-mint px-4 rounded-pill" target="_blank">
+                <i class="fas fa-download mr-1"></i> Muat Turun
+            </a>
+        </div>
+        @endforeach
+    </div>
+</div>
+@elseif(request('discipline'))
+<div class="alert alert-warning border-0 shadow-sm rounded-lg">
+    Maaf, dokumen untuk kriteria tersebut belum tersedia buat masa ini.
+</div>
+@endif
     </div>
 
     <div class="row">

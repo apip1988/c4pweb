@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+// Tambah ini di atas untuk panggil Model yang kita buat tadi
+use App\CredentialingDocument; 
 
 class CredentialingController extends Controller
 {
     public function index(Request $request)
     {
-        // Senarai Disiplin Mengikut Senarai Afif
+        // 1. Senarai Disiplin Afif
         $disciplines = [
             'Peri-Operative Care',
             'Intensive Care Nursing',
@@ -28,6 +30,7 @@ class CredentialingController extends Controller
             'Circumcision (Dorsal Slit Technique)'
         ];
         
+        // 2. Senarai Jenis Dokumen
         $docTypes = [
             'Borang Credentialing', 
             'Borang Recredentialing', 
@@ -37,6 +40,28 @@ class CredentialingController extends Controller
             'Garis Panduan'
         ];
 
-        return view('credentialing.index', compact('disciplines', 'docTypes'));
+        // 3. LOGIK CARIAN (Tangkis input dari Form)
+        $selectedDiscipline = $request->get('discipline');
+        $selectedDocType = $request->get('doc_type');
+        
+        $results = null;
+
+        // Jika user ada buat carian
+        if ($selectedDiscipline || $selectedDocType) {
+            $query = CredentialingDocument::query();
+
+            if ($selectedDiscipline) {
+                $query->where('discipline', $selectedDiscipline);
+            }
+
+            if ($selectedDocType) {
+                $query->where('document_type', $selectedDocType);
+            }
+
+            $results = $query->get();
+        }
+
+        // 4. Hantar semua data ke View
+        return view('credentialing.index', compact('disciplines', 'docTypes', 'results'));
     }
 }
