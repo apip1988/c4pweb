@@ -86,4 +86,5 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 //Credentialing//
-Route::get('/credentialing', [CredentialingController::class, 'index'])->name('credentialing.index');
+// Cara BARU (Lebih Tepat)
+Route::get('/credentialing', [App\Http\Controllers\CredentialingController::class, 'index'])->name('credentialing.index');
