@@ -15,9 +15,9 @@ return new class extends Migration
         $table->id();
         $table->string('type');          // SPG, Surat, Guideline, Minit Mesyuarat
         $table->string('title');         // Tajuk Dokumen
-        $table->string('publisher');     // Dikeluarkan oleh (MKM, KKM, dsb)
+        $table->string('publisher');     // Dari Siapa (MKM, KKM, dsb)
         $table->year('year');            // Tahun
-        $table->string('file_path');     // Lokasi fail PDF
+        $table->string('file_path');     // Path fail PDF
         $table->timestamps();
     });
 }
