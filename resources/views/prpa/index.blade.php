@@ -9,7 +9,6 @@
         --ppp-accent: #4caf50; /* Hijau Terang untuk Hover */
     }
     
-    /* Utility */
     .section-title { 
         font-weight: 700; 
         color: var(--ppp-green); 
@@ -28,7 +27,6 @@
     }
     .card-custom:hover { transform: translateY(-5px); }
     
-    /* Stat Box */
     .stat-box { 
         background: var(--ppp-light); 
         padding: 20px; 
@@ -40,7 +38,6 @@
     .stat-number { font-size: 1.8rem; font-weight: 700; color: var(--ppp-green); display: block; }
     .stat-label { font-size: 0.8rem; color: #444; text-transform: uppercase; font-weight: 600; }
     
-    /* 🟢 BOX BUTANG KURSUS (4 CARDS) */
     .btn-menu { 
         height: 100%; 
         display: flex; 
@@ -55,6 +52,7 @@
         border: 1px solid #eee; 
         color: #333; 
         box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        cursor: pointer;
     }
     .btn-menu i { font-size: 2.2rem; margin-bottom: 15px; color: var(--ppp-green); }
     .btn-menu:hover { 
@@ -66,7 +64,6 @@
     
     .scroll-offset { scroll-margin-top: 100px; }
 
-    /* 📱 MOBILE OPTIMIZATION */
     @media (max-width: 768px) {
         .btn-menu { padding: 15px 5px !important; }
         .btn-menu i { font-size: 1.6rem !important; }
@@ -75,7 +72,6 @@
 </style>
 
 <div class="container py-4">
-    
     <div id="prpa-dashboard" class="scroll-offset mb-5">
         <h4 class="section-title">Dashboard PRPA</h4>
         <div class="card card-custom p-3 p-md-4 shadow-sm">
@@ -120,24 +116,25 @@
         <h4 class="section-title">Pengurusan Kursus</h4>
         <div class="row text-center px-2 px-md-0">
             <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
-                <a href="#" class="btn-menu shadow-sm h-100">
+                <a href="#" class="btn-menu shadow-sm">
                     <i class="fas fa-file-signature"></i>
                     <span class="font-weight-bold">Borang Permohonan</span>
                 </a>
             </div>
             <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
-                <a href="#" class="btn-menu shadow-sm h-100">
+                <a href="#" class="btn-menu shadow-sm">
                     <i class="fas fa-video"></i>
                     <span class="font-weight-bold">Video Kursus</span>
                 </a>
             </div>
             <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
-                <a href="javascript:void(0)" class="btn btn-primary btn-block shadow-sm" data-toggle="modal" data-target="#quizSelectorModal" style="border-radius: 10px; font-weight: bold;">
-    <i class="fas fa-play mr-2"></i> SOALAN
-</a>
+                <div class="btn-menu shadow-sm" data-toggle="modal" data-target="#quizSelectorModal">
+                    <i class="fas fa-question-circle"></i>
+                    <span class="font-weight-bold">e-Quiz</span>
+                </div>
             </div>
             <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
-                <a href="{{ route('prpa.semak.borang') }}" class="btn-menu shadow-sm h-100">
+                <a href="{{ route('prpa.semak.borang') }}" class="btn-menu shadow-sm">
                     <i class="fas fa-poll"></i>
                     <span class="font-weight-bold">Semak Keputusan</span>
                 </a>
@@ -209,40 +206,32 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="quizSelectorModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content" style="border-radius: 25px; border: none; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
-            <div class="modal-header" style="background: linear-gradient(45deg, #3051a0, #4a69bd); color: white; border: none; padding: 20px;">
-                <h5 class="modal-title font-weight-bold"><i class="fas fa-tasks mr-2"></i> KONFIGURASI e-QUIZ</h5>
+        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="background: #3051a0; color: white; border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title font-weight-bold">PILIH SET SOALAN</h5>
                 <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
             </div>
-
             <div class="modal-body p-4 text-center">
-                <div class="mb-4">
-                    <div style="font-size: 50px; color: #3051a0;"><i class="fas fa-user-graduate"></i></div>
-                    <h5 class="font-weight-bold mt-2">Sediaan Minda PRPA</h5>
-                    <p class="text-muted small">Pilih set soalan dan tekan butang merah untuk mula.</p>
-                </div>
-
                 <div class="form-group">
-                    <select id="quizSetPicker" class="form-control form-control-lg text-center" 
-                            style="border-radius: 15px; border: 2px solid #3051a0; font-weight: 700; color: #3051a0; background: #f0f4ff;">
-                        <option value="">-- PILIH SET SOALAN --</option>
-                        <option value="{{ url('/prpa/quiz/1') }}">SET 1: ASAS & PENGENALAN (AKTIF)</option>
-                        <option value="" disabled>SET 2: (AKAN DATANG)</option>
-                        <option value="" disabled>SET 3: (AKAN DATANG)</option>
-                        <option value="" disabled>SET 4: (AKAN DATANG)</option>
-                        <option value="" disabled>SET 5: (AKAN DATANG)</option>
+                    <select id="quizSetPicker" class="form-control form-control-lg text-center" style="border-radius: 12px; font-weight: bold; border: 2px solid #3051a0;">
+                        <option value="">-- SILA PILIH --</option>
+                        <option value="{{ url('/prpa/quiz/1') }}">SET 1</option>
+                        <option value="" disabled>SET 2</option>
+                        <option value="" disabled>SET 3</option>
+                        <option value="" disabled>SET 4</option>
+                        <option value="" disabled>SET 5</option>
                     </select>
                 </div>
 
                 <button id="startQuizBtn" class="btn btn-block mt-4" 
-                    style="height: 65px; border-radius: 50px; font-size: 1.3rem; font-weight: 900; color: white;
-                           background: linear-gradient(180deg, #ff5e62 0%, #ff0000 50%, #990000 100%);
-                           box-shadow: 0 8px 25px rgba(255, 0, 0, 0.5), inset 0 3px 6px rgba(255, 255, 255, 0.4);
-                           border: 2px solid #660000; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); 
-                           opacity: 0.4; cursor: not-allowed; transition: all 0.4s ease;" disabled>
-                    START QUIZ <i class="fas fa-fire ml-2"></i>
+                    style="height: 60px; border-radius: 30px; font-size: 1.3rem; font-weight: 900; color: white;
+                           background: linear-gradient(180deg, #ff4d4d 0%, #cc0000 50%, #800000 100%);
+                           box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+                           border: none; opacity: 0.5; cursor: not-allowed; transition: 0.3s;" disabled>
+                    START
                 </button>
             </div>
         </div>
@@ -251,31 +240,22 @@
 
 <script>
 $(document).ready(function() {
-    // Pantau perubahan dropdown
+    // Control Butang Start
     $('#quizSetPicker').on('change', function() {
         var val = $(this).val();
         var btn = $('#startQuizBtn');
 
         if (val !== "") {
-            btn.prop('disabled', false).css({
-                'opacity': '1',
-                'cursor': 'pointer',
-                'transform': 'scale(1.05)'
-            });
+            btn.prop('disabled', false).css({'opacity': '1', 'cursor': 'pointer'});
         } else {
-            btn.prop('disabled', true).css({
-                'opacity': '0.4',
-                'cursor': 'not-allowed',
-                'transform': 'scale(1)'
-            });
+            btn.prop('disabled', true).css({'opacity': '0.5', 'cursor': 'not-allowed'});
         }
     });
 
-    // Handle Klik Start
+    // Jalankan Redirect bila klik Start
     $('#startQuizBtn').click(function() {
         var url = $('#quizSetPicker').val();
         if (url !== "") {
-            $(this).html('<i class="fas fa-sync fa-spin"></i> SEDANG MEMPROSES...');
             window.location.href = url;
         }
     });
