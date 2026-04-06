@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\PrpaController;
 use App\Http\Controllers\PhcalsExamController;
 use App\Http\Controllers\CredentialingController;
+use App\Http\Controllers\RujukanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,4 +101,21 @@ Route::get('/users/delete/{id}', [App\Http\Controllers\UserController::class, 'd
         Route::post('/credentialing/store', [CredentialingController::class, 'store'])->name('credentialing.store');
         Route::get('/credentialing/delete/{id}', [CredentialingController::class, 'destroy'])->name('credentialing.destroy');
     });
+
+/*
+|--------------------------------------------------------------------------
+| e-RUJUKAN
+|--------------------------------------------------------------------------
+*/
+    
+
+// Public Page
+Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index');
+
+// Admin Page (Letak dalam group admin)
+Route::group(['middleware' => ['auth', 'admin']], function () {
+    Route::get('/admin/rujukan/upload', [RujukanController::class, 'create'])->name('admin.rujukan.create');
+    Route::post('/admin/rujukan/store', [RujukanController::class, 'store'])->name('admin.rujukan.store');
+    Route::get('/admin/rujukan/delete/{id}', [RujukanController::class, 'destroy'])->name('admin.rujukan.destroy');
+});
 });
