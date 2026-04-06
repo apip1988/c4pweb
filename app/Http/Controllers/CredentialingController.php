@@ -64,4 +64,40 @@ class CredentialingController extends Controller
         // 4. Hantar semua data ke View
         return view('credentialing.index', compact('disciplines', 'docTypes', 'results'));
     }
+
+    public function create()
+{
+    // Copy senarai disiplin dari fungsi index tadi supaya sama
+    $disciplines = ['Peri-Operative Care', 'Intensive Care Nursing', 'Emergency Medicine & Trauma Services (AMO & Nurses)', 'Emergency Medicine & Trauma Services (Lecturer & Clinical Instructor)', 'Ophthalmology', 'Dialysis Care (Haemodialysis)', 'Pre Hospital Care Services', 'Anaesthesiology & Intensive Care (Anaesthesia)', 'Anaesthesiology & Intensive Care (Peri-Anaesthesia)', 'Anaesthesiology & Intensive Care (Intensive Care)', 'Orthopaedics Services', 'Cardio (Cardiovascular Perfusion)', 'Cardio (Cardiology)', 'Endoscopy Services', 'Peri-Anaesthesia Care (P.A.C)', 'Circumcision (Dorsal Slit Technique)'];
+    
+    $docTypes = ['Borang Credentialing', 'Borang Recredentialing', 'Carta Alir', 'Buku Log', 'Kriteria', 'Garis Panduan'];
+
+    return view('credentialing.upload', compact('disciplines', 'docTypes'));
+}
+
+public function store(Request $request)
+{
+    $request->validate([
+        'discipline' => 'required',
+        'document_type' => 'required',
+        'title' => 'required',
+        'file' => 'required|mimes:pdf|max:10000', // Had 10MB
+    ]);
+
+    if ($request->hasFile('file')) {
+        $file = $request->file('file');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/credentialing'), $fileName);
+
+        \App\CredentialingDocument::create([
+            'discipline' => $request->discipline,
+            'document_type' => $request->document_type,
+            'title' => $request->title,
+            'file_path' => 'uploads/credentialing/' . $fileName,
+        ]);
+
+        return back()->with('success', 'Dokumen berjaya dimuat naik!');
+    }
+}
+
 }

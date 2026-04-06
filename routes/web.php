@@ -85,6 +85,16 @@ Route::group(['middleware' => ['auth']], function () {
     });
 });
 
-//Credentialing//
+
+/*
+|--------------------------------------------------------------------------
+| CREDENTIALING
+|--------------------------------------------------------------------------
+*/
 // Cara BARU (Lebih Tepat)
 Route::get('/credentialing', [App\Http\Controllers\CredentialingController::class, 'index'])->name('credentialing.index');
+
+//Admin Upload Credentialing Document//
+// Tambah dalam group middleware auth
+Route::get('/admin/credentialing/upload', [App\Http\Controllers\CredentialingController::class, 'create'])->name('credentialing.create');
+Route::post('/admin/credentialing/store', [App\Http\Controllers\CredentialingController::class, 'store'])->name('credentialing.store');
