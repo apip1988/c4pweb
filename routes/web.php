@@ -84,3 +84,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy']);
     });
 });
+
+//Credentialing//
+Route::get('/credentialing', [CredentialingController::class, 'index'])->name('credentialing.index');

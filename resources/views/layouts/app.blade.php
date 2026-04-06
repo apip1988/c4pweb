@@ -111,8 +111,7 @@
                         <li class="dropdown-custom">
                             <a href="javascript:void(0)" class="menu-biru">e-PUSAT <i class="fas fa-caret-down"></i></a>
                             <ul class="dropdown-content">
-                                <li class="header">Modul Dalaman</li>
-                                <li><a href="#" class="menu-biru">e-CREDENTIAL</a></li>
+                                <a class="dropdown-item" href="{{ route('credentialing.index') }}">e-Credentialing</a>
                                 <li><a href="#" class="menu-biru">e-PEPERIKSAAN</a></li>
                                 
                                 <li class="has-submenu">
@@ -149,7 +148,6 @@
 
                                 <li><a href="{{ url('/ebook') }}" class="menu-biru">e-RUJUKAN</a></li>
 
-                                <li class="header">Sistem Luar & Pautan</li>
                                 <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank" class="menu-biru">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru">MyCPD</a></li>
                                 <li><a href="https://p3s.moh.gov.my/login" target="_blank" class="menu-biru">P3S</a></li>
