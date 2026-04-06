@@ -134,7 +134,7 @@
                                     </ul>
                                 </li>
 
-                                <li><a href="{{ url('/ebook') }}" class="menu-biru">e-RUJUKAN</a></li>
+                                <li><a href="{{ route('rujukan.index') }}" class="menu-biru">e-RUJUKAN</a></li>
                                 <li><a href="https://www.bless.gov.my/" target="_blank" class="menu-biru small">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru small">MyCPD</a></li>
                             </ul>
