@@ -52,6 +52,7 @@
             min-width: 250px; box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
             z-index: 9999; list-style: none; padding: 10px 0;
             border-top: 3px solid #3051a0;
+            right: 0; /* Align to right for user profile */
         }
         .dropdown-content li a { color: #555; padding: 10px 20px; display: block; text-decoration: none; font-size: 13px; font-weight: 500; }
         .dropdown-content li a:hover { background-color: #f8f9fa; color: #3051a0; }
@@ -102,7 +103,7 @@
                         
                         <li class="dropdown-custom">
                             <a href="javascript:void(0)">DIREKTORI <i class="fas fa-caret-down"></i></a>
-                            <ul class="dropdown-content">
+                            <ul class="dropdown-content" style="left: 0;">
                                 <li><a href="{{ url('/direktori/carian-ppp') }}">Carian PPP</a></li>
                                 <li><a href="{{ route('direktori.carta-organisasi') }}">Carta Organisasi</a></li>
                             </ul>
@@ -110,9 +111,9 @@
 
                         <li class="dropdown-custom">
                             <a href="javascript:void(0)" class="menu-biru">e-PUSAT <i class="fas fa-caret-down"></i></a>
-                            <ul class="dropdown-content">
-                                <a class="dropdown-item" href="{{ route('credentialing.index') }}">e-Credentialing</a>
-                                <li><a href="#" class="menu-biru">e-PEPERIKSAAN</a></li>
+                            <ul class="dropdown-content" style="left: 0;">
+                                <li><a href="{{ route('credentialing.index') }}">e-Credentialing</a></li>
+                                <li><a href="#" class="menu-biru text-muted">e-PEPERIKSAAN (Akan Datang)</a></li>
                                 
                                 <li class="has-submenu">
                                     <a href="javascript:void(0)" class="menu-biru">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
@@ -126,37 +127,20 @@
                                 </li>
 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)" class="menu-biru">e-KPI <i class="fas fa-caret-right float-right mt-1"></i></a>
-                                    <ul class="submenu-box">
-                                        <li><a href="#">Laporan (Awam)</a></li>
-                                        @auth
-                                            <li><a href="#">Pengisian KPI</a></li>
-                                        @endauth
-                                    </ul>
-                                </li>
-
-                                <li class="has-submenu">
                                     <a href="javascript:void(0)" class="menu-biru">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
-                                        @auth
-                                            <li><a href="{{ url('/prpa/register') }}" class="text-success font-weight-bold">Pendaftaran PRPA</a></li>
-                                        @endauth
+                                        <li><a href="{{ url('/prpa/semak-keputusan') }}">Semak Keputusan</a></li>
                                         <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>
-                                        <li><a href="{{ url('/prpa#rujukan') }}">Rujukan</a></li>
                                     </ul>
                                 </li>
 
                                 <li><a href="{{ url('/ebook') }}" class="menu-biru">e-RUJUKAN</a></li>
-
-                                <li><a href="https://www.bless.gov.my/bless/action/login?show" target="_blank" class="menu-biru">BLESS</a></li>
-                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru">MyCPD</a></li>
-                                <li><a href="https://p3s.moh.gov.my/login" target="_blank" class="menu-biru">P3S</a></li>
-                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts/halaman-utama" target="_blank" class="menu-biru">TRIAGE</a></li>
+                                <li><a href="https://www.bless.gov.my/" target="_blank" class="menu-biru small">BLESS</a></li>
+                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank" class="menu-biru small">MyCPD</a></li>
                             </ul>
                         </li>
 
                         <li><a href="#">AMOTeX</a></li>
-                        <li><a href="#">JURNAL</a></li>
                         <li><a href="{{ url('/hubungi') }}">HUBUNGI</a></li>
 
                         @guest
@@ -169,13 +153,17 @@
                                 <ul class="dropdown-content">
                                     @if(Auth::user()->role == 'ADMIN')
                                         <li class="header">PENTADBIRAN</li>
-                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield"></i> Dashboard Admin</a></li>
+                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
+                                        <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-primary"></i> Pengurusan Pengguna</a></li>
+                                        <li><a href="{{ route('credentialing.create') }}"><i class="fas fa-file-upload mr-2 text-primary"></i> Urus Credentialing</a></li>
+                                        <hr class="my-1">
                                     @endif
+
                                     <li class="header">AKAUN SAYA</li>
-                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card"></i> Profil Saya</a></li>
+                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card mr-2 text-secondary"></i> Profil Saya</a></li>
                                     <li>
                                         <a href="{{ route('logout') }}" class="text-danger font-weight-bold" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            <i class="fas fa-power-off"></i> LOGOUT
+                                            <i class="fas fa-power-off mr-2"></i> KELUAR SISTEM
                                         </a>
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
                                     </li>
@@ -187,7 +175,7 @@
             </div>
         </header>
 
-        <main>
+        <main class="py-4">
             @yield('content')
         </main>
     </div>
@@ -199,6 +187,7 @@
                 $(this).find('i').toggleClass('fa-bars fa-times');
             });
 
+            // Handle dropdowns for mobile devices
             if ($(window).width() <= 992) {
                 $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
                     e.preventDefault();
