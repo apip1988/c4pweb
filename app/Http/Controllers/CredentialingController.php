@@ -8,18 +8,26 @@ class CredentialingController extends Controller
 {
     public function index(Request $request)
     {
-        // Senarai Disiplin Credentialing
+        // Senarai Disiplin Mengikut Senarai Afif
         $disciplines = [
-            'Kecemasan (ED)', 
-            'Dewan Bedah (OT)', 
-            'Kesihatan Awam', 
-            'Hemodialisis', 
-            'Ortopedik',
-            'Anaestesiologi',
-            'Perawatan Rapi (ICU)'
+            'Peri-Operative Care',
+            'Intensive Care Nursing',
+            'Emergency Medicine & Trauma Services (AMO & Nurses)',
+            'Emergency Medicine & Trauma Services (Lecturer & Clinical Instructor)',
+            'Ophthalmology',
+            'Dialysis Care (Haemodialysis)',
+            'Pre Hospital Care Services',
+            'Anaesthesiology & Intensive Care (Anaesthesia)',
+            'Anaesthesiology & Intensive Care (Peri-Anaesthesia)',
+            'Anaesthesiology & Intensive Care (Intensive Care)',
+            'Orthopaedics Services',
+            'Cardio (Cardiovascular Perfusion)',
+            'Cardio (Cardiology)',
+            'Endoscopy Services',
+            'Peri-Anaesthesia Care (P.A.C)',
+            'Circumcision (Dorsal Slit Technique)'
         ];
         
-        // Senarai Dokumen Credentialing Sahaja
         $docTypes = [
             'Borang Credentialing', 
             'Borang Recredentialing', 

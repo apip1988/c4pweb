@@ -70,10 +70,12 @@
             </div>
             <div class="col-md-5 mb-3">
                 <label class="small font-weight-bold">Nama Dokumen</label>
-                <select class="form-control form-control-lg" style="border-radius: 10px;">
-                    <option>-- Pilih Jenis Dokumen --</option>
-                    @foreach($docTypes as $doc) <option>{{ $doc }}</option> @endforeach
-                </select>
+                <select class="form-control form-control-lg" style="border-radius: 10px; font-size: 0.9rem;">
+    <option value="">-- Pilih Disiplin --</option>
+    @foreach($disciplines as $d)
+        <option value="{{ $d }}">{{ $d }}</option>
+    @endforeach
+</select>
             </div>
             <div class="col-md-2 mb-3">
                 <label>&nbsp;</label>
