@@ -35,10 +35,12 @@
                             <td>
                                 <form action="{{ route('admin.users.updateRole', $u->id) }}" method="POST" class="d-flex">
                                     @csrf
-                                    <select name="role" class="form-control form-control-sm mr-2" style="width: 120px;">
-                                        <option value="USER" {{ $u->role != 'ADMIN' ? 'selected' : '' }}>USER</option>
-                                        <option value="ADMIN" {{ $u->role == 'ADMIN' ? 'selected' : '' }}>ADMIN</option>
-                                    </select>
+                                    <select name="role" class="form-control form-control-sm mr-2" style="width: 150px;">
+    <option value="USER" {{ $u->role == 'USER' ? 'selected' : '' }}>USER</option>
+    <option value="VIP" {{ $u->role == 'VIP' ? 'selected' : '' }}>VIP</option>
+    <option value="ADMIN" {{ $u->role == 'ADMIN' ? 'selected' : '' }}>ADMIN</option>
+    <option value="SUPER ADMIN" {{ $u->role == 'SUPER ADMIN' ? 'selected' : '' }}>SUPER ADMIN</option>
+</select>
                                     <button type="submit" class="btn btn-sm btn-primary">Update</button>
                                 </form>
                             </td>

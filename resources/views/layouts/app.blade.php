@@ -151,13 +151,17 @@
                                     <i class="fas fa-user-circle"></i> {{ strtoupper(explode(' ', Auth::user()->name)[0]) }} <i class="fas fa-caret-down"></i>
                                 </a>
                                 <ul class="dropdown-content">
-                                    @if(Auth::user()->role == 'ADMIN')
-                                        <li class="header">PENTADBIRAN</li>
-                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
-                                        <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-primary"></i> Pengurusan Pengguna</a></li>
-                                        <li><a href="{{ route('credentialing.create') }}"><i class="fas fa-file-upload mr-2 text-primary"></i> Urus Credentialing</a></li>
-                                        <hr class="my-1">
-                                    @endif
+                                    @if(in_array(Auth::user()->role, ['ADMIN', 'SUPER ADMIN']))
+    <li class="header">PENTADBIRAN ({{ Auth::user()->role }})</li>
+    <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
+    
+    @if(Auth::user()->role == 'SUPER ADMIN')
+        <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan Pengguna</a></li>
+    @endif
+    
+    <li><a href="{{ route('credentialing.create') }}"><i class="fas fa-file-upload mr-2 text-primary"></i> Urus Credentialing</a></li>
+    <hr class="my-1">
+@endif
 
                                     <li class="header">AKAUN SAYA</li>
                                     <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card mr-2 text-secondary"></i> Profil Saya</a></li>

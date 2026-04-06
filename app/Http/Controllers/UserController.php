@@ -7,11 +7,15 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        $users = User::orderBy('created_at', 'desc')->get();
-        return view('admin.users.index', compact('users'));
-    }
+    // Dalam UserController.php
+
+public function index()
+{
+    $users = \App\User::orderBy('created_at', 'desc')->get();
+    // Kita hantar senarai role ke view
+    $roles = ['SUPER ADMIN', 'ADMIN', 'VIP', 'USER']; 
+    return view('admin.users.index', compact('users', 'roles'));
+}
 
     public function updateRole(Request $request, $id)
     {
