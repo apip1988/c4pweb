@@ -137,4 +137,15 @@ class PrpaController extends Controller
 
         return view('phcals.review', compact('result', 'reviewData'));
     }
+
+    public function printCertificate($id)
+{
+    $result = PhcalsResult::where('id', $id)
+                ->where('user_id', auth()->id())
+                ->where('status', 'PASSED') // Hanya boleh print kalau lulus
+                ->firstOrFail();
+
+    return view('phcals.print', compact('result'));
+}
+
 }

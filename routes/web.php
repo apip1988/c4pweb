@@ -80,6 +80,7 @@ Route::get('/prpa/quiz/{id}', [App\Http\Controllers\PrpaController::class, 'star
     Route::post('/phcals/submit', [App\Http\Controllers\PrpaController::class, 'submitQuiz'])->name('phcals.submit');
     Route::get('/phcals/history', [App\Http\Controllers\PrpaController::class, 'showHistory'])->name('phcals.history');
     Route::get('/phcals/review/{id}', [App\Http\Controllers\PrpaController::class, 'showReview'])->name('phcals.review');
+    Route::get('/phcals/print/{id}', [App\Http\Controllers\PrpaController::class, 'printCertificate'])->name('phcals.print');
 
     // Modul Permohonan User
     Route::get('/kompetensi/permohonan', function () { return view('kompetensi.permohonan'); })->name('user.permohonan');

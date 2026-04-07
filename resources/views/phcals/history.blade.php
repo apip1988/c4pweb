@@ -52,10 +52,10 @@
     <i class="fas fa-eye"></i> View Review
 </a>
                                     @if($res->status == 'PASSED')
-                                    <a href="#" class="btn btn-sm btn-secondary" title="Print Certificate">
-                                        <i class="fas fa-print"></i>
-                                    </a>
-                                    @endif
+<a href="{{ route('phcals.print', $res->id) }}" target="_blank" class="btn btn-sm btn-dark" title="Print Certificate">
+    <i class="fas fa-print"></i> Print
+</a>
+@endif
                                 </div>
                             </td>
                         </tr>
