@@ -141,7 +141,8 @@
                     <label class="font-weight-bold d-block text-left ml-1">Select Your Question Set:</label>
                     <select id="finalSetSelect" class="form-control form-control-lg" style="border: 2px solid #3051a0; font-weight: bold;">
     <option value="">-- SELECT SET --</option>
-    <option value="/prpa/quiz/1">SET 1</option> <option value="" disabled>SET 2 (coming soon)</option>
+    <option value="{{ url('/prpa/quiz/1') }}">SET 1</option>
+    <option value="" disabled>SET 2</option>
 </select>
                 </div>
 
@@ -158,25 +159,18 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const select = document.getElementById('finalSetSelect');
         const btn = document.getElementById('finalStartBtn');
+        const select = document.getElementById('finalSetSelect');
 
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const selectedPath = select.value;
-            
-            if (selectedPath !== "") {
-                // Beri visual loading supaya user tahu sistem tengah proses
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LOADING QUESTIONS...';
-                this.style.pointerEvents = 'none';
-
-                // Guna URL terus tanpa tambah origin secara manual
-                window.location.href = selectedPath;
+        btn.onclick = function() {
+            const url = select.value;
+            if (url !== "") {
+                // Cara paling "kasar" untuk paksa browser pindah page
+                window.location = url;
             } else {
-                alert("Please select a Question Set first!");
+                alert("Please select SET 1 first!");
             }
-        });
+        };
     });
 </script>
 @endsection
