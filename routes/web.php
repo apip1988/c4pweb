@@ -120,7 +120,4 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 });
 
 // Laluan untuk buka soalan PHCALS (Set 1)
-Route::get('/prpa/quiz/1', function () {
-    return view('phcals.exam'); // Ini akan panggil fail resources/views/phcals/exam.blade.php
-})->name('quiz.phcals');
-});
+Route::get('/prpa/quiz/{id}', [App\Http\Controllers\PrpaController::class, 'startQuiz']);

@@ -34,21 +34,25 @@ class PrpaController extends Controller
 
     public function startQuiz($id)
 {
-    // Panggil data soalan dari fail Set1
+    // Kita panggil fail data soalan yang kita buat tadi (app/QuizData/Set1.php)
     $className = "App\QuizData\Set" . $id;
+    
+    // Pastikan class wujud
+    if (!class_exists($className)) {
+        return redirect()->back()->with('error', 'Set not found.');
+    }
+
     $allQuestions = $className::questions();
 
-    // 🎲 BUAT RAWAK (SOALAN & PILIHAN JAWAPAN)
-    $shuffledQuestions = collect($allQuestions)->shuffle()->map(function($item) {
+    // Rawakkan soalan & jawapan (SHUFFLE)
+    $questions = collect($allQuestions)->shuffle()->map(function($item) {
         $item['options'] = collect($item['options'])->shuffle()->all();
         return $item;
     })->all();
 
-    // Hantar data ke view (Ini akan selesaikan error Undefined Variable)
-    return view('phcals.exam', [
-        'questions' => $shuffledQuestions,
-        'id' => $id
-    ]);
+    // Hantar $questions ke view phcals.exam
+    // COMPACT ini yang akan hilangkan error "Undefined variable" tu
+    return view('phcals.exam', compact('questions', 'id'));
 }
 
     public function showQuiz($id)
