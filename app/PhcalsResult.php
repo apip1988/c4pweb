@@ -6,21 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class PhcalsResult extends Model
 {
-    // Ini adalah 'kunci' untuk benarkan data masuk ke table
+    // Kolum yang dibenarkan untuk disimpan (mesti sama dengan migration)
     protected $fillable = [
-        'user_id',
-        'set_number',
-        'score',
-        'correct_count',
-        'start_time',
-        'end_time'
+        'user_id', 
+        'set_id', 
+        'score', 
+        'status', 
+        'review_data', 
+        'attempt_date', 
+        'expiry_date'
     ];
 
-    /**
-     * Hubungkan dengan User (Optional tapi bagus untuk ada)
-     */
-   public function user()
+    // Hubungan: Satu keputusan milik satu User
+    public function user()
     {
-        return $this->belongsTo(\App\User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 }

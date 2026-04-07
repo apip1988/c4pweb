@@ -64,38 +64,68 @@ class PrpaController extends Controller
      * Proses Submit Jawapan & Kira Markah
      */
     public function submitQuiz(Request $request)
-    {
-        $userAnswers = $request->input('ans'); // Ambil jawapan dari form
-        $originalQuestions = session('quiz_questions'); // Ambil soalan dari session
-        $setId = $request->input('set_id');
+{
+    // 1. Ambil jawapan yang user pilih dari form (ans[0], ans[1], etc)
+    $userAnswers = $request->input('ans'); 
+    
+    // 2. Ambil soalan yang tersimpan dalam session masa mula kuiz tadi
+    $questions = session('quiz_questions');
+    $setId = $request->input('set_id', 1);
 
-        if (!$originalQuestions) {
-            return redirect()->route('prpa.index')->with('error', 'Session expired. Please try again.');
-        }
-
-        $totalQuestions = count($originalQuestions);
-        $correctCount = 0;
-
-        // Bandingkan jawapan user dengan jawapan betul
-        foreach ($originalQuestions as $index => $q) {
-            if (isset($userAnswers[$index]) && $userAnswers[$index] === $q['answer']) {
-                $correctCount++;
-            }
-        }
-
-        $score = ($correctCount / $totalQuestions) * 100;
-        $status = ($score == 100) ? 'LULUS' : 'RE-ATTEMPT';
-
-        // Simpan keputusan ke database
-        PhcalsResult::create([
-            'user_id' => Auth::id(),
-            'set_id' => $setId,
-            'score' => round($score, 2),
-            'status' => $status,
-            'attempt_date' => now(),
-            'expiry_date' => now()->addYears(3),
-        ]);
-
-        return redirect()->route('phcals.history')->with('success', 'Quiz completed! Your score: ' . round($score, 2) . '%');
+    // Jika session hilang (timeout), hantar balik ke main page
+    if (!$questions) {
+        return redirect()->route('prpa.index')->with('error', 'Session expired. Please restart the quiz.');
     }
+
+    $totalQuestions = count($questions);
+    $correctCount = 0;
+    $reviewData = []; // Untuk simpan sejarah jawapan (Review)
+
+    // 3. Proses Pengiraan
+    foreach ($questions as $index => $q) {
+        $userAns = $userAnswers[$index] ?? null;
+        $isCorrect = ($userAns === $q['answer']);
+        
+        if ($isCorrect) { 
+            $correctCount++; 
+        }
+
+        // Simpan data untuk paparan Hijau/Merah nanti
+        $reviewData[] = [
+            'question' => $q['question'],
+            'correct'  => $q['answer'],
+            'user_ans' => $userAns,
+            'is_right' => $isCorrect
+        ];
+    }
+
+    // 4. Tentukan Markah & Status
+    $score = ($correctCount / $totalQuestions) * 100;
+    $status = ($score == 100) ? 'PASSED' : 'RE-ATTEMPT';
+
+    // 5. Simpan ke Database
+    \App\PhcalsResult::create([
+        'user_id'      => auth()->id(),
+        'set_id'       => $setId,
+        'score'        => round($score, 2),
+        'status'       => $status,
+        'review_data'  => json_encode($reviewData), // Simpan sebagai JSON
+        'attempt_date' => now(),
+        'expiry_date'  => now()->addYears(3), // Expired dalam 3 tahun
+    ]);
+
+    // 6. Selesai! Hantar user ke page history
+    return redirect()->route('phcals.history')->with('success', 'Examination submitted successfully!');
+}
+
+    public function showHistory()
+{
+    // Ambil semua sejarah kuiz milik user yang tengah login sekarang
+    $results = \App\PhcalsResult::where('user_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+    return view('phcals.history', compact('results'));
+}
+
 }

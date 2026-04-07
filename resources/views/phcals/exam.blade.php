@@ -55,37 +55,14 @@
                 <p class="text-muted mt-2">Nota: Anda perlu skor 100% untuk lulus dan mencetak sijil.</p>
             </div>
 
-            <form action="{{ route('prpa.quiz.submit') }}" method="POST">
-                @csrf
-                
-                @foreach($questions as $index => $q)
-<div class="card shadow-sm mb-4 question-card" id="card-{{ $index }}" style="border-radius: 15px;">
-    <div class="card-body p-4">
-        <h5 class="font-weight-bold" style="color: #3051a0;">Question {{ $index + 1 }}</h5>
-        <p class="lead" style="font-weight: 500;">{{ $q['question'] }}</p>
-        <hr>
+            <form id="quizForm" action="{{ route('phcals.submit') }}" method="POST">
+    @csrf
+    <input type="hidden" name="set_id" value="{{ $id }}">
 
-        @foreach($q['options'] as $oIndex => $option)
-        <div class="custom-control custom-radio mb-3">
-            <input type="radio" id="q{{$index}}o{{$oIndex}}" name="ans[{{$index}}]" value="{{$option}}" 
-                   class="custom-control-input" onchange="markAsAnswered({{$index}})">
-            <label class="custom-control-label w-100" for="q{{$index}}o{{$oIndex}}" style="cursor: pointer;">
-                {{ $option }}
-            </label>
-        </div>
-        @endforeach
-    </div>
-</div>
-@endforeach
-
-                <div class="card p-4 shadow-sm bg-light text-center border-0">
-                    <h4>Sudah selesai menjawab?</h4>
-                    <p>Pastikan semua soalan telah diisi sebelum menghantar.</p>
-                    <button type="submit" class="btn btn-primary btn-lg px-5 shadow" onclick="return confirm('Adakah anda pasti mahu menghantar jawapan?')">
-                        HANTAR JAWAPAN SEKARANG
-                    </button>
-                </div>
-            </form>
+    <button type="submit" class="btn btn-primary btn-block mt-4">
+        HANTAR JAWAPAN SEKARANG
+    </button>
+</form>
         </div>
     </div>
 </div>
