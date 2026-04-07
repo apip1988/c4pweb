@@ -1,8 +1,8 @@
 <?php
 
-namespace App\QuizData;
+namespace App\QuizData; // Mesti App (A besar) dan QuizData (Q & D besar)
 
-class Set1 {
+class Set1 { // Mesti Set1 (S besar)
     public static function questions() {
         return [
             [
