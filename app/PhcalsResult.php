@@ -17,6 +17,11 @@ class PhcalsResult extends Model
         'expiry_date'
     ];
 
+    protected $casts = [
+        'attempt_date' => 'datetime',
+        'expiry_date'  => 'datetime',
+    ];
+    
     // Hubungan: Satu keputusan milik satu User
     public function user()
     {
