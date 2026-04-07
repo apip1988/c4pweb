@@ -139,19 +139,18 @@
 
                 <div class="form-group mb-4">
                     <label class="font-weight-bold d-block text-left ml-1">Select Your Question Set:</label>
-                    <select id="finalSetSelect" class="form-control form-control-lg" ...>
+                    <select id="finalSetSelect" class="form-control form-control-lg" style="border: 2px solid #3051a0; font-weight: bold;">
     <option value="">-- SELECT SET --</option>
-    <option value="https://amoppp.com/prpa/quiz/1">SET 1</option>
-    <option value="" disabled>SET 2 (coming soon)</option>
+    <option value="/prpa/quiz/1">SET 1</option> <option value="" disabled>SET 2 (coming soon)</option>
 </select>
                 </div>
 
-                <button id="finalStartBtn" class="btn btn-block shadow-lg" 
-                    style="height: 65px; border-radius: 40px; font-size: 1.4rem; font-weight: 900; color: white;
-                           background: linear-gradient(180deg, #ff4d4d 0%, #cc0000 50%, #800000 100%);
-                           border: none; opacity: 0.5; cursor: not-allowed; transition: 0.3s;" disabled>
-                    START EXAMINATION <i class="fas fa-play-circle ml-2"></i>
-                </button>
+                <button id="finalStartBtn" class="btn btn-block mt-4" 
+    style="height: 60px; border-radius: 30px; font-size: 1.3rem; font-weight: 900; color: white;
+           background: linear-gradient(180deg, #ff4d4d 0%, #cc0000 50%, #800000 100%);
+           box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4); border: none; cursor: pointer; opacity: 1;">
+    START EXAMINATION <i class="fas fa-play-circle ml-2"></i>
+</button>
             </div>
         </div>
     </div>
@@ -162,31 +161,22 @@
         const select = document.getElementById('finalSetSelect');
         const btn = document.getElementById('finalStartBtn');
 
-        // Logic Aktifkan Button
-        select.addEventListener('change', function() {
-            if (this.value !== "") {
-                btn.disabled = false; 
-                btn.style.opacity = "1"; 
-                btn.style.cursor = "pointer";
-            } else {
-                btn.disabled = true; 
-                btn.style.opacity = "0.5"; 
-                btn.style.cursor = "not-allowed";
-            }
-        });
-
-        // Logic Klik Redirect (Guna Full Path)
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            const urlTujuan = select.value; // Ini dah pegang "/prpa/quiz/1"
             
-            if (urlTujuan !== "") {
-                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> LOADING...';
+            const selectedPath = select.value;
+            
+            if (selectedPath !== "") {
+                // Beri visual loading supaya user tahu sistem tengah proses
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LOADING QUESTIONS...';
                 this.style.pointerEvents = 'none';
-                
-                // Terus meluncur ke URL tujuan tanpa gabung apa-apa
-                window.location.href = urlTujuan;
+
+                // Guna URL terus tanpa tambah origin secara manual
+                window.location.href = selectedPath;
+            } else {
+                alert("Please select a Question Set first!");
             }
         });
+    });
 </script>
 @endsection
