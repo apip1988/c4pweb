@@ -59,22 +59,24 @@
                 @csrf
                 
                 @foreach($questions as $index => $q)
-                <div class="question-card">
-                    <h5 class="font-weight-bold">Soalan {{ $index + 1 }}</h5>
-                    <p class="lead" style="font-size: 1.1rem;">{{ $q->question_text }}</p>
-                    
-                    <div class="option-container">
-                        @foreach(['A', 'B', 'C', 'D'] as $opt)
-                        @php $field = 'ans_'.strtolower($opt); @endphp
-                        <label class="option-item">
-                            <input type="radio" name="answers[{{ $q->id }}]" value="{{ $opt }}" required>
-                            <span class="checkmark"></span>
-                            <span><strong>{{ $opt }}.</strong> {{ $q->$field }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-                @endforeach
+<div class="card shadow-sm mb-4 question-card" id="card-{{ $index }}" style="border-radius: 15px;">
+    <div class="card-body p-4">
+        <h5 class="font-weight-bold" style="color: #3051a0;">Question {{ $index + 1 }}</h5>
+        <p class="lead" style="font-weight: 500;">{{ $q['question'] }}</p>
+        <hr>
+
+        @foreach($q['options'] as $oIndex => $option)
+        <div class="custom-control custom-radio mb-3">
+            <input type="radio" id="q{{$index}}o{{$oIndex}}" name="ans[{{$index}}]" value="{{$option}}" 
+                   class="custom-control-input" onchange="markAsAnswered({{$index}})">
+            <label class="custom-control-label w-100" for="q{{$index}}o{{$oIndex}}" style="cursor: pointer;">
+                {{ $option }}
+            </label>
+        </div>
+        @endforeach
+    </div>
+</div>
+@endforeach
 
                 <div class="card p-4 shadow-sm bg-light text-center border-0">
                     <h4>Sudah selesai menjawab?</h4>
