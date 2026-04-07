@@ -33,8 +33,9 @@
     .scroll-offset { scroll-margin-top: 100px; }
 
     .instruction-text {
-        background: #f8f9fa; border-left: 5px solid #3051a0; padding: 15px;
-        text-align: left; font-size: 0.9rem; color: #333; line-height: 1.6; border-radius: 5px;
+        background: #f8f9fa; border-left: 5px solid #3051a0; padding: 20px;
+        text-align: left; font-size: 0.95rem; color: #333; line-height: 1.6; border-radius: 8px;
+        max-height: 300px; overflow-y: auto;
     }
 
     @media (max-width: 768px) {
@@ -73,19 +74,19 @@
 
     <div id="prpa-kursus" class="scroll-offset mb-5">
         <h4 class="section-title">Pengurusan Kursus</h4>
-        <div class="row text-center">
-            <div class="col-6 col-md-3 mb-3 px-2">
+        <div class="row text-center px-2 px-md-0">
+            <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
                 <a href="#" class="btn-menu shadow-sm"><i class="fas fa-file-signature"></i><span class="font-weight-bold">Borang Permohonan</span></a>
             </div>
-            <div class="col-6 col-md-3 mb-3 px-2">
+            <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
                 <a href="#" class="btn-menu shadow-sm"><i class="fas fa-video"></i><span class="font-weight-bold">Video Kursus</span></a>
             </div>
-            <div class="col-6 col-md-3 mb-3 px-2">
+            <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
                 <div class="btn-menu shadow-sm" data-toggle="modal" data-target="#quizSelectorModal">
                     <i class="fas fa-question-circle"></i><span class="font-weight-bold">e-Quiz</span>
                 </div>
             </div>
-            <div class="col-6 col-md-3 mb-3 px-2">
+            <div class="col-6 col-md-3 mb-3 px-1 px-md-2">
                 <a href="{{ route('prpa.semak.borang') }}" class="btn-menu shadow-sm"><i class="fas fa-poll"></i><span class="font-weight-bold">Semak Keputusan</span></a>
             </div>
         </div>
@@ -118,64 +119,38 @@
             </div>
         </div>
     </div>
-
-    <div id="prpa-hubungi" class="scroll-offset mb-5 pb-5">
-        <h4 class="section-title">Hubungi Sekretariat</h4>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="card card-custom p-4 d-flex flex-row align-items-center shadow-sm" style="border-left: 5px solid var(--ppp-green) !important;">
-                    <i class="fas fa-user-circle fa-3x mr-3" style="color: var(--ppp-green);"></i>
-                    <div>
-                        <p class="mb-0 font-weight-bold">En. Mohd Faris bin Abdul Rashid</p>
-                        <p class="mb-0 small text-muted">Pen. Peg. Perubatan U10</p>
-                        <p class="mb-0 small font-weight-bold mt-1 text-primary">03-8883 1517</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card card-custom p-4 d-flex flex-row align-items-center shadow-sm" style="border-left: 5px solid var(--ppp-green) !important;">
-                    <i class="fas fa-user-circle fa-3x mr-3" style="color: var(--ppp-green);"></i>
-                    <div>
-                        <p class="mb-0 font-weight-bold">En. Muhammad Romzi bin Husain</p>
-                        <p class="mb-0 small text-muted">Penolong Pegawai Perubatan U7</p>
-                        <p class="mb-0 small font-weight-bold mt-1 text-primary">03-8883 1386</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="modal fade" id="quizSelectorModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content" style="border-radius: 20px;">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title font-weight-bold">EXAMINATION INSTRUCTIONS</h5>
+        <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden;">
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title font-weight-bold"><i class="fas fa-file-alt mr-2"></i> EXAMINATION INSTRUCTIONS</h5>
                 <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <div class="modal-body p-4 text-center">
-                <div class="instruction-text mb-4 text-dark">
-                    <p>This quiz consists of 120 questions in English version and must be completed in a single session. Please allocate approximately two (2) hours for uninterrupted completion.</p>
+                <div class="instruction-text mb-4 text-dark shadow-sm">
+                    <p>This quiz consists of <strong>120 questions</strong> in English version and must be completed in a single session. Please allocate approximately <strong>two (2) hours</strong> for uninterrupted completion.</p>
                     <p>Read each question carefully and select the single (1) best answer from the options provided. Before attempting the quiz, thoroughly review the course manual to ensure you are prepared. You may refer to the manual anytime if you are in doubt.</p>
-                    <p>The objective is to achieve 100% accuracy. You may retake the quiz as many times as needed. You can download your result and give it to your supervisor.</p>
-                    <p>This quiz requires seamless internet connection to work.</p>
+                    <p>The objective is to achieve <strong>100% accuracy</strong>. You may retake the quiz as many times as needed. You can download your result and give it to your supervisor.</p>
+                    <p>This quiz requires a seamless internet connection to work.</p>
                     <p class="mb-0 font-weight-bold text-primary">Best regards, PHCALS Team</p>
                 </div>
 
-                <div class="form-group">
-                    <select id="finalSetSelect" class="form-control form-control-lg" style="border: 2px solid #3051a0; font-weight: bold;">
-                        <option value="">-- SELECT SET --</option>
-                        <option value="/prpa/quiz/1">SET 1</option>
-                        <option value="" disabled>SET 2</option>
-                        <option value="" disabled>SET 3</option>
-                    </select>
+                <div class="form-group mb-4">
+                    <label class="font-weight-bold d-block text-left ml-1">Select Your Question Set:</label>
+                    <select id="finalSetSelect" class="form-control form-control-lg" style="border: 2px solid #3051a0; font-weight: bold; border-radius: 12px;">
+    <option value="">-- CHOOSE SET --</option>
+    <option value="{{ route('prpa.quiz.start', ['id' => 1]) }}">SET 1 (PHCALS)</option>
+    <option value="" disabled>SET 2 (COMING SOON)</option>
+</select>
                 </div>
 
-                <button id="finalStartBtn" class="btn btn-block mt-4" 
-                    style="height: 60px; border-radius: 30px; font-size: 1.3rem; font-weight: 900; color: white;
+                <button id="finalStartBtn" class="btn btn-block shadow-lg" 
+                    style="height: 65px; border-radius: 40px; font-size: 1.4rem; font-weight: 900; color: white;
                            background: linear-gradient(180deg, #ff4d4d 0%, #cc0000 50%, #800000 100%);
-                           box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4); border: none; opacity: 0.5; cursor: not-allowed;" disabled>
-                    START EXAMINATION
+                           border: none; opacity: 0.5; cursor: not-allowed; transition: 0.3s;" disabled>
+                    START EXAMINATION <i class="fas fa-play-circle ml-2"></i>
                 </button>
             </div>
         </div>
@@ -187,16 +162,34 @@
         const select = document.getElementById('finalSetSelect');
         const btn = document.getElementById('finalStartBtn');
 
+        // Logic Aktifkan Button
         select.addEventListener('change', function() {
             if (this.value !== "") {
-                btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer";
+                btn.disabled = false; 
+                btn.style.opacity = "1"; 
+                btn.style.cursor = "pointer";
             } else {
-                btn.disabled = true; btn.style.opacity = "0.5"; btn.style.cursor = "not-allowed";
+                btn.disabled = true; 
+                btn.style.opacity = "0.5"; 
+                btn.style.cursor = "not-allowed";
             }
         });
 
-        btn.addEventListener('click', function() {
-            if (select.value !== "") { window.location.href = select.value; }
+        // Logic Klik Redirect (Guna Full Path)
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const path = select.value;
+            if (path !== "") {
+                // Tambah visual feedback
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> PREPARING QUESTIONS...';
+                this.style.pointerEvents = 'none';
+                
+                // Bina URL lengkap supaya tidak ralat
+                const fullUrl = window.location.origin + path;
+                console.log("Navigating to:", fullUrl);
+                
+                window.location.assign(fullUrl);
+            }
         });
     });
 </script>
