@@ -208,43 +208,28 @@
 </div>
 
 <div class="modal fade" id="quizSelectorModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-            <div class="modal-header" style="background: #3051a0; color: white; border-radius: 20px 20px 0 0;">
-                <h5 class="modal-title font-weight-bold">EXAMINATION INSTRUCTIONS</h5>
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title font-weight-bold">PILIH SET SOALAN</h5>
                 <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
             </div>
-            <div class="modal-body p-4">
-                <div class="form-group mb-4">
-                    <label class="font-weight-bold">Please Select Question Set:</label>
-                    <select id="quizSetPicker" class="form-control form-control-lg" style="border-radius: 10px; font-weight: bold; border: 2px solid #3051a0;">
-                        <option value="">-- SELECT SET --</option>
-                        <option value="{{ url('/prpa/quiz/1') }}">SET 1</option>
-                        <option value="" disabled>SET 2 (INACTIVE)</option>
-                        <option value="" disabled>SET 3 (INACTIVE)</option>
-                        <option value="" disabled>SET 4 (INACTIVE)</option>
-                        <option value="" disabled>SET 5 (INACTIVE)</option>
+            <div class="modal-body p-4 text-center">
+                <div class="form-group">
+                    <select id="finalQuizPicker" class="form-control form-control-lg" style="border: 2px solid #3051a0; font-weight: bold;">
+                        <option value="">-- SILA PILIH --</option>
+                        <option value="/prpa/quiz/1">SET 1</option>
+                        <option value="" disabled>SET 2</option>
+                        <option value="" disabled>SET 3</option>
                     </select>
                 </div>
 
-                <div id="instructionBox" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 5px solid #3051a0;" class="animate__animated animate__fadeIn">
-                    <p>This quiz consists of <strong>120 questions</strong> in English version and must be completed in a single session. Please allocate approximately <strong>two (2) hours</strong> for uninterrupted completion.</p>
-                    
-                    <p>Read each question carefully and select the single (1) best answer from the options provided. Before attempting the quiz, thoroughly review the course manual to ensure you are prepared to answer the questions accurately. You may refer to the manual anytime when you are attempting the question if you are in doubt.</p>
-                    
-                    <p>The objective is to achieve <strong>100% accuracy</strong>. You may retake the quiz as many times as needed to reach this benchmark. You can download your result and give it to your supervisor.</p>
-                    
-                    <p>This quiz requires seamless internet connection to work.</p>
-                    
-                    <p class="mb-0 mt-3">Best regards,<br><strong>PHCALS Team</strong></p>
-                </div>
-
-                <button id="startQuizBtn" class="btn btn-block mt-4" 
-                    style="height: 60px; border-radius: 30px; font-size: 1.2rem; font-weight: 900; color: white;
+                <button id="btnStartGlossy" class="btn btn-block mt-4" 
+                    style="height: 60px; border-radius: 30px; font-size: 1.3rem; font-weight: 900; color: white;
                            background: linear-gradient(180deg, #ff4d4d 0%, #cc0000 50%, #800000 100%);
                            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-                           border: none; display: none;">
-                    START EXAMINATION
+                           border: none; opacity: 0.5; cursor: not-allowed;" disabled>
+                    START
                 </button>
             </div>
         </div>
@@ -253,23 +238,25 @@
 
 <script>
 $(document).ready(function() {
-    // Logic tunjuk arahan & butang bila set dipilih
-    $('#quizSetPicker').on('change', function() {
-        var val = $(this).val();
-        if (val !== "") {
-            $('#instructionBox').slideDown();
-            $('#startQuizBtn').fadeIn();
+    // 1. Pantau perubahan dropdown guna ID baru 'finalQuizPicker'
+    $('#finalQuizPicker').on('change', function() {
+        var selectedVal = $(this).val();
+        var startBtn = $('#btnStartGlossy');
+
+        if (selectedVal != "") {
+            startBtn.prop('disabled', false).css({'opacity': '1', 'cursor': 'pointer'});
         } else {
-            $('#instructionBox').slideUp();
-            $('#startQuizBtn').fadeOut();
+            startBtn.prop('disabled', true).css({'opacity': '0.5', 'cursor': 'not-allowed'});
         }
     });
 
-    // Jalankan Redirect
-    $('#startQuizBtn').click(function() {
-        var url = $('#quizSetPicker').val();
-        if (url !== "") {
-            window.location.href = url;
+    // 2. Bila klik Start, kita paksa browser pergi ke URL tu
+    $('#btnStartGlossy').on('click', function() {
+        var targetUrl = $('#finalQuizPicker').val();
+        if (targetUrl != "") {
+            // Kita tambah console log untuk debug
+            console.log("Navigating to: " + targetUrl);
+            window.location.href = targetUrl;
         }
     });
 });
