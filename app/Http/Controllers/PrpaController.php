@@ -32,6 +32,25 @@ class PrpaController extends Controller
         return view('prpa.hasil_keputusan', compact('user', 'results'));
     }
 
+    public function startQuiz($id)
+{
+    // Panggil data soalan dari fail Set1
+    $className = "App\QuizData\Set" . $id;
+    $allQuestions = $className::questions();
+
+    // 🎲 BUAT RAWAK (SOALAN & PILIHAN JAWAPAN)
+    $shuffledQuestions = collect($allQuestions)->shuffle()->map(function($item) {
+        $item['options'] = collect($item['options'])->shuffle()->all();
+        return $item;
+    })->all();
+
+    // Hantar data ke view (Ini akan selesaikan error Undefined Variable)
+    return view('phcals.exam', [
+        'questions' => $shuffledQuestions,
+        'id' => $id
+    ]);
+}
+
     public function showQuiz($id)
 {
     // Jika user pilih Set 1, kita panggil view soalan tadi
