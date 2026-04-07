@@ -30,7 +30,7 @@
 
         <p>To whom it may concern,</p>
 
-        <p class="bold" style="text-decoration: underline;">PHCALS COMPETENCY EXAMINATION RESULT (SET {{ $result->set_id }})</p>
+        <p class="bold" style="text-decoration: underline;">PHCALS COMPETENCY EXAMINATION RESULT</p>
 
         <p>Please be informed that the following candidate has completed the online PHCALS Competency Examination:</p>
 
