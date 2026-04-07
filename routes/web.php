@@ -75,7 +75,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Modul PHCALS (Exam & Quiz)
     Route::get('/prpa/quiz/{id}', [App\Http\Controllers\PrpaController::class, 'startQuiz'])->name('prpa.quiz.start'); // Ini yang Afif cari
     Route::get('/phcals/exam', [PhcalsExamController::class, 'index'])->name('phcals.exam');
-    Route::post('/phcals/submit', [PhcalsExamController::class, 'submit'])->name('phcals.submit');
+    Route::post('/prpa/quiz/submit', [App\Http\Controllers\PrpaController::class, 'submitQuiz'])->name('prpa.quiz.submit');
     Route::get('/phcals/history', [PhcalsExamController::class, 'history'])->name('phcals.history');
     Route::get('/phcals/review/{id}', [PhcalsExamController::class, 'review'])->name('phcals.review');
 

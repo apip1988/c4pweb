@@ -55,7 +55,7 @@
                 <p class="text-muted mt-2">Nota: Anda perlu skor 100% untuk lulus dan mencetak sijil.</p>
             </div>
 
-            <form action="{{ route('phcals.submit') }}" method="POST" id="exam-form" oncontextmenu="return false;">
+            <form action="{{ route('prpa.quiz.submit') }}" method="POST">
                 @csrf
                 
                 @foreach($questions as $index => $q)
