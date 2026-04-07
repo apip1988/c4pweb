@@ -11,6 +11,8 @@ use App\Http\Controllers\PrpaController;
 use App\Http\Controllers\PhcalsExamController;
 use App\Http\Controllers\CredentialingController;
 use App\Http\Controllers\RujukanController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,12 +37,15 @@ Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_te
 Route::post('/kompetensi/tempat/hasil', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_hasil');
 
 // --- Modul PRPA (Public) ---
-Route::get('/prpa', function () { return view('prpa.index'); });
+Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak_keputusan'); })->name('prpa.semak.borang');
 Route::get('/prpa/hasil-keputusan', [PrpaController::class, 'proses_semak'])->name('prpa.semak.hasil');
 
 // --- Modul Credentialing (Carian Public) ---
 Route::get('/credentialing', [CredentialingController::class, 'index'])->name('credentialing.index');
+
+// --- Modul e-Rujukan (Public) ---
+Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index');
 
 // --- Auth Routes ---
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -67,7 +72,8 @@ Route::group(['middleware' => ['auth']], function () {
         return (auth()->user()->role == 'ADMIN') ? redirect()->route('admin.dashboard') : redirect()->route('user.dashboard');
     });
 
-    // Modul PHCALS (Exam)
+    // Modul PHCALS (Exam & Quiz)
+    Route::get('/prpa/quiz/{id}', [PrpaController::class, 'startQuiz'])->name('prpa.quiz.start'); // Ini yang Afif cari
     Route::get('/phcals/exam', [PhcalsExamController::class, 'index'])->name('phcals.exam');
     Route::post('/phcals/submit', [PhcalsExamController::class, 'submit'])->name('phcals.submit');
     Route::get('/phcals/history', [PhcalsExamController::class, 'history'])->name('phcals.history');
@@ -79,15 +85,15 @@ Route::group(['middleware' => ['auth']], function () {
     Route::match(['get', 'post'], '/kompetensi/hantar-emel', [KompetensiController::class, 'hantar_emel_penempatan'])->name('kompetensi.hantar_emel');
 
     /* --- 🔐 KHAS UNTUK ADMIN SAHAJA --- */
-    Route::group(['prefix' => 'admin'], function() {
-        // Pengurusan User (Hanya Admin)
-Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('admin.users.index');
-Route::post('/users/update-role/{id}', [App\Http\Controllers\UserController::class, 'updateRole'])->name('admin.users.updateRole');
-Route::get('/users/delete/{id}', [App\Http\Controllers\UserController::class, 'destroy'])->name('admin.users.destroy');
-
+    Route::group(['prefix' => 'admin', 'middleware' => ['admin']], function() {
         // Admin Dashboard
         Route::get('/dashboard', [KompetensiController::class, 'admin_dashboard'])->name('admin.dashboard');
         
+        // Pengurusan User
+        Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+        Route::post('/users/update-role/{id}', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
+        Route::get('/users/delete/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+
         // Pengurusan Kompetensi
         Route::get('/kompetensi/senarai-permohonan', [KompetensiController::class, 'admin_senarai_permohonan'])->name('admin.permohonan');
         Route::post('/permohonan/update-status', [KompetensiController::class, 'update_status_permohonan'])->name('admin.update_status');
@@ -96,28 +102,14 @@ Route::get('/users/delete/{id}', [App\Http\Controllers\UserController::class, 'd
         Route::post('/kompetensi/update', [KompetensiController::class, 'update_calon']);
         Route::get('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy']);
 
-        // 🟢 Pengurusan Credentialing (Hanya Admin Boleh Upload)
+        // Pengurusan Credentialing
         Route::get('/credentialing/upload', [CredentialingController::class, 'create'])->name('credentialing.create');
         Route::post('/credentialing/store', [CredentialingController::class, 'store'])->name('credentialing.store');
         Route::get('/credentialing/delete/{id}', [CredentialingController::class, 'destroy'])->name('credentialing.destroy');
+
+        // Pengurusan e-Rujukan
+        Route::get('/rujukan/upload', [RujukanController::class, 'create'])->name('admin.rujukan.create');
+        Route::post('/rujukan/store', [RujukanController::class, 'store'])->name('admin.rujukan.store');
+        Route::get('/rujukan/delete/{id}', [RujukanController::class, 'destroy'])->name('admin.rujukan.destroy');
     });
-
-/*
-|--------------------------------------------------------------------------
-| e-RUJUKAN
-|--------------------------------------------------------------------------
-*/
-    
-
-// Public Page
-Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index');
-
-// Admin Page (Letak dalam group admin)
-Route::group(['middleware' => ['auth', 'admin']], function () {
-    Route::get('/admin/rujukan/upload', [RujukanController::class, 'create'])->name('admin.rujukan.create');
-    Route::post('/admin/rujukan/store', [App\Http\Controllers\RujukanController::class, 'store'])->name('admin.rujukan.store');
-    Route::get('/admin/rujukan/delete/{id}', [RujukanController::class, 'destroy'])->name('admin.rujukan.destroy');
-});
-
-// Laluan untuk buka soalan PHCALS (Set 1)
-Route::get('/prpa/quiz/{id}', [App\Http\Controllers\PrpaController::class, 'startQuiz']);
+}); // <--- Penutup middleware auth yang hilang tadi
