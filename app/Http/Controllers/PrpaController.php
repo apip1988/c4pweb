@@ -40,27 +40,25 @@ class PrpaController extends Controller
      * Memulakan sesi kuiz (Start Exam)
      */
     public function startQuiz($id)
-    {
-        // Panggil class data soalan (PENTING: Gunakan Backslash \ di depan App)
-        $className = "\\App\\QuizData\\Set" . $id;
-        
-        if (!class_exists($className)) {
-            return redirect()->back()->with('error', 'Set not found.');
-        }
-
-        $allQuestions = $className::questions();
-
-        // Rawakkan soalan & jawapan (SHUFFLE)
-        $questions = collect($allQuestions)->shuffle()->map(function($item) {
-            $item['options'] = collect($item['options'])->shuffle()->all();
-            return $item;
-        })->all();
-
-        // Simpan soalan yang dirawakkan ke dalam session (untuk rujukan masa semak markah)
-        session(['quiz_questions' => $questions]);
-
-        return view('phcals.exam', compact('questions', 'id'));
+{
+    // Gunakan full path yang tepat
+    $className = "App\QuizData\Set" . $id;
+    
+    // Check kalau class ni wujud atau tidak
+    if (!class_exists($className)) {
+        // Kalau tak wujud, dia akan redirect balik (Sebab tu keluar 302)
+        return "ERROR: Class $className tidak dijumpai. Pastikan fail app/QuizData/Set1.php ada dan namespace betul.";
     }
+
+    $allQuestions = $className::questions();
+
+    $questions = collect($allQuestions)->shuffle()->map(function($item) {
+        $item['options'] = collect($item['options'])->shuffle()->all();
+        return $item;
+    })->all();
+
+    return view('phcals.exam', compact('questions', 'id'));
+}
 
     /**
      * Proses Submit Jawapan & Kira Markah
