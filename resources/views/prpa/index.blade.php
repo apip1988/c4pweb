@@ -139,10 +139,10 @@
 
                 <div class="form-group mb-4">
                     <label class="font-weight-bold d-block text-left ml-1">Select Your Question Set:</label>
-                    <select id="finalSetSelect" class="form-control form-control-lg" style="border: 2px solid #3051a0; font-weight: bold; border-radius: 12px;">
-    <option value="">-- CHOOSE SET --</option>
-    <option value="{{ route('prpa.quiz.start', ['id' => 1]) }}">SET 1 (PHCALS)</option>
-    <option value="" disabled>SET 2 (COMING SOON)</option>
+                    <select id="finalSetSelect" class="form-control form-control-lg" ...>
+    <option value="">-- SELECT SET --</option>
+    <option value="https://amoppp.com/prpa/quiz/1">SET 1</option>
+    <option value="" disabled>SET 2 (coming soon)</option>
 </select>
                 </div>
 
@@ -178,19 +178,15 @@
         // Logic Klik Redirect (Guna Full Path)
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            const path = select.value;
-            if (path !== "") {
-                // Tambah visual feedback
-                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> PREPARING QUESTIONS...';
+            const urlTujuan = select.value; // Ini dah pegang "/prpa/quiz/1"
+            
+            if (urlTujuan !== "") {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> LOADING...';
                 this.style.pointerEvents = 'none';
                 
-                // Bina URL lengkap supaya tidak ralat
-                const fullUrl = window.location.origin + path;
-                console.log("Navigating to:", fullUrl);
-                
-                window.location.assign(fullUrl);
+                // Terus meluncur ke URL tujuan tanpa gabung apa-apa
+                window.location.href = urlTujuan;
             }
         });
-    });
 </script>
 @endsection
