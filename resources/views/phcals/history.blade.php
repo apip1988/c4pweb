@@ -48,9 +48,9 @@
                             </td>
                             <td class="align-middle">
                                 <div class="btn-group">
-                                    <a href="#" class="btn btn-sm btn-info text-white" title="Review Answers">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    <a href="{{ route('phcals.review', $res->id) }}" class="btn btn-sm btn-info text-white" title="Review Answers">
+    <i class="fas fa-eye"></i> View Review
+</a>
                                     @if($res->status == 'PASSED')
                                     <a href="#" class="btn btn-sm btn-secondary" title="Print Certificate">
                                         <i class="fas fa-print"></i>
