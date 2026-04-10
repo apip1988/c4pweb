@@ -13,19 +13,29 @@ class User extends Authenticatable
      * Nama kolom yang DIBENARKAN untuk disimpan (Mass Assignment)
      */
     protected $fillable = [
-    'name', 
-    'email', 
-    'password', 
-    'ic_number', 
-    'phone_number', 
-    'no_lpp', 
-    'sektor', 
-    'ptj_sekarang', 
-    'tarikh_lantikan',
-    'edu_diploma'
-];
+        'name', 
+        'email', 
+        'password', 
+        'ic_number', 
+        'phone_number', 
+        'no_lpp', 
+        'sektor', 
+        'ptj_sekarang', 
+        'tarikh_lantikan',
+        'edu_diploma'
+    ];
 
+    /**
+     * Kolom yang disembunyikan daripada paparan JSON
+     */
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    /**
+     * SISTEM PERTAHANAN: Enkripsi data sensitif secara automatik
+     */
+    protected $casts = [
+        'ic_number' => 'encrypted',
     ];
 }

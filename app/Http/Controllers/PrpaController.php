@@ -15,16 +15,28 @@ class PrpaController extends Controller
      */
     public function proses_semak(Request $request)
     {
+        // 1. Validasi Input: Wajib 12 digit angka sahaja (Security Level 1)
+        $request->validate([
+            'ic_number' => 'required|numeric|digits:12', 
+        ], [
+            'ic_number.required' => 'Sila masukkan No. Kad Pengenalan.',
+            'ic_number.numeric'  => 'No. K/P mestilah dalam bentuk angka sahaja.',
+            'ic_number.digits'   => 'No. K/P mestilah 12 digit (Tanpa tanda -).',
+        ]);
+
         $ic = $request->input('ic_number');
 
-        // 1. Cari user berdasarkan IC
-        $user = User::where('ic_number', $ic)->first();
+        // 2. Cari user (Security Level 2: Mencari dalam data terenkripsi)
+        // Kita gunakan filter supaya Laravel tolong decrypt IC semasa mencari
+        $user = User::all()->filter(function($u) use ($ic) {
+            return $u->ic_number === $ic;
+        })->first();
 
         if (!$user) {
             return back()->with('error', 'Maaf, rekod bagi No. K/P tersebut tidak dijumpai dalam sistem.');
         }
 
-        // 2. Tarik semua result PHCALS milik user tersebut
+        // 3. Tarik semua result PHCALS milik user tersebut
         $results = PhcalsResult::where('user_id', $user->id)
                     ->orderBy('created_at', 'desc')
                     ->get();
@@ -138,14 +150,16 @@ class PrpaController extends Controller
         return view('phcals.review', compact('result', 'reviewData'));
     }
 
+    /**
+     * Cetak Sijil
+     */
     public function printCertificate($id)
-{
-    $result = PhcalsResult::where('id', $id)
-                ->where('user_id', auth()->id())
-                ->where('status', 'PASSED') // Hanya boleh print kalau lulus
-                ->firstOrFail();
+    {
+        $result = PhcalsResult::where('id', $id)
+                    ->where('user_id', auth()->id())
+                    ->where('status', 'PASSED') // Hanya boleh print kalau lulus
+                    ->firstOrFail();
 
-    return view('phcals.print', compact('result'));
-}
-
+        return view('phcals.print', compact('result'));
+    }
 }
