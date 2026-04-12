@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (VERSI FINAL - TOTAL STABLE)
+| Web Routes - MASTER COPY AFIF (FIX PRPA VIEW)
 |--------------------------------------------------------------------------
 */
 
@@ -17,18 +17,11 @@ Route::get('/hubungi', function () { return view('hubungi'); });
 
 
 // --- 2. AUTHENTICATION (LOGIN, REGISTER, LOGOUT) ---
-// Login
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-
-// Register (Dah dibetulkan supaya keluar borang pendaftaran)
 Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
-
-// Logout
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-
-// Reset Password (Dummy)
 Route::get('password/reset', function() { return "Fungsi Reset Password Belum Aktif."; })->name('password.request');
 
 
@@ -38,14 +31,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
-// Semak Tempat
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
-
-// Semak Keputusan
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
-
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
 
@@ -59,13 +48,21 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 5. e-PRPA (PENYELAMAT ERROR) ---
-// Dashboard PRPA
-Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
+// --- 5. e-PRPA (PENYELAMAT VIEW ERROR) ---
+Route::get('/prpa', function () { 
+    return view('prpa.index'); 
+})->name('prpa.index');
 
-// Semak Keputusan PRPA (Dibetulkan supaya Dashboard tidak 404)
 Route::get('/prpa/semak-keputusan', function () { 
-    return view('prpa.semak'); 
+    // CEK FAIL SEBELUM PAPAR: Supaya tak keluar error 'View Not Found'
+    if (view()->exists('prpa.semak')) {
+        return view('prpa.semak');
+    }
+    
+    // Mesej bantuan kalau fail tak wujud
+    return "<h3>Fail Tidak Dijumpai!</h3>
+            <p>Sila pastikan fail wujud di: <b>resources/views/prpa/semak.blade.php</b></p>
+            <p>Mungkin nama fail kau <i>semak_keputusan.blade.php</i>? Sila tukar nama fail tu jadi <b>semak.blade.php</b></p>";
 })->name('prpa.semak.borang');
 
 
