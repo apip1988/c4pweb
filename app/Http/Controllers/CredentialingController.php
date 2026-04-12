@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\CredentialingDocument; 
 use App\Rujukan; // PASTIKAN MODEL INI ADA
-use Illuminate\Support:Facades\File;
+use Illuminate\Support\Facades\File;
 
 class CredentialingController extends Controller
 {
