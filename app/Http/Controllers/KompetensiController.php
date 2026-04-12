@@ -17,6 +17,10 @@ class KompetensiController extends Controller
         ]);
     }
 
+    public function index()
+{
+    return view('welcome');
+}
     // --- 1. PROSES USER: HANTAR PERMOHONAN ---
     public function hantar_permohonan(Request $request)
     {
