@@ -23,32 +23,30 @@
                                 <th>Nama</th>
                                 <th>IC</th>
                                 <th>Sektor / PTJ</th>
-                                <th class="text-center">Tindakan</th> </tr>
+                                <th class="text-center">Tindakan</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            @forelse($senarai_baru as $baru)
+                            @foreach($senarai_baru as $baru)
                             <tr>
                                 <td><input type="checkbox" name="ids[]" value="{{ $baru->id }}" class="ids1"></td>
                                 <td>{{ strtoupper($baru->name) }}</td>
                                 <td>{{ $baru->ic_number }}</td>
                                 <td>{{ $baru->sektor }} <br> <small class="text-muted">{{ $baru->ptj_sekarang }}</small></td>
                                 <td class="text-center">
-                                    <button type="submit" name="ids[]" value="{{ $baru->id }}" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm" onclick="return confirm('Sahkan calon ini sahaja?')">
-                                        <i class="fas fa-check-circle mr-1"></i> SAHKAN
+                                    <button type="submit" name="ids[]" value="{{ $baru->id }}" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm" onclick="return confirm('Sahkan calon ini?')">
+                                        <i class="fas fa-check-circle"></i> SAHKAN
                                     </button>
                                 </td>
                             </tr>
-                            @empty
-                            <tr><td colspan="5" class="text-center text-muted">Tiada permohonan baru.</td></tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
-                
                 @if($senarai_baru->count() > 0)
-                <button type="submit" class="btn btn-outline-success shadow-sm rounded-pill px-4 mt-2">
-                    <i class="fas fa-check-double mr-1"></i> Sahkan Calon (Bulk)
-                </button>
+                    <button type="submit" class="btn btn-outline-success shadow-sm rounded-pill px-4 mt-2">
+                        <i class="fas fa-check-double mr-1"></i> Sahkan Calon (Bulk)
+                    </button>
                 @endif
             </form>
         </div>
@@ -63,33 +61,32 @@
                 @csrf
                 <div class="row mb-3">
                     <div class="col-md-3">
-                        <label class="font-weight-bold text-muted">Tarikh Peperiksaan</label>
+                        <label class="font-weight-bold">Tarikh Peperiksaan</label>
                         <input type="date" name="tarikh_ujian" class="form-control" required>
                     </div>
                     <div class="col-md-2">
-                        <label class="font-weight-bold text-muted">Masa</label>
+                        <label class="font-weight-bold">Masa</label>
                         <input type="time" name="masa_ujian" class="form-control" required>
                     </div>
                     <div class="col-md-2">
-                        <label class="font-weight-bold text-muted">Medium</label>
+                        <label class="font-weight-bold">Medium</label>
                         <select name="medium" class="form-control" onchange="toggleMedium(this)">
                             <option value="FIZIKAL">FIZIKAL</option>
                             <option value="MAYA">MAYA</option>
                         </select>
                     </div>
                     <div class="col-md-3" id="input_lokasi">
-                        <label class="font-weight-bold text-muted">Lokasi / Pautan</label>
+                        <label class="font-weight-bold">Lokasi / Pautan</label>
                         <input type="text" name="lokasi_fizikal" class="form-control" placeholder="Masukkan Tempat/Link">
                     </div>
                     <div class="col-md-2">
-                        <label class="font-weight-bold text-muted">Status Layak</label>
+                        <label class="font-weight-bold">Status Layak</label>
                         <select name="status_layak" class="form-control">
                             <option value="LAYAK">LAYAK</option>
                             <option value="TIDAK LAYAK">TIDAK LAYAK</option>
                         </select>
                     </div>
                 </div>
-
                 <div class="table-responsive">
                     <table class="table table-hover border">
                         <thead class="bg-light">
@@ -97,13 +94,11 @@
                                 <th width="50"><input type="checkbox" onclick="toggle(this, 'ids2')"></th>
                                 <th>Nama / IC</th>
                                 <th>PTJ / Negeri</th>
-                                <th>Status Semasa</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($senarai_tempat as $tempat)
                             <tr>
                                 <td><input type="checkbox" name="ids[]" value="{{ $tempat->id }}" class="ids2"></td>
-                                <td>{{ $tempat->nama }} <br> <small class="text-primary">{{ $tempat->ic_number }}</small></td>
-                                <td>{{ $tempat->alamat_ptj }}</td>
-                                <td><span class="badge badge-
+                                <td>{{ $tempat->nama }} <br
