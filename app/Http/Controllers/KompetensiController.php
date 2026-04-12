@@ -93,13 +93,30 @@ class KompetensiController extends Controller
 
     // --- FUNGSI ADMIN: PENGURUSAN CALON ---
     public function admin_pengurusan_calon(Request $request)
-    {
-        $senarai_baru = DB::table('permohonans')->where('status', 'PENDING')->get();
-        $senarai_tempat = DB::table('keputusan_penilaian')->where('tempat_ujian', 'BELUM DITETAPKAN')->get();
-        $senarai_keputusan = DB::table('keputusan_penilaian')->where('tempat_ujian', '!=', 'BELUM DITETAPKAN')->get();
+{
+    // KOD PAKSA: Jika table tak wujud, buat sekarang juga!
+    DB::statement("CREATE TABLE IF NOT EXISTS keputusan_penilaian (
+        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        nama VARCHAR(191),
+        ic_number VARCHAR(191),
+        phone VARCHAR(191),
+        alamat_ptj TEXT,
+        jenis_ujian VARCHAR(191),
+        tarikh_ujian DATE NULL,
+        masa_ujian TIME NULL,
+        tempat_ujian VARCHAR(191) DEFAULT 'BELUM DITETAPKAN',
+        keputusan VARCHAR(191) DEFAULT 'DALAM PROSES',
+        created_at TIMESTAMP NULL,
+        updated_at TIMESTAMP NULL
+    )");
 
-        return view('kompetensi.admin_permohonan', compact('senarai_baru', 'senarai_tempat', 'senarai_keputusan'));
-    }
+    // Ambil data untuk paparan table
+    $senarai_baru = DB::table('permohonans')->where('status', 'PENDING')->get();
+    $senarai_tempat = DB::table('keputusan_penilaian')->where('tempat_ujian', 'BELUM DITETAPKAN')->get();
+    $senarai_keputusan = DB::table('keputusan_penilaian')->where('tempat_ujian', '!=', 'BELUM DITETAPKAN')->get();
+
+    return view('kompetensi.admin_permohonan', compact('senarai_baru', 'senarai_tempat', 'senarai_keputusan'));
+}
 
     public function sahkan_permohonan(Request $request)
     {
