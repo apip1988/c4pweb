@@ -156,4 +156,87 @@
     // Jalankan sekali masa page load
     window.onload = toggleForm;
 </script>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-10">
+        <h4 class="section-title mb-4">
+            <i class="fas fa-list mr-2"></i> SENARAI DOKUMEN MUAT NAIK
+        </h4>
+
+        <div class="card card-custom shadow-sm border-0">
+            <div class="card-body p-4">
+                
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pills-cre-tab" data-toggle="pill" href="#pills-cre" role="tab">e-Credentialing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-ruj-tab" data-toggle="pill" href="#pills-ruj" role="tab">e-Rujukan</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-cre" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-hover border">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Tajuk / Jenis</th>
+                                        <th>Disiplin</th>
+                                        <th class="text-center">Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(\App\CredentialingDocument::orderBy('created_at','desc')->get() as $cre)
+                                    <tr>
+                                        <td>
+                                            <strong>{{ $cre->title }}</strong><br>
+                                            <small class="text-muted">{{ $cre->document_type }}</small>
+                                        </td>
+                                        <td><span class="badge badge-secondary">{{ $cre->discipline }}</span></td>
+                                        <td class="text-center">
+                                            <a href="{{ asset($cre->file_path) }}" target="_blank" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                            <a href="{{ route('credentialing.destroy', $cre->id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Padam dokumen ini?')"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pills-ruj" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-hover border">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Tajuk / Tahun</th>
+                                        <th>Jenis / Penerbit</th>
+                                        <th class="text-center">Tindakan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(\App\Rujukan::orderBy('created_at','desc')->get() as $ruj)
+                                    <tr>
+                                        <td>
+                                            <strong>{{ $ruj->title }}</strong><br>
+                                            <small class="text-muted">Tahun: {{ $ruj->year }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-primary">{{ $ruj->type }}</span><br>
+                                            <small>{{ $ruj->publisher }}</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ asset($ruj->file_path) }}" target="_blank" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                                            <a href="{{ route('admin.rujukan.destroy', $ruj->id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Padam dokumen ini?')"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div> </div>
+        </div>
+    </div>
+</div>
 @endsection

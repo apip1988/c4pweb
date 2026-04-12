@@ -119,18 +119,15 @@ class CredentialingController extends Controller
 
     // 4. Padam Dokumen (Credentialing Only - Rujukan urus di RujukanController jika perlu)
     public function destroy($id)
-    {
-        $doc = CredentialingDocument::find($id);
-
-        if ($doc) {
-            $filePath = public_path($doc->file_path);
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-            $doc->delete();
-            return back()->with('success', 'Dokumen berjaya dipadam!');
-        }
-
-        return back()->with('error', 'Dokumen tidak dijumpai.');
+{
+    $doc = \App\CredentialingDocument::findOrFail($id);
+    
+    // Padam fail fizikal
+    if (file_exists(public_path($doc->file_path))) {
+        unlink(public_path($doc->file_path));
     }
+    
+    $doc->delete();
+    return back()->with('success', 'Dokumen e-Credentialing berjaya dipadam!');
+}
 }
