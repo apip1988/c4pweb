@@ -50,7 +50,7 @@ Route::get('/credentialing', [CredentialingController::class, 'index'])->name('c
 Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index');
 
 // Auth Routes
-//Auth::routes(); // Menggunakan default Laravel Auth routes untuk simplify
+//Auth::routes();  Menggunakan default Laravel Auth routes untuk simplify
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +60,9 @@ Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index
 
 Route::middleware(['auth'])->group(function () {
     
+    // Tambah ini secara manual untuk ganti Auth::routes() yang bermasalah tadi
+Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
     // Dashboard & Profile
     Route::get('/user/dashboard', function () { return view('user.dashboard'); })->name('user.dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
