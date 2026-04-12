@@ -21,6 +21,12 @@ class KompetensiController extends Controller
 {
     return view('welcome');
 }
+
+public function borang_permohonan()
+{
+    return view('kompetensi.permohonan');
+}
+
     // --- 1. PROSES USER: HANTAR PERMOHONAN ---
     public function hantar_permohonan(Request $request)
     {
