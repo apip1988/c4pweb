@@ -6,74 +6,57 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Master Copy Afif (VERSI PENUH & STABIL)
+| Web Routes - Master Copy Afif (ANTI-404 VERSION)
 |--------------------------------------------------------------------------
 */
 
-// --- 1. LALUAN UTAMA, DASHBOARD & HUBUNGI ---
+// --- 1. LALUAN UTAMA & DASHBOARD ---
 Route::get('/', [KompetensiController::class, 'index']);
 Route::get('/dashboard', [KompetensiController::class, 'dashboard']);
 Route::get('/hubungi', function () { return view('hubungi'); });
 
-
-// --- 2. LALUAN AUTHENTICATION (LOG MASUK / DAFTAR / KELUAR) ---
-// Login
+// --- 2. AUTHENTICATION (LOGIN & REGISTER) ---
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-
-// Register (User boleh daftar sendiri sekarang)
 Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
-
-// Logout
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-
-// Penyelamat untuk link "Forgot Password" di page Login
 Route::get('password/reset', function() { return "Fungsi Reset Password Belum Aktif."; })->name('password.request');
 
-
-// --- 3. LALUAN E-KOMPETENSI (USER - PERLU LOGIN) ---
+// --- 3. E-KOMPETENSI (USER - PERLU LOGIN) ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan']);
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
-
-// --- 4. LALUAN SEMAKAN & CETAK SLIP (AWAM / USER) ---
-Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat']);
+// --- 4. SEMAKAN (AWAM / USER) - PENYELAMAT 404 DI SINI ---
+// Halaman Semak Tempat
+Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
+// Proses Semak Tempat (Borang panggil route ni)
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
-Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index']);
+
+// Halaman Semak Keputusan
+Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
+// Proses Semak Keputusan (Borang panggil route ni)
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
+
+// Cetak
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
-
-// --- 5. LALUAN ADMIN E-KOMPETENSI (PENGURUSAN CALON) ---
+// --- 5. ADMIN E-KOMPETENSI (PENGURUSAN CALON) ---
 Route::middleware(['auth'])->group(function () {
-    // Paparan Utama
-    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon']);
-    
-    // Proses Sahkan, Tempat & Keputusan
+    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
     Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
     Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
-    
-    // Padam Rekod
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-
-// --- 6. DIREKTORI, RUJUKAN & PENGURUSAN LAIN ---
+// --- 6. MENU-MENU LAIN ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
-
-// Route e-Rujukan
 Route::get('/rujukan', function () { return view('rujukan.index'); })->name('rujukan.index');
-
-// Route e-Credentialing
 Route::get('/credentialing', function () { return view('credentialing.index'); })->name('credentialing.index');
 Route::get('/credentialing/create', function () { return view('credentialing.create'); })->name('credentialing.create');
-
-// Route Pengurusan Pengguna & Profile
 Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
-Route::get('/admin/dashboard', function () { return view('admin.dashboard'); });
 Route::get('/profile', function () { return view('auth.profile'); });
