@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (VERSI KEMASKINI & LENGKAP)
+| Web Routes - MASTER COPY AFIF (FIX PRPA RESULT ROUTE)
 |--------------------------------------------------------------------------
 */
 
@@ -19,11 +19,8 @@ Route::get('/hubungi', function () { return view('hubungi'); });
 // --- 2. AUTHENTICATION (LOGIN, REGISTER, LOGOUT) ---
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-
-// REGISTER: Dah dihubungkan terus ke Controller asal Laravel
 Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
-
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('password/reset', function() { return "Fungsi Reset Password Belum Aktif."; })->name('password.request');
 
@@ -51,15 +48,21 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 5. e-PRPA ---
+// --- 5. e-PRPA (PENYELAMAT 404 & ROUTE HASIL) ---
 Route::get('/prpa', function () { 
     return view('prpa.index'); 
 })->name('prpa.index');
 
-// Direct terus paparkan view semak PRPA
+// Halaman Borang Semak PRPA
 Route::get('/prpa/semak-keputusan', function () { 
     return view('prpa.semak'); 
 })->name('prpa.semak.borang');
+
+// ROUTE BARU: Penyelamat Error 'prpa.semak.hasil'
+// Buat masa ni kita hantar ke function dummy supaya tak crash
+Route::post('/prpa/hasil-semakan', function () { 
+    return "Fungsi paparan hasil semakan PRPA sedang dikemaskini."; 
+})->name('prpa.semak.hasil');
 
 
 // --- 6. MENU DIREKTORI & LAIN-LAIN ---
