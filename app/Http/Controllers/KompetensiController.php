@@ -29,26 +29,41 @@ public function borang_permohonan()
 
     // --- 1. PROSES USER: HANTAR PERMOHONAN ---
     public function hantar_permohonan(Request $request)
-    {
-        $user = Auth::user();
-        $currentTime = date('Y-m-d H:i:s');
+{
+    $user = Auth::user();
+    $currentTime = date('Y-m-d H:i:s');
 
-        // Simpan ke table permohonans
-        DB::table('permohonans')->insert([
-            'user_id'      => $user->id,
-            'name'         => $user->name,
-            'ic_number'    => $user->ic_number,
-            'email'        => $user->email,
-            'sektor'       => $user->sektor,
-            'phone_number' => $user->phone_number,
-            'ptj_sekarang' => $user->ptj_sekarang,
-            'status'       => 'PENDING', // Status awal: Senarai Nama Calon
-            'created_at'   => $currentTime,
-            'updated_at'   => $currentTime,
-        ]);
+    // KOD PAKSA: Jika table tak wujud, buat sekarang juga!
+    DB::statement("CREATE TABLE IF NOT EXISTS permohonans (
+        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        user_id BIGINT UNSIGNED,
+        name VARCHAR(191),
+        ic_number VARCHAR(191),
+        email VARCHAR(191),
+        sektor VARCHAR(191),
+        phone_number VARCHAR(191),
+        ptj_sekarang VARCHAR(191),
+        status VARCHAR(191) DEFAULT 'PENDING',
+        created_at TIMESTAMP NULL,
+        updated_at TIMESTAMP NULL
+    )");
 
-        return redirect()->back()->with('success', 'Permohonan Berjaya Dihantar!');
-    }
+    // Baru kita insert data
+    DB::table('permohonans')->insert([
+        'user_id'      => $user->id,
+        'name'         => $user->name,
+        'ic_number'    => $user->ic_number,
+        'email'        => $user->email,
+        'sektor'       => $user->sektor,
+        'phone_number' => $user->phone_number,
+        'ptj_sekarang' => $user->ptj_sekarang,
+        'status'       => 'PENDING',
+        'created_at'   => $currentTime,
+        'updated_at'   => $currentTime,
+    ]);
+
+    return redirect()->back()->with('success', 'Permohonan Berjaya Dihantar!');
+}
 
     // --- 2. PROSES ADMIN: PENGURUSAN CALON (VIEW UTAMA) ---
     public function admin_pengurusan_calon(Request $request)
