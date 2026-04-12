@@ -165,7 +165,7 @@
                                 </li>
 
                                 <li class="has-submenu">
-                                    <a href="javascript:void(0)">PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <a href="javascript:void(0)">e-PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
                                         <li><a href="{{ url('/prpa/semak-keputusan') }}">Semak Keputusan</a></li>
                                         <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>

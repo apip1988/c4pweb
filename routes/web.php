@@ -45,26 +45,12 @@ Route::prefix('kompetensi')->group(function () {
     Route::post('/tempat/hasil', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_hasil');
 });
 
-// Modul PRPA & e-Rujukan (Public View)
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
-Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak_keputusan'); })->name('prpa.semak.borang');
-Route::get('/prpa/hasil-keputusan', [PrpaController::class, 'proses_semak'])->name('prpa.semak.hasil');
-
 Route::get('/credentialing', [CredentialingController::class, 'index'])->name('credentialing.index');
 Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index');
 
 // Auth Routes
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [LoginController::class, 'login']);
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('register', [RegisterController::class, 'register']);
-
-// Password Reset
-Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('password/reset', [ResetPasswordController::class, 'reset']);
+Auth::routes(); // Menggunakan default Laravel Auth routes untuk simplify
 
 /*
 |--------------------------------------------------------------------------
@@ -81,47 +67,40 @@ Route::middleware(['auth'])->group(function () {
         return (auth()->user()->role == 'ADMIN') ? redirect()->route('admin.dashboard') : redirect()->route('user.dashboard');
     });
 
-    // Modul Quiz & Exam
-    Route::get('/prpa/quiz/{id}', [PrpaController::class, 'startQuiz'])->name('prpa.quiz.start');
-    Route::post('/prpa/quiz/submit', [PrpaController::class, 'submitQuiz'])->name('prpa.quiz.submit');
-
-    Route::prefix('phcals')->group(function () {
-        Route::get('/exam', [PhcalsExamController::class, 'index'])->name('phcals.exam');
-        Route::post('/submit', [PrpaController::class, 'submitQuiz'])->name('phcals.submit');
-        Route::get('/history', [PrpaController::class, 'showHistory'])->name('phcals.history');
-        Route::get('/review/{id}', [PrpaController::class, 'showReview'])->name('phcals.review');
-        Route::get('/print/{id}', [PrpaController::class, 'printCertificate'])->name('phcals.print');
-    });
-
-    // Permohonan User
-    Route::get('/kompetensi/permohonan', function () { return view('kompetensi.permohonan'); })->name('user.permohonan');
+    // Permohonan User (Kompetensi)
+    Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('user.permohonan');
     Route::post('/kompetensi/hantar-permohonan', [KompetensiController::class, 'hantar_permohonan']);
-    Route::match(['get', 'post'], '/kompetensi/hantar-emel', [KompetensiController::class, 'hantar_emel_penempatan'])->name('kompetensi.hantar_emel');
 
     /* --- 🔐 KHAS UNTUK ADMIN SAHAJA --- */
     Route::group(['prefix' => 'admin', 'middleware' => ['admin']], function() {
         
         Route::get('/dashboard', [KompetensiController::class, 'admin_dashboard'])->name('admin.dashboard');
         
+        // --- PENGURUSAN CALON KOMPETENSI (ALIRAN BARU) ---
+        // Page Utama Pengurusan Calon (Ada 4 Table tu)
+        Route::get('/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('admin.kompetensi.pengurusan');
+        
+        // Proses Aliran 1: Sahkan Permohonan (Bulk)
+        Route::post('/kompetensi/sahkan-permohonan', [KompetensiController::class, 'sahkan_permohonan']);
+        
+        // Proses Aliran 2: Kemaskini Tempat & Kelayakan (Bulk)
+        Route::post('/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan']);
+        
+        // Proses Aliran 3: Kemaskini Keputusan Akhir (Bulk)
+        Route::post('/kompetensi/kemaskini-keputusan-akhir', [KompetensiController::class, 'kemaskini_keputusan_akhir']);
+        
+        // Padam Rekod
+        Route::get('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('admin.kompetensi.destroy');
+
+
         // Pengurusan User
         Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
         Route::post('/users/update-role/{id}', [UserController::class, 'updateRole'])->name('admin.users.updateRole');
         Route::get('/users/delete/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
-        // Pengurusan Kompetensi
-        Route::get('/kompetensi/senarai-permohonan', [KompetensiController::class, 'admin_senarai_permohonan'])->name('admin.permohonan');
-        Route::post('/permohonan/update-status', [KompetensiController::class, 'update_status_permohonan'])->name('admin.update_status');
-        Route::get('/kompetensi/pengurusan', [KompetensiController::class, 'admin_index'])->name('admin.kompetensi.index');
-        Route::post('/kompetensi/store', [KompetensiController::class, 'store'])->name('admin.kompetensi.store');
-        Route::post('/kompetensi/update', [KompetensiController::class, 'update_calon'])->name('admin.kompetensi.update');
-        Route::get('/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('admin.kompetensi.destroy');
-
         // MASTER UPLOAD (Credentialing & Rujukan)
-        // URL asal: amoppp.com/admin/document/upload
         Route::get('/document/upload', [CredentialingController::class, 'create'])->name('credentialing.create');
         Route::post('/document/store', [CredentialingController::class, 'store'])->name('admin.document.store');
-        
-        // Route pemadaman
         Route::get('/credentialing/delete/{id}', [CredentialingController::class, 'destroy'])->name('credentialing.destroy');
         Route::get('/rujukan/delete/{id}', [RujukanController::class, 'destroy'])->name('admin.rujukan.destroy');
     });
