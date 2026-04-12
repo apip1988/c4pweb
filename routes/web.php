@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (FIX PRPA VIEW)
+| Web Routes - MASTER COPY AFIF (VERSI KEMASKINI & LENGKAP)
 |--------------------------------------------------------------------------
 */
 
@@ -19,8 +19,11 @@ Route::get('/hubungi', function () { return view('hubungi'); });
 // --- 2. AUTHENTICATION (LOGIN, REGISTER, LOGOUT) ---
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+
+// REGISTER: Dah dihubungkan terus ke Controller asal Laravel
 Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('password/reset', function() { return "Fungsi Reset Password Belum Aktif."; })->name('password.request');
 
@@ -48,21 +51,14 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 5. e-PRPA (PENYELAMAT VIEW ERROR) ---
+// --- 5. e-PRPA ---
 Route::get('/prpa', function () { 
     return view('prpa.index'); 
 })->name('prpa.index');
 
+// Direct terus paparkan view semak PRPA
 Route::get('/prpa/semak-keputusan', function () { 
-    // CEK FAIL SEBELUM PAPAR: Supaya tak keluar error 'View Not Found'
-    if (view()->exists('prpa.semak')) {
-        return view('prpa.semak');
-    }
-    
-    // Mesej bantuan kalau fail tak wujud
-    return "<h3>Fail Tidak Dijumpai!</h3>
-            <p>Sila pastikan fail wujud di: <b>resources/views/prpa/semak.blade.php</b></p>
-            <p>Mungkin nama fail kau <i>semak_keputusan.blade.php</i>? Sila tukar nama fail tu jadi <b>semak.blade.php</b></p>";
+    return view('prpa.semak'); 
 })->name('prpa.semak.borang');
 
 
