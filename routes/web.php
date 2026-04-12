@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Master Copy Afif
+| Web Routes - Master Copy Afif (STABIL)
 |--------------------------------------------------------------------------
 */
 
@@ -15,12 +15,12 @@ Route::get('/', [KompetensiController::class, 'index']);
 Route::get('/dashboard', [KompetensiController::class, 'dashboard']);
 Route::get('/hubungi', function () { return view('hubungi'); });
 
-// 2. LALUAN AUTHENTICATION (MANUAL)
+// 2. LALUAN AUTHENTICATION
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-// 3. LALUAN E-KOMPETENSI (USER - MESTI LOGIN)
+// 3. LALUAN E-KOMPETENSI (USER)
 Route::middleware(['auth'])->group(function () {
     Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan']);
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
@@ -35,27 +35,23 @@ Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_s
 
 // 5. LALUAN ADMIN (E-KOMPETENSI)
 Route::middleware(['auth'])->group(function () {
-    
-    // Paparan Utama Pengurusan Calon
     Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon']);
-    
-    // Proses Sahkan Calon (ID dari button yang Afif tambah tadi)
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
-    
-    // Proses Kemaskini Tempat Ujian
     Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
-    
-    // Proses Kemaskini Keputusan Akhir
     Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
-    
-    // Padam Rekod Calon
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// 6. DIREKTORI & MENU-MENU LAIN (SUPAYA TAK HILANG)
+// 6. LALUAN LAIN-LAIN (YANG MENYEBABKAN ERROR TADI)
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 
-// Route untuk e-Credentialing & lain-lain (jika ada)
-Route::get('/credentialing', [App\Http\Controllers\CredentialingController::class, 'index'])->name('credentialing.index');
-Route::get('/credentialing/create', [App\Http\Controllers\CredentialingController::class, 'create'])->name('credentialing.create');
+// INI YANG PENTING: Nama rujukan.index mesti ada
+Route::get('/rujukan', function () { return view('rujukan.index'); })->name('rujukan.index');
+
+// Route untuk e-Credentialing
+Route::get('/credentialing', function () { return view('credentialing.index'); })->name('credentialing.index');
+Route::get('/credentialing/create', function () { return view('credentialing.create'); })->name('credentialing.create');
+
+// Route untuk Admin Users (Jika ada menu Pengurusan Pengguna)
+Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
