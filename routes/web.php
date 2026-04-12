@@ -50,7 +50,7 @@ Route::get('/credentialing', [CredentialingController::class, 'index'])->name('c
 Route::get('/rujukan', [RujukanController::class, 'index'])->name('rujukan.index');
 
 // Auth Routes
-Auth::routes(); // Menggunakan default Laravel Auth routes untuk simplify
+//Auth::routes(); // Menggunakan default Laravel Auth routes untuk simplify
 
 /*
 |--------------------------------------------------------------------------
