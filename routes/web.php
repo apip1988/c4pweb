@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (VERSI PENUH)
+| Web Routes - MASTER COPY AFIF (VERSI FINAL - ANTI 404)
 |--------------------------------------------------------------------------
 */
 
@@ -28,11 +28,11 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
-// SEMAK TEMPAT (Penyelamat 404 bila masuk IC)
+// Semak Tempat (Kompetensi)
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 
-// SEMAK KEPUTUSAN (Penyelamat 404 bila masuk IC)
+// Semak Keputusan (Kompetensi)
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
 
@@ -49,12 +49,21 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 4. e-PRPA (YANG HILANG TADI) ---
+// --- 4. e-PRPA (PENYELAMAT ERROR TADI) ---
+// Route Dashboard PRPA
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
-Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak');
+
+// Route Semak Keputusan PRPA (Nama route ni kena ada sebab dipanggil oleh dashboard)
+Route::get('/prpa/semak-keputusan', function () { 
+    // Jika fail prpa.semak tak wujud, aku arahkan ke prpa.index dulu supaya tak crash
+    if(view()->exists('prpa.semak')) {
+        return view('prpa.semak');
+    }
+    return "Fail resources/views/prpa/semak.blade.php tidak dijumpai. Sila semak nama fail.";
+})->name('prpa.semak.borang');
 
 
-// --- 5. MENU LAIN (DIREKTORI, RUJUKAN, CREDENTIALING) ---
+// --- 5. MENU LAIN ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/rujukan', function () { return view('rujukan.index'); })->name('rujukan.index');
