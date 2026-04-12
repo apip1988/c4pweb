@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (FIX TOTAL 404 SEMAKAN)
+| Web Routes - MASTER COPY AFIF (VERSI FINAL ANTI-PENING)
 |--------------------------------------------------------------------------
 */
 
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', [KompetensiController::class, 'index']);
 Route::get('/dashboard', [KompetensiController::class, 'dashboard']);
 Route::get('/hubungi', function () { return view('hubungi'); });
+
 
 // --- 2. AUTHENTICATION (LOGIN, REGISTER, LOGOUT) ---
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -23,25 +24,27 @@ Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'r
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('password/reset', function() { return "Fungsi Reset Belum Aktif."; })->name('password.request');
 
+
 // --- 3. e-KOMPETENSI (USER & PROSES DAFTAR) ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan']);
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
-// --- 4. SEMAKAN e-KOMPETENSI (PENYELAMAT 404) ---
+
+// --- 4. SEMAKAN e-KOMPETENSI (FIX TOTAL 404 SEMASA MASUK IC) ---
 // Semak Tempat
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 
-// Semak Keputusan (INI YANG KAU KENA TADI)
+// Semak Keputusan
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
-// Pastikan nama ini 'kompetensi.proses_semak' sebijik macam dalam borang <form action="...">
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
 
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
-// --- 5. e-KOMPETENSI (ADMIN) ---
+
+// --- 5. e-KOMPETENSI (ADMIN / PENGURUSAN CALON) ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
@@ -50,16 +53,19 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// --- 6. e-PRPA ---
+
+// --- 6. e-PRPA (FIX DASHBOARD & SEMAKAN) ---
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
-Route::post('/prpa/hasil-semakan', function () { return "Hasil PRPA"; })->name('prpa.semak.hasil');
+Route::post('/prpa/hasil-semakan', function () { return "Paparan Hasil PRPA"; })->name('prpa.semak.hasil');
 
-// --- 7. e-CREDENTIALING ---
+
+// --- 7. e-CREDENTIALING (FIX ROUTE NOT FOUND) ---
 Route::get('/credentialing', function () { return view('credentialing.index'); })->name('credentialing.index');
 Route::get('/credentialing/create', function () { return view('credentialing.create'); })->name('credentialing.create');
 
-// --- 8. LAIN-LAIN ---
+
+// --- 8. MENU LAIN-LAIN (SUPAYA APP.BLADE TAK CRASH) ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/rujukan', function () { return view('rujukan.index'); })->name('rujukan.index');
