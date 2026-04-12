@@ -8,7 +8,6 @@
     <title>Cawangan Perkhidmatan PPP</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
@@ -43,11 +42,9 @@
         }
 
         .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; }
-        
         .logo-text { font-size: 20px; font-weight: 700; color: var(--ppp-blue); letter-spacing: 1px; }
 
         .nav-custom { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; }
-        
         .nav-custom > li > a { 
             display: block; 
             padding: 12px 15px; 
@@ -61,6 +58,7 @@
 
         .nav-custom > li > a:hover { color: var(--ppp-blue); transform: translateY(-1px); }
 
+        /* Dropdown Setup */
         .dropdown-custom { position: relative; }
         .dropdown-custom:hover > .dropdown-content { display: block; opacity: 1; visibility: visible; }
         
@@ -82,6 +80,7 @@
             text-transform: uppercase; margin-bottom: 5px;
         }
 
+        /* Submenu Setup */
         .has-submenu { position: relative; }
         .has-submenu:hover > .submenu-box { display: block; }
         .submenu-box {
@@ -91,7 +90,7 @@
             border-radius: 0 8px 8px 0;
         }
 
-        .mobile-toggler { display: none; background: none; border: 2px solid var(--ppp-blue); color: var(--ppp-blue); font-size: 20px; padding: 5px 12px; border-radius: 6px; cursor: pointer; outline: none !important; }
+        .mobile-toggler { display: none; background: none; border: 2px solid var(--ppp-blue); color: var(--ppp-blue); font-size: 20px; padding: 5px 12px; border-radius: 6px; cursor: pointer; }
 
         @media (max-width: 992px) {
             .mobile-toggler { display: block; }
@@ -99,14 +98,9 @@
                 display: none; flex-direction: column; position: absolute;
                 top: 100%; left: 0; width: 100%; background: #fff;
                 border-bottom: 4px solid var(--ppp-blue); max-height: 85vh; overflow-y: auto;
-                box-shadow: 0 10px 15px rgba(0,0,0,0.1);
             }
             .nav-custom.active { display: flex; }
-            .nav-custom > li { width: 100%; border-bottom: 1px solid #f0f0f0; }
-            .dropdown-content, .submenu-box { 
-                position: static; display: none; width: 100%; box-shadow: none; 
-                background: #fafafa; padding-left: 15px; border: none; opacity: 1; visibility: visible;
-            }
+            .dropdown-content, .submenu-box { position: static; display: none; width: 100%; box-shadow: none; border: none; opacity: 1; visibility: visible; }
             .dropdown-custom.active > .dropdown-content, .has-submenu.active > .submenu-box { display: block; }
         }
     </style>
@@ -142,18 +136,36 @@
                             <a href="javascript:void(0)">e-PUSAT <i class="fas fa-caret-down ml-1"></i></a>
                             <ul class="dropdown-content">
                                 <li><a href="{{ route('credentialing.index') }}">e-Credentialing</a></li>
+                                
                                 <li class="has-submenu border-top mt-2 pt-2">
                                     <a href="javascript:void(0)">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
                                     <ul class="submenu-box">
-                                        @auth <li><a href="{{ url('/kompetensi/permohonan') }}" class="text-danger font-weight-bold">Borang Permohonan Baru</a></li> @endauth
+                                        @auth 
+                                            <li><a href="{{ url('/kompetensi/permohonan') }}" class="text-danger font-weight-bold">Borang Permohonan Baru</a></li> 
+                                        @endauth
                                         <li><a href="{{ url('/kompetensi/tempat') }}">Semak Tempat</a></li>
                                         <li><a href="{{ url('/kompetensi/semak') }}">Semak Keputusan</a></li>
                                     </ul>
                                 </li>
+
+                                <li class="has-submenu">
+                                    <a href="javascript:void(0)">e-PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        <li><a href="{{ url('/prpa/semak-keputusan') }}">Semak Keputusan</a></li>
+                                        <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>
+                                    </ul>
+                                </li>
+
                                 <li><a href="{{ route('rujukan.index') }}">e-RUJUKAN</a></li>
+                                <li><a href="https://www.bless.gov.my/" target="_blank">BLESS</a></li>
+                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts" target="_blank">Triage MTS</a></li>
+                                <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
+                                <li><a href="https://semakerjaya.moh.gov.my/semakan.php" target="_blank">Semakan Kerjaya</a></li>
                             </ul>
                         </li>
 
+                        <li><a href="#">AMOTeX</a></li>
                         <li><a href="{{ url('/hubungi') }}">HUBUNGI</a></li>
 
                         @guest
@@ -166,13 +178,16 @@
                                     <i class="fas fa-user-circle mr-1"></i> {{ strtoupper(explode(' ', Auth::user()->name)[0]) }} <i class="fas fa-caret-down ml-1"></i>
                                 </a>
                                 <ul class="dropdown-content">
-                                    @if(Auth::user()->role == 'ADMIN' || Auth::user()->role == 'SUPER ADMIN')
+                                    @if(in_array(strtoupper(Auth::user()->role), ['ADMIN', 'SUPER ADMIN']))
                                         <li class="header">PENTADBIRAN</li>
                                         <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
                                         
-                                        <li><a href="{{ url('/admin/kompetensi/pengurusan-calon') }}" class="text-danger font-weight-bold italic">
-                                            <i class="fas fa-users-cog mr-2"></i> PENGURUSAN CALON</a>
-                                        </li>
+                                        <li><a href="{{ url('/admin/kompetensi/pengurusan-calon') }}" class="text-danger font-weight-bold"><i class="fas fa-users-cog mr-2"></i> PENGURUSAN CALON</a></li>
+                                        
+                                        @if(strtoupper(Auth::user()->role) == 'SUPER ADMIN')
+                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-dark"></i> Pengurusan Pengguna</a></li>
+                                        @endif
+                                        <li><a href="{{ route('credentialing.create') }}">Pengurusan Dokumen</a></li>
                                         <hr class="my-1">
                                     @endif
 
@@ -199,12 +214,21 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         $(document).ready(function() {
             $('#mobile-btn').click(function() {
                 $('.nav-custom').toggleClass('active');
+                $(this).find('i').toggleClass('fa-bars fa-times');
             });
+
+            if ($(window).width() <= 992) {
+                $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
+                    e.preventDefault();
+                    var $parent = $(this).parent();
+                    $parent.toggleClass('active');
+                    $parent.siblings().removeClass('active').find('.active').removeClass('active');
+                });
+            }
         });
     </script>
 </body>
