@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Master Copy Afif (VERSI PALING STABIL)
+| Web Routes - Master Copy Afif (VERSI PENUH & STABIL)
 |--------------------------------------------------------------------------
 */
 
@@ -16,14 +16,20 @@ Route::get('/dashboard', [KompetensiController::class, 'dashboard']);
 Route::get('/hubungi', function () { return view('hubungi'); });
 
 
-// --- 2. LALUAN AUTHENTICATION (LOG MASUK / KELUAR) ---
+// --- 2. LALUAN AUTHENTICATION (LOG MASUK / DAFTAR / KELUAR) ---
+// Login
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+
+// Register (User boleh daftar sendiri sekarang)
+Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+
+// Logout
 Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-// PENYELAMAT: Route ini untuk elakkan error 'password.request' & 'register' not defined dalam page Login
+// Penyelamat untuk link "Forgot Password" di page Login
 Route::get('password/reset', function() { return "Fungsi Reset Password Belum Aktif."; })->name('password.request');
-Route::get('register', function() { return "Sila hubungi Admin untuk pendaftaran."; })->name('register');
 
 
 // --- 3. LALUAN E-KOMPETENSI (USER - PERLU LOGIN) ---
@@ -56,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 6. DIREKTORI, RUJUKAN & PENGURUSAN PENGGUNA ---
+// --- 6. DIREKTORI, RUJUKAN & PENGURUSAN LAIN ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 
@@ -67,7 +73,7 @@ Route::get('/rujukan', function () { return view('rujukan.index'); })->name('ruj
 Route::get('/credentialing', function () { return view('credentialing.index'); })->name('credentialing.index');
 Route::get('/credentialing/create', function () { return view('credentialing.create'); })->name('credentialing.create');
 
-// Route Pengurusan Pengguna (Admin)
+// Route Pengurusan Pengguna & Profile
 Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); });
 Route::get('/profile', function () { return view('auth.profile'); });
