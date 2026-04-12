@@ -24,7 +24,7 @@
         body { 
             font-family: 'Poppins', sans-serif; 
             background-color: var(--ppp-bg); 
-            padding-top: 90px; /* Jarak untuk Fixed Navbar */
+            padding-top: 90px; 
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -32,7 +32,6 @@
 
         #app { flex: 1; }
 
-        /* --- NAVBAR RE-DESIGN --- */
         #top-nav {
             background: #fff; 
             border-bottom: 4px solid var(--ppp-blue); 
@@ -44,11 +43,8 @@
         }
 
         .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; }
-        
         .logo-text { font-size: 20px; font-weight: 700; color: var(--ppp-blue); letter-spacing: 1px; }
-
         .nav-custom { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; }
-        
         .nav-custom > li > a { 
             display: block; 
             padding: 12px 15px; 
@@ -62,7 +58,6 @@
 
         .nav-custom > li > a:hover { color: var(--ppp-blue); transform: translateY(-1px); }
 
-        /* Dropdown Desktop */
         .dropdown-custom { position: relative; }
         .dropdown-custom:hover > .dropdown-content { display: block; opacity: 1; visibility: visible; }
         
@@ -84,7 +79,6 @@
             text-transform: uppercase; margin-bottom: 5px;
         }
 
-        /* Flyout Submenu */
         .has-submenu { position: relative; }
         .has-submenu:hover > .submenu-box { display: block; }
         .submenu-box {
@@ -96,7 +90,6 @@
 
         .mobile-toggler { display: none; background: none; border: 2px solid var(--ppp-blue); color: var(--ppp-blue); font-size: 20px; padding: 5px 12px; border-radius: 6px; cursor: pointer; outline: none !important; }
 
-        /* --- RESPONSIVE MOBILE --- */
         @media (max-width: 992px) {
             .mobile-toggler { display: block; }
             .nav-custom {
@@ -112,12 +105,7 @@
                 background: #fafafa; padding-left: 15px; border: none; opacity: 1; visibility: visible;
             }
             .dropdown-custom.active > .dropdown-content, .has-submenu.active > .submenu-box { display: block; }
-            .has-submenu > a .fa-caret-right { transform: rotate(90deg); }
         }
-
-        /* Helpers */
-        .section-title { font-weight: 700; color: var(--ppp-blue); border-left: 5px solid var(--ppp-blue); padding-left: 15px; text-transform: uppercase; margin-bottom: 20px; }
-        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -126,7 +114,7 @@
             <div class="container nav-container">
                 <div class="logo-text">
                     <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">
-                        <i class="fas fa- clinic-medical mr-1"></i> PORTAL PPP
+                        <i class="fas fa-clinic-medical mr-1"></i> PORTAL PPP
                     </a>
                 </div>
 
@@ -172,16 +160,9 @@
                                     </ul>
                                 </li>
                                 <li><a href="{{ route('rujukan.index') }}">e-RUJUKAN</a></li>
-                                <li><a href="https://www.bless.gov.my/" target="_blank">BLESS</a></li>
-                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
-                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts" target="_blank">Triage MTS</a></li>
-                                <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
-                                <li><a href="https://semakerjaya.moh.gov.my/semakan.php" target="_blank">Semakan Kerjaya</a></li>
-
                             </ul>
                         </li>
 
-                        <li><a href="#">AMOTeX</a></li>
                         <li><a href="{{ url('/hubungi') }}">HUBUNGI</a></li>
 
                         @guest
@@ -197,63 +178,12 @@
                                     @if(in_array(strtoupper(Auth::user()->role), ['ADMIN', 'SUPER ADMIN']))
                                         <li class="header">PENTADBIRAN</li>
                                         <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
+                                        
+                                        <li>
+                                            <a href="{{ url('/admin/kompetensi/pengurusan-calon') }}" class="text-danger font-weight-bold">
+                                                <i class="fas fa-users-cog mr-2"></i> PENGURUSAN CALON
+                                            </a>
+                                        </li>
+
                                         @if(strtoupper(Auth::user()->role) == 'SUPER ADMIN')
-                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan Pengguna</a></li>
-                                        @endif
-                                        <li><a href="{{ route('credentialing.create') }}">Pengurusan Dokumen</a></li>
-                                        <hr class="my-1">
-                                    @endif
-
-                                    <li class="header">AKAUN SAYA</li>
-                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card mr-2 text-secondary"></i> Profil Saya</a></li>
-                                    <li>
-                                        <a href="{{ route('logout') }}" class="text-danger font-weight-bold" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            <i class="fas fa-power-off mr-2"></i> KELUAR SISTEM
-                                        </a>
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
-                                    </li>
-                                </ul>
-                            </li>
-                        @endguest
-                    </ul>
-                </nav>
-            </div>
-        </header>
-
-        <main class="container">
-            @yield('content')
-        </main>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            // Mobile Menu Toggler
-            $('#mobile-btn').click(function() {
-                $('.nav-custom').toggleClass('active');
-                $(this).find('i').toggleClass('fa-bars fa-times');
-            });
-
-            // Dropdown & Submenu for Mobile
-            if ($(window).width() <= 992) {
-                $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
-                    e.preventDefault();
-                    var $parent = $(this).parent();
-                    $parent.toggleClass('active');
-                    $parent.siblings().removeClass('active').find('.active').removeClass('active');
-                });
-            }
-
-            // Close mobile menu when clicking outside
-            $(document).click(function(event) {
-                if (!$(event.target).closest('#top-nav').length) {
-                    $('.nav-custom').removeClass('active');
-                    $('#mobile-btn').find('i').addClass('fa-bars').removeClass('fa-times');
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-dark"></i> Pengurusan

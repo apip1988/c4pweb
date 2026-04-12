@@ -17,87 +17,101 @@ class KompetensiController extends Controller
         ]);
     }
 
+    // --- LALUAN AWAM / DASHBOARD ---
     public function index()
-{
-    return view('welcome');
-}
+    {
+        return view('welcome');
+    }
 
-public function borang_permohonan()
-{
-    return view('kompetensi.permohonan');
-}
+    public function dashboard() {
+        $data = DB::table('statistik_utama')->pluck('jumlah', 'kategori');
+        $getData = function($key) use ($data) { return isset($data[$key]) ? (int)$data[$key] : 0; };
+        return view('dashboard', [
+            'total_ppp' => $getData('Lelaki') + $getData('Perempuan'),
+            'lelaki' => $getData('Lelaki'), 'perempuan' => $getData('Perempuan'),
+            'perubatan' => $getData('Perubatan'), 'kesihatan' => $getData('Kesihatan'),
+            'pengurusan' => $getData('Pengurusan'), 'sektor_awam' => $getData('Awam'),
+            'sektor_swasta' => $getData('Swasta'), 'tetap' => $getData('Tetap'),
+            'kontrak' => $getData('Kontrak'), 'mers' => $getData('NG MERS999'),
+            'ipkkm' => $getData('IPKKM'), 'jkn' => $getData('JKN'),
+            'pkd' => $getData('PKD'), 'hospital' => $getData('HOSPITAL'),
+            'klinik' => $getData('KLINIK'), 'kader' => $getData('KADER'),
+        ]);
+    }
 
-    // --- 1. PROSES USER: HANTAR PERMOHONAN ---
+    // --- FUNGSI USER (BORANG & SEMAKAN) ---
+    public function borang_permohonan()
+    {
+        return view('kompetensi.permohonan');
+    }
+
+    public function halaman_semak_tempat()
+    {
+        return view('kompetensi.semak_tempat');
+    }
+
+    public function user_index()
+    {
+        return view('kompetensi.semak');
+    }
+
     public function hantar_permohonan(Request $request)
-{
-    $user = Auth::user();
-    $currentTime = date('Y-m-d H:i:s');
+    {
+        $user = Auth::user();
+        $currentTime = date('Y-m-d H:i:s');
 
-    // KOD PAKSA: Jika table tak wujud, buat sekarang juga!
-    DB::statement("CREATE TABLE IF NOT EXISTS permohonans (
-        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        user_id BIGINT UNSIGNED,
-        name VARCHAR(191),
-        ic_number VARCHAR(191),
-        email VARCHAR(191),
-        sektor VARCHAR(191),
-        phone_number VARCHAR(191),
-        ptj_sekarang VARCHAR(191),
-        status VARCHAR(191) DEFAULT 'PENDING',
-        created_at TIMESTAMP NULL,
-        updated_at TIMESTAMP NULL
-    )");
+        // KOD PAKSA: Jika table tak wujud, buat sekarang juga!
+        DB::statement("CREATE TABLE IF NOT EXISTS permohonans (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            user_id BIGINT UNSIGNED,
+            name VARCHAR(191),
+            ic_number VARCHAR(191),
+            email VARCHAR(191),
+            sektor VARCHAR(191),
+            phone_number VARCHAR(191),
+            ptj_sekarang VARCHAR(191),
+            status VARCHAR(191) DEFAULT 'PENDING',
+            created_at TIMESTAMP NULL,
+            updated_at TIMESTAMP NULL
+        )");
 
-    // Baru kita insert data
-    DB::table('permohonans')->insert([
-        'user_id'      => $user->id,
-        'name'         => $user->name,
-        'ic_number'    => $user->ic_number,
-        'email'        => $user->email,
-        'sektor'       => $user->sektor,
-        'phone_number' => $user->phone_number,
-        'ptj_sekarang' => $user->ptj_sekarang,
-        'status'       => 'PENDING',
-        'created_at'   => $currentTime,
-        'updated_at'   => $currentTime,
-    ]);
+        DB::table('permohonans')->insert([
+            'user_id'      => $user->id,
+            'name'         => $user->name,
+            'ic_number'    => $user->ic_number,
+            'email'        => $user->email,
+            'sektor'       => $user->sektor,
+            'phone_number' => $user->phone_number,
+            'ptj_sekarang' => $user->ptj_sekarang,
+            'status'       => 'PENDING',
+            'created_at'   => $currentTime,
+            'updated_at'   => $currentTime,
+        ]);
 
-    return redirect()->back()->with('success', 'Permohonan Berjaya Dihantar!');
-}
+        return redirect()->back()->with('success', 'Permohonan Berjaya Dihantar!');
+    }
 
-    // --- 2. PROSES ADMIN: PENGURUSAN CALON (VIEW UTAMA) ---
+    // --- FUNGSI ADMIN: PENGURUSAN CALON ---
     public function admin_pengurusan_calon(Request $request)
     {
-        // Table 1: Permohonan Baru (Status PENDING)
         $senarai_baru = DB::table('permohonans')->where('status', 'PENDING')->get();
-
-        // Table 2: Semakan Tempat (Status DISAHKAN & Belum Kemaskini Tempat)
-        $senarai_tempat = DB::table('keputusan_penilaian')
-                            ->where('tempat_ujian', 'BELUM DITETAPKAN')
-                            ->get();
-
-        // Table 3 & 4: Keputusan & Senarai Akhir
-        $senarai_keputusan = DB::table('keputusan_penilaian')
-                                ->where('tempat_ujian', '!=', 'BELUM DITETAPKAN')
-                                ->get();
+        $senarai_tempat = DB::table('keputusan_penilaian')->where('tempat_ujian', 'BELUM DITETAPKAN')->get();
+        $senarai_keputusan = DB::table('keputusan_penilaian')->where('tempat_ujian', '!=', 'BELUM DITETAPKAN')->get();
 
         return view('kompetensi.admin_permohonan', compact('senarai_baru', 'senarai_tempat', 'senarai_keputusan'));
     }
 
-    // --- 3. PROSES ADMIN: SAHKAN PERMOHONAN (BULK/SINGLE) ---
     public function sahkan_permohonan(Request $request)
     {
-        $ids = $request->ids; // Ambil array ID dari checkbox
+        $ids = $request->ids; 
         $currentTime = date('Y-m-d H:i:s');
+
+        if(!$ids) return redirect()->back()->with('error', 'Sila pilih calon.');
 
         foreach ($ids as $id) {
             $data = DB::table('permohonans')->where('id', $id)->first();
-            
             if ($data) {
-                // Update status di table permohonans
                 DB::table('permohonans')->where('id', $id)->update(['status' => 'DISAHKAN']);
-
-                // Masuk ke table keputusan_penilaian (Semakan Tempat)
                 DB::table('keputusan_penilaian')->updateOrInsert(
                     ['ic_number' => $data->ic_number],
                     [
@@ -112,13 +126,13 @@ public function borang_permohonan()
                 );
             }
         }
-        return redirect()->back()->with('success', 'Calon telah disahkan ke peringkat Semakan Tempat.');
+        return redirect()->back()->with('success', 'Calon telah disahkan.');
     }
 
-    // --- 4. PROSES ADMIN: KEMASKINI TEMPAT & KELAYAKAN (BULK/SINGLE) ---
     public function kemaskini_penempatan(Request $request)
     {
         $ids = $request->ids;
+        if(!$ids) return redirect()->back()->with('error', 'Sila pilih calon.');
 
         foreach ($ids as $id) {
             if ($request->status_layak == 'TIDAK LAYAK') {
@@ -137,24 +151,23 @@ public function borang_permohonan()
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
         }
-        return redirect()->back()->with('success', 'Maklumat penempatan telah dikemaskini.');
+        return redirect()->back()->with('success', 'Maklumat penempatan dikemaskini.');
     }
 
-    // --- 5. PROSES ADMIN: KEMASKINI KEPUTUSAN (BULK/SINGLE) ---
     public function kemaskini_keputusan_akhir(Request $request)
     {
         $ids = $request->ids;
-        // Pilihan: LULUS, GAGAL, TIDAK HADIR & GAGAL
+        if(!$ids) return redirect()->back()->with('error', 'Sila pilih calon.');
         
         DB::table('keputusan_penilaian')->whereIn('id', $ids)->update([
             'keputusan' => $request->keputusan_pilihan,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
-        return redirect()->back()->with('success', 'Keputusan peperiksaan telah dikemaskini.');
+        return redirect()->back()->with('success', 'Keputusan peperiksaan dikemaskini.');
     }
 
-    // --- 6. PROSES USER: SEMAKAN (KEKALKAN) ---
+    // --- PROSES SEMAKAN & CETAKAN ---
     public function proses_semak_keputusan(Request $request)
     {
         $ic = $request->ic_nombor;
@@ -177,7 +190,6 @@ public function borang_permohonan()
         return view('kompetensi.cetak_slip', compact('data'));
     }
 
-    // --- 7. ADMIN: DELETE (KEKALKAN) ---
     public function destroy($id) {
         DB::table('keputusan_penilaian')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Rekod dipadam!');
