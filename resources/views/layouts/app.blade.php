@@ -171,11 +171,13 @@
                                         <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>
                                     </ul>
                                 </li>
-
-                                <li class="header mt-2">Pautan Luar</li>
                                 <li><a href="{{ route('rujukan.index') }}">e-RUJUKAN</a></li>
                                 <li><a href="https://www.bless.gov.my/" target="_blank">BLESS</a></li>
                                 <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts" target="_blank">Triage MTS</a></li>
+                                <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
+                                <li><a href="https://semakerjaya.moh.gov.my/semakan.php" target="_blank">Semakan Kerjaya</a></li>
+
                             </ul>
                         </li>
 
