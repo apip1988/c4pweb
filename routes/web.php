@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (VERSI FINAL ANTI-PENING)
+| Web Routes - MASTER COPY AFIF (VERSI KEMASKINI MUTLAK)
 |--------------------------------------------------------------------------
 */
 
@@ -33,14 +33,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 // --- 4. SEMAKAN e-KOMPETENSI (FIX TOTAL 404 SEMASA MASUK IC) ---
-// Semak Tempat
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
-
-// Semak Keputusan
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
-
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
 
@@ -60,9 +56,9 @@ Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })-
 Route::post('/prpa/hasil-semakan', function () { return "Paparan Hasil PRPA"; })->name('prpa.semak.hasil');
 
 
-// --- 7. e-CREDENTIALING (FIX ROUTE NOT FOUND) ---
-// --- e-CREDENTIALING ---
-Route::get('/credentialing', function () { return view('credentialing.index'); 
+// --- 7. e-CREDENTIALING ---
+Route::get('/credentialing', function () { 
+    return view('credentialing.index'); 
 })->name('credentialing.index');
 
 Route::get('/credentialing/create', function () { 
@@ -78,13 +74,24 @@ Route::delete('/credentialing/delete/{id}', function ($id) {
 })->name('credentialing.destroy');
 
 
-// --- 8. MENU LAIN-LAIN (SUPAYA APP.BLADE TAK CRASH) ---
+// --- 8. MENU LAIN-LAIN (TERMASUK FIX RUJUKAN $STATS) ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
-Route::get('/rujukan', function () { return view('rujukan.index'); })->name('rujukan.index');
+
+// KEMASKINI RUJUKAN: Tambah variable $stats supaya page tak crash
+Route::get('/rujukan', function () { 
+    $stats = (object)[
+        'total' => 0,
+        'baru' => 0,
+        'arkib' => 0
+    ];
+    return view('rujukan.index', compact('stats')); 
+})->name('rujukan.index');
+
 Route::delete('/rujukan/delete/{id}', function ($id) { 
     return "Proses padam rujukan ID: ".$id." sedang dikemaskini."; 
 })->name('admin.rujukan.destroy');
+
 Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); });
 Route::get('/profile', function () { return view('auth.profile'); });
