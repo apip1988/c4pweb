@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (FIX NAMA PENGURUSAN DOKUMEN)
+| Web Routes - MASTER COPY AFIF (PULIHKAN URL ASAL & SEMUA DATA)
 |--------------------------------------------------------------------------
 */
 
@@ -45,33 +45,37 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. PENGURUSAN DOKUMEN (DULU E-CREDENTIALING) ---
-Route::get('/dokumen', function () { 
-    $disciplines = collect(); 
+// --- 6. PENGURUSAN DOKUMEN / e-CREDENTIALING (URL ASAL FIX 404) ---
+Route::get('/credentialing', function () { 
+    $disciplines = collect(); // Fix Undefined variable $disciplines
     return view('credentialing.index', compact('disciplines')); 
 })->name('credentialing.index');
 
-Route::get('/dokumen/tambah', function () { 
+Route::get('/credentialing/create', function () { 
     return view('credentialing.create'); 
 })->name('credentialing.create');
 
-Route::post('/dokumen/simpan', function () { 
+Route::post('/credentialing/store', function () { 
     return "Proses Simpan Dokumen"; 
 })->name('admin.document.store');
 
-Route::delete('/dokumen/padam/{id}', function ($id) { 
+Route::delete('/credentialing/delete/{id}', function ($id) { 
     return "Proses Padam Dokumen"; 
 })->name('credentialing.destroy');
 
-// --- 7. e-RUJUKAN ---
+// --- 7. e-RUJUKAN (FIX $STATS & $RESULTS) ---
 Route::get('/rujukan', function () { 
-    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
-    $results = collect(); 
+    $stats = [
+        'total' => 0, 'baru' => 0, 'arkib' => 0, 'spg' => 0, 
+        'surat' => 0, 'guideline' => 0, 'minit' => 0, 'aktif' => 0
+    ];
+    $results = collect(); // Fix Undefined variable $results
     return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
+
 Route::delete('/rujukan/delete/{id}', function ($id) { return "Padam Rujukan"; })->name('admin.rujukan.destroy');
 
-// --- 8. ADMIN: PENGURUSAN PENGGUNA ---
+// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIX count() ERROR) ---
 Route::get('/admin/users', function () { 
     $users = \App\Models\User::all(); 
     return view('admin.users.index', compact('users')); 
