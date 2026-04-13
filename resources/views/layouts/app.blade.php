@@ -117,7 +117,7 @@
             <div class="container nav-container">
                 <div class="logo-text">
                     <a href="{{ url('/') }}" style="text-decoration: none; color: inherit;">
-                        <i class="fas fa-clinic-medical mr-1"></i> PORTAL PPP
+                        <i class="fas fa-clinic-medical mr-1 text-primary"></i> PORTAL PPP
                     </a>
                 </div>
 
@@ -127,10 +127,115 @@
 
                 <nav id="nav-menu">
                     <ul class="nav-custom">
-                        <li><a href="{{ url('/') }}"><i class="fas fa-home mr-1"></i> UTAMA</a></li>
+                        <li><a href="{{ url('/') }}"><i class="fas fa-home mr-1 text-success"></i> UTAMA</a></li>
                         <li><a href="{{ url('/dashboard') }}">DASHBOARD</a></li>
                         
                         <li class="dropdown-custom">
                             <a href="javascript:void(0)">DIREKTORI <i class="fas fa-caret-down ml-1"></i></a>
                             <ul class="dropdown-content">
-                                <li><a href="{{ url('/direktori/carian-ppp') }}">
+                                <li><a href="{{ url('/direktori/carian-ppp') }}">Carian PPP</a></li>
+                                <li><a href="{{ route('direktori.carta-organisasi') }}">Carta organisasi</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown-custom">
+                            <a href="javascript:void(0)">e-PUSAT <i class="fas fa-caret-down ml-1"></i></a>
+                            <ul class="dropdown-content">
+                                <li><a href="{{ route('credentialing.index') }}">e-Credentialing</a></li>
+                                
+                                <li class="has-submenu border-top mt-2 pt-2">
+                                    <a href="javascript:void(0)">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        @auth 
+                                            <li><a href="{{ url('/kompetensi/permohonan') }}" style="color:red; font-weight:bold;">Borang permohonan baru</a></li> 
+                                        @endauth
+                                        <li><a href="{{ url('/kompetensi/tempat') }}">Semak tempat</a></li>
+                                        <li><a href="{{ url('/kompetensi/semak') }}">Semak keputusan</a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="has-submenu">
+                                    <a href="javascript:void(0)">e-PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
+                                    <ul class="submenu-box">
+                                        <li><a href="{{ url('/prpa/semak-keputusan') }}">Semak keputusan</a></li>
+                                        <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>
+                                    </ul>
+                                </li>
+
+                                <li><a href="{{ route('rujukan.index') }}">e-Rujukan</a></li>
+                                <li><a href="https://www.bless.gov.my/" target="_blank">Bless</a></li>
+                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">Mycpd</a></li>
+                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts" target="_blank">Triage mts</a></li>
+                                <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3s</a></li>
+                                <li><a href="https://semakerjaya.moh.gov.my/semakan.php" target="_blank">Semakan kerjaya</a></li>
+                            </ul>
+                        </li>
+
+                        <li><a href="#">AMOTEX</a></li>
+                        <li><a href="{{ url('/hubungi') }}">HUBUNGI</a></li>
+
+                        @guest
+                            <li class="ml-lg-3 mt-3 mt-lg-0">
+                                <a href="{{ route('login') }}" class="btn btn-primary btn-sm text-white px-4" style="border-radius:20px; font-weight:700;">LOG MASUK</a>
+                            </li>
+                        @else
+                            <li class="dropdown-custom ml-lg-3">
+                                <a href="javascript:void(0)" class="btn btn-light btn-sm px-3" style="border-radius:20px; border:1px solid #ddd;">
+                                    <i class="fas fa-user-circle mr-1 text-primary"></i> {{ strtoupper(explode(' ', Auth::user()->name)[0]) }} <i class="fas fa-caret-down ml-1"></i>
+                                </a>
+                                <ul class="dropdown-content">
+                                    @if(in_array(strtoupper(Auth::user()->role), ['ADMIN', 'SUPER ADMIN']))
+                                        <li class="header">Pentadbiran</li>
+                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard admin</a></li>
+                                        <li><a href="{{ url('/admin/kompetensi/pengurusan-calon') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan calon</a></li>
+                                        
+                                        @if(strtoupper(Auth::user()->role) == 'SUPER ADMIN')
+                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users mr-2 text-dark"></i> Pengurusan pengguna</a></li>
+                                        @endif
+                                        
+                                        <li><a href="{{ route('credentialing.index') }}"><i class="fas fa-envelope mr-2 text-success"></i> Pengurusan dokumen</a></li>
+                                        <hr class="my-1">
+                                    @endif
+
+                                    <li class="header">Akaun Saya</li>
+                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card mr-2 text-secondary"></i> Profil saya</a></li>
+                                    <li>
+                                        <a href="{{ route('logout') }}" class="text-danger font-weight-bold" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="fas fa-power-off mr-2 text-danger"></i> Keluar sistem
+                                        </a>
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endguest
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            @yield('content')
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#mobile-btn').click(function() {
+                $('.nav-custom').toggleClass('active');
+                $(this).find('i').toggleClass('fa-bars fa-times');
+            });
+
+            if ($(window).width() <= 992) {
+                $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
+                    e.preventDefault();
+                    var $parent = $(this).parent();
+                    $parent.toggleClass('active');
+                    $parent.siblings().removeClass('active').find('.active').removeClass('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
