@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (VERSI PULIHKAN SEMUA DATA)
+| Web Routes - MASTER COPY AFIF (FIX NAMA PENGURUSAN DOKUMEN)
 |--------------------------------------------------------------------------
 */
 
@@ -33,7 +33,6 @@ Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_s
 
 // --- 4. e-KOMPETENSI (ADMIN / PENGURUSAN CALON) ---
 Route::middleware(['auth'])->group(function () {
-    // Gunakan Controller asal supaya butang sahkan/kemaskini respon!
     Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
     Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
@@ -46,16 +45,23 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. e-CREDENTIALING (FIX $disciplines ERROR) ---
-Route::get('/credentialing', function () { 
-    // Blade kau cari $disciplines, kita hantar collection kosong supaya tak error
+// --- 6. PENGURUSAN DOKUMEN (DULU E-CREDENTIALING) ---
+Route::get('/dokumen', function () { 
     $disciplines = collect(); 
     return view('credentialing.index', compact('disciplines')); 
 })->name('credentialing.index');
 
-Route::get('/credentialing/create', function () { return view('credentialing.create'); })->name('credentialing.create');
-Route::post('/credentialing/store', function () { return "Simpan Dokumen"; })->name('admin.document.store');
-Route::delete('/credentialing/delete/{id}', function ($id) { return "Padam Dokumen"; })->name('credentialing.destroy');
+Route::get('/dokumen/tambah', function () { 
+    return view('credentialing.create'); 
+})->name('credentialing.create');
+
+Route::post('/dokumen/simpan', function () { 
+    return "Proses Simpan Dokumen"; 
+})->name('admin.document.store');
+
+Route::delete('/dokumen/padam/{id}', function ($id) { 
+    return "Proses Padam Dokumen"; 
+})->name('credentialing.destroy');
 
 // --- 7. e-RUJUKAN ---
 Route::get('/rujukan', function () { 
@@ -65,13 +71,13 @@ Route::get('/rujukan', function () {
 })->name('rujukan.index');
 Route::delete('/rujukan/delete/{id}', function ($id) { return "Padam Rujukan"; })->name('admin.rujukan.destroy');
 
-// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIX count() ERROR) ---
+// --- 8. ADMIN: PENGURUSAN PENGGUNA ---
 Route::get('/admin/users', function () { 
     $users = \App\Models\User::all(); 
     return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
 
-// --- 9. DIREKTORI & PROFIL ---
+// --- 9. LAIN-LAIN ---
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); });
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
