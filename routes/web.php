@@ -82,6 +82,9 @@ Route::delete('/credentialing/delete/{id}', function ($id) {
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/rujukan', function () { return view('rujukan.index'); })->name('rujukan.index');
+Route::delete('/rujukan/delete/{id}', function ($id) { 
+    return "Proses padam rujukan ID: ".$id." sedang dikemaskini."; 
+})->name('admin.rujukan.destroy');
 Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); });
 Route::get('/profile', function () { return view('auth.profile'); });
