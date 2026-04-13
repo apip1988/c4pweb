@@ -61,18 +61,12 @@ Route::post('/prpa/hasil-semakan', function () { return "Paparan Hasil PRPA"; })
 
 
 // --- 7. e-CREDENTIALING (FIX ROUTE NOT FOUND) ---
-Route::get('/credentialing', function () { 
-    if (view()->exists('credentialing.index')) {
-        return view('credentialing.index');
-    }
-    return "Fail resources/views/credentialing/index.blade.php tidak dijumpai.";
+// --- e-CREDENTIALING ---
+Route::get('/credentialing', function () { return view('credentialing.index'); 
 })->name('credentialing.index');
 
 Route::get('/credentialing/create', function () { 
-    if (view()->exists('credentialing.create')) {
-        return view('credentialing.create');
-    }
-    return "Fail resources/views/credentialing/create.blade.php tidak dijumpai.";
+    return view('credentialing.create'); 
 })->name('credentialing.create');
 
 
