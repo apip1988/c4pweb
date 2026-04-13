@@ -73,6 +73,10 @@ Route::post('/credentialing/store', function () {
     return "Proses simpan dokumen sedang dikemaskini."; 
 })->name('admin.document.store');
 
+Route::delete('/credentialing/delete/{id}', function ($id) { 
+    return "Proses padam dokumen ID: ".$id." sedang dikemaskini."; 
+})->name('credentialing.destroy');
+
 
 // --- 8. MENU LAIN-LAIN (SUPAYA APP.BLADE TAK CRASH) ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
