@@ -187,7 +187,9 @@
                                         @if(strtoupper(Auth::user()->role) == 'SUPER ADMIN')
                                             <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-dark"></i> Pengurusan Pengguna</a></li>
                                         @endif
-                                        <li><a href="{{ route('credentialing.create') }}">Pengurusan Dokumen</a></li>
+                                        <li><a href="{{ route('credentialing.index') }}" class="nav-link text-success">
+    <i class="fas fa-envelope mr-2"></i> Pengurusan Dokumen
+</a></li>
                                         <hr class="my-1">
                                     @endif
 
