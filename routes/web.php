@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (FIXED ARRAY STATS)
+| Web Routes - MASTER COPY AFIF (FIX TOTAL ARRAY KEYS)
 |--------------------------------------------------------------------------
 */
 
@@ -32,7 +32,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 4. SEMAKAN e-KOMPETENSI (FIX TOTAL 404 SEMASA MASUK IC) ---
+// --- 4. SEMAKAN e-KOMPETENSI ---
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
@@ -40,7 +40,7 @@ Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_se
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
 
-// --- 5. e-KOMPETENSI (ADMIN / PENGURUSAN CALON) ---
+// --- 5. e-KOMPETENSI (ADMIN) ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
@@ -50,46 +50,37 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// --- 6. e-PRPA (FIX DASHBOARD & SEMAKAN) ---
+// --- 6. e-PRPA ---
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Paparan Hasil PRPA"; })->name('prpa.semak.hasil');
 
 
 // --- 7. e-CREDENTIALING ---
-Route::get('/credentialing', function () { 
-    return view('credentialing.index'); 
-})->name('credentialing.index');
-
-Route::get('/credentialing/create', function () { 
-    return view('credentialing.create'); 
-})->name('credentialing.create');
-
-Route::post('/credentialing/store', function () { 
-    return "Proses simpan dokumen sedang dikemaskini."; 
-})->name('admin.document.store');
-
-Route::delete('/credentialing/delete/{id}', function ($id) { 
-    return "Proses padam dokumen ID: ".$id." sedang dikemaskini."; 
-})->name('credentialing.destroy');
+Route::get('/credentialing', function () { return view('credentialing.index'); })->name('credentialing.index');
+Route::get('/credentialing/create', function () { return view('credentialing.create'); })->name('credentialing.create');
+Route::post('/credentialing/store', function () { return "Proses simpan"; })->name('admin.document.store');
+Route::delete('/credentialing/delete/{id}', function ($id) { return "Padam ID: ".$id; })->name('credentialing.destroy');
 
 
-// --- 8. MENU LAIN-LAIN (TERMASUK FIX RUJUKAN STATS SEBAGAI ARRAY) ---
+// --- 8. MENU LAIN-LAIN (FIX RUJUKAN STATS LENGKAP) ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 
-// KEMASKINI RUJUKAN: Hantar $stats sebagai ARRAY [] supaya tak Error 'Object type stdClass as array'
+// KEMASKINI RUJUKAN: Aku tambah 'spg' dan lain-lain supaya tak Undefined Array Key
 Route::get('/rujukan', function () { 
     $stats = [
         'total' => 0,
         'baru' => 0,
-        'arkib' => 0
+        'arkib' => 0,
+        'spg' => 0,    // INI YANG KAU KENA TADI
+        'aktif' => 0
     ];
     return view('rujukan.index', compact('stats')); 
 })->name('rujukan.index');
 
 Route::delete('/rujukan/delete/{id}', function ($id) { 
-    return "Proses padam rujukan ID: ".$id." sedang dikemaskini."; 
+    return "Proses padam rujukan ID: ".$id; 
 })->name('admin.rujukan.destroy');
 
 Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
