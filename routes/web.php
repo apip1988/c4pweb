@@ -69,6 +69,10 @@ Route::get('/credentialing/create', function () {
     return view('credentialing.create'); 
 })->name('credentialing.create');
 
+Route::post('/credentialing/store', function () { 
+    return "Proses simpan dokumen sedang dikemaskini."; 
+})->name('admin.document.store');
+
 
 // --- 8. MENU LAIN-LAIN (SUPAYA APP.BLADE TAK CRASH) ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
