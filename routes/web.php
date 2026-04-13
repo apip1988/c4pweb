@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (VERSI KEMASKINI MUTLAK)
+| Web Routes - MASTER COPY AFIF (FIXED ARRAY STATS)
 |--------------------------------------------------------------------------
 */
 
@@ -74,13 +74,13 @@ Route::delete('/credentialing/delete/{id}', function ($id) {
 })->name('credentialing.destroy');
 
 
-// --- 8. MENU LAIN-LAIN (TERMASUK FIX RUJUKAN $STATS) ---
+// --- 8. MENU LAIN-LAIN (TERMASUK FIX RUJUKAN STATS SEBAGAI ARRAY) ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 
-// KEMASKINI RUJUKAN: Tambah variable $stats supaya page tak crash
+// KEMASKINI RUJUKAN: Hantar $stats sebagai ARRAY [] supaya tak Error 'Object type stdClass as array'
 Route::get('/rujukan', function () { 
-    $stats = (object)[
+    $stats = [
         'total' => 0,
         'baru' => 0,
         'arkib' => 0
