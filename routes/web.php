@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (FIX RUJUKAN: SPG, SURAT, GUIDELINE, MINIT)
+| Web Routes - MASTER COPY AFIF (FIX RUJUKAN: STATS & RESULTS)
 |--------------------------------------------------------------------------
 */
 
@@ -60,19 +60,24 @@ Route::post('/credentialing/store', function () { return "Simpan Dokumen"; })->n
 Route::delete('/credentialing/delete/{id}', function ($id) { return "Padam ID: ".$id; })->name('credentialing.destroy');
 
 
-// --- 7. e-RUJUKAN (FIX TOTAL: SPG, SURAT, GUIDELINE, MINIT) ---
+// --- 7. e-RUJUKAN (FIX TOTAL: STATS & RESULTS) ---
 Route::get('/rujukan', function () { 
+    // Data Statistik
     $stats = [
         'total'     => 0,
         'baru'      => 0,
         'arkib'     => 0,
-        'spg'       => 0, // Statistik SPG
-        'surat'     => 0, // Statistik SURAT (Fix ralat tadi)
-        'guideline' => 0, // Statistik GUIDELINE
-        'minit'     => 0, // Statistik MINIT
+        'spg'       => 0,
+        'surat'     => 0,
+        'guideline' => 0,
+        'minit'     => 0,
         'aktif'     => 0
     ];
-    return view('rujukan.index', compact('stats')); 
+
+    // Data Senarai Dokumen (Fix ralat Undefined variable $results)
+    $results = collect(); // Kita hantar collection kosong supaya table tak error
+
+    return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
 Route::delete('/rujukan/delete/{id}', function ($id) { 
@@ -80,7 +85,7 @@ Route::delete('/rujukan/delete/{id}', function ($id) {
 })->name('admin.rujukan.destroy');
 
 
-// --- 8. MENU DIREKTORI & PROFIL ---
+// --- 8. MENU LAIN-LAIN ---
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/admin/users', function () { return view('admin.users.index'); })->name('admin.users.index');
