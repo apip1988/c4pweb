@@ -58,7 +58,6 @@
 
         .nav-custom > li > a:hover { color: var(--ppp-blue); transform: translateY(-1px); }
 
-        /* Dropdown Setup */
         .dropdown-custom { position: relative; }
         .dropdown-custom:hover > .dropdown-content { display: block; opacity: 1; visibility: visible; }
         
@@ -71,7 +70,15 @@
             right: 0; opacity: 0; transition: 0.3s;
         }
 
-        .dropdown-content li a { color: #555; padding: 10px 20px; display: block; text-decoration: none !important; font-size: 13px; font-weight: 500; }
+        .dropdown-content li a { 
+            color: #555; 
+            padding: 10px 20px; 
+            display: block; 
+            text-decoration: none !important; 
+            font-size: 12px; 
+            font-weight: 500;
+            text-transform: capitalize;
+        }
         .dropdown-content li a:hover { background-color: #f1f4f9; color: var(--ppp-blue); padding-left: 25px; }
         
         .dropdown-content .header { 
@@ -80,7 +87,6 @@
             text-transform: uppercase; margin-bottom: 5px;
         }
 
-        /* Submenu Setup */
         .has-submenu { position: relative; }
         .has-submenu:hover > .submenu-box { display: block; }
         .submenu-box {
@@ -127,111 +133,4 @@
                         <li class="dropdown-custom">
                             <a href="javascript:void(0)">DIREKTORI <i class="fas fa-caret-down ml-1"></i></a>
                             <ul class="dropdown-content">
-                                <li><a href="{{ url('/direktori/carian-ppp') }}">Carian PPP</a></li>
-                                <li><a href="{{ route('direktori.carta-organisasi') }}">Carta Organisasi</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="dropdown-custom">
-                            <a href="javascript:void(0)">e-PUSAT <i class="fas fa-caret-down ml-1"></i></a>
-                            <ul class="dropdown-content">
-                                <li><a href="{{ route('credentialing.index') }}">e-Credentialing</a></li>
-                                
-                                <li class="has-submenu border-top mt-2 pt-2">
-                                    <a href="javascript:void(0)">e-KOMPETENSI <i class="fas fa-caret-right float-right mt-1"></i></a>
-                                    <ul class="submenu-box">
-                                        @auth 
-                                            <li><a href="{{ url('/kompetensi/permohonan') }}" class="text-danger font-weight-bold">Borang Permohonan Baru</a></li> 
-                                        @endauth
-                                        <li><a href="{{ url('/kompetensi/tempat') }}">Semak Tempat</a></li>
-                                        <li><a href="{{ url('/kompetensi/semak') }}">Semak Keputusan</a></li>
-                                    </ul>
-                                </li>
-
-                                <li class="has-submenu">
-                                    <a href="javascript:void(0)">e-PRPA <i class="fas fa-caret-right float-right mt-1"></i></a>
-                                    <ul class="submenu-box">
-                                        <li><a href="{{ url('/prpa/semak-keputusan') }}">Semak Keputusan</a></li>
-                                        <li><a href="{{ url('/prpa#dashboard') }}">Dashboard</a></li>
-                                    </ul>
-                                </li>
-
-                                <li><a href="{{ route('rujukan.index') }}">e-RUJUKAN</a></li>
-                                <li><a href="https://www.bless.gov.my/" target="_blank">BLESS</a></li>
-                                <li><a href="https://www.mycpd2.moh.gov.my/" target="_blank">MyCPD</a></li>
-                                <li><a href="https://sites.google.com/moh.gov.my/jkteknikaltriageemts" target="_blank">Triage MTS</a></li>
-                                <li><a href="https://p3s.moh.gov.my/login" target="_blank">P3S</a></li>
-                                <li><a href="https://semakerjaya.moh.gov.my/semakan.php" target="_blank">Semakan Kerjaya</a></li>
-                            </ul>
-                        </li>
-
-                        <li><a href="#">AMOTeX</a></li>
-                        <li><a href="{{ url('/hubungi') }}">HUBUNGI</a></li>
-
-                        @guest
-                            <li class="ml-lg-3 mt-3 mt-lg-0">
-                                <a href="{{ route('login') }}" class="btn btn-primary btn-sm text-white px-4" style="border-radius:20px; font-weight:700;">LOG MASUK</a>
-                            </li>
-                        @else
-                            <li class="dropdown-custom ml-lg-3">
-                                <a href="javascript:void(0)" class="btn btn-light btn-sm px-3" style="border-radius:20px; border:1px solid #ddd;">
-                                    <i class="fas fa-user-circle mr-1"></i> {{ strtoupper(explode(' ', Auth::user()->name)[0]) }} <i class="fas fa-caret-down ml-1"></i>
-                                </a>
-                                <ul class="dropdown-content">
-                                    @if(in_array(strtoupper(Auth::user()->role), ['ADMIN', 'SUPER ADMIN']))
-                                        <li class="header">PENTADBIRAN</li>
-                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard Admin</a></li>
-                                        
-                                        <li><a href="{{ url('/admin/kompetensi/pengurusan-calon') }}" class="text-danger font-weight-bold"><i class="fas fa-users-cog mr-2"></i> PENGURUSAN CALON</a></li>
-                                        
-                                        @if(strtoupper(Auth::user()->role) == 'SUPER ADMIN')
-                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users-cog mr-2 text-dark"></i> Pengurusan Pengguna</a></li>
-                                        @endif
-                                        <li><a href="{{ route('credentialing.index') }}" class="nav-link text-success">
-    <i class="fas fa-envelope mr-2"></i> Pengurusan Dokumen
-</a></li>
-                                        <hr class="my-1">
-                                    @endif
-
-                                    <li class="header">AKAUN SAYA</li>
-                                    <li><a href="{{ url('/profile') }}"><i class="fas fa-id-card mr-2 text-secondary"></i> Profil Saya</a></li>
-                                    <li>
-                                        <a href="{{ route('logout') }}" class="text-danger font-weight-bold" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            <i class="fas fa-power-off mr-2"></i> KELUAR SISTEM
-                                        </a>
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
-                                    </li>
-                                </ul>
-                            </li>
-                        @endguest
-                    </ul>
-                </nav>
-            </div>
-        </header>
-
-        <main class="container">
-            @yield('content')
-        </main>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#mobile-btn').click(function() {
-                $('.nav-custom').toggleClass('active');
-                $(this).find('i').toggleClass('fa-bars fa-times');
-            });
-
-            if ($(window).width() <= 992) {
-                $('.dropdown-custom > a, .has-submenu > a').click(function(e) {
-                    e.preventDefault();
-                    var $parent = $(this).parent();
-                    $parent.toggleClass('active');
-                    $parent.siblings().removeClass('active').find('.active').removeClass('active');
-                });
-            }
-        });
-    </script>
-</body>
-</html>
+                                <li><a href="{{ url('/direktori/carian-ppp') }}">
