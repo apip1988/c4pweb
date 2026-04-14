@@ -3,68 +3,82 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 text-center shadow-sm p-5 bg-white" style="border-radius: 20px; border: 2px solid #3051a0;">
-            <i class="fas fa-map-marker-alt fa-4x text-primary mb-4"></i>
-            <h3 class="font-weight-bold" style="color: #3051a0;">Semakan Penempatan Ujian</h3>
-            <p class="text-muted">Sila masukkan No. Kad Pengenalan tanpa tanda '-'</p>
-            
-            {{-- Pastikan action dan method sepadan dengan web.php --}}
-            <form action="{{ route('kompetensi.proses_semak_tempat') }}" method="POST">
-    @csrf
-    <div class="form-group">
-        <label class="font-weight-bold">MASUKKAN NO. KAD PENGENALAN (TANPA '-') :</label>
-        <input type="text" name="ic" class="form-control form-control-lg text-center" 
-               placeholder="Contoh: 900101105522" maxlength="12" required>
-    </div>
-    <button type="submit" class="btn btn-primary btn-lg btn-block shadow">
-        <i class="fas fa-search mr-2"></i> SEMAK TEMPAT UJIAN
-    </button>
-</form>
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #3051a0, #5072c4);">
+                    <img src="{{ asset('img/logo_kkm.png') }}" alt="Logo KKM" style="width: 80px;" class="mb-2">
+                    <h4 class="font-weight-bold mb-0">SEMAKAN MAKLUMAT</h4>
+                    <p class="mb-0 small text-uppercase">Penempatan Ujian Penilaian Kompetensi</p>
+                </div>
 
-            <div class="mt-4">
-                <a href="{{ url('/') }}" class="text-muted small"><i class="fas fa-arrow-left"></i> Kembali ke Halaman Utama</a>
+                <div class="card-body p-5">
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="border-radius: 10px;">
+                            <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    @endif
+
+                    @if(session('success'))
+                        <div class="alert alert-success border-0 shadow-sm mb-4" style="border-radius: 10px;">
+                            <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <p class="text-center text-muted mb-4">Sila masukkan nombor kad pengenalan anda tanpa tanda sempang ( - ).</p>
+
+                    <form action="{{ route('kompetensi.proses_semak_tempat') }}" method="POST">
+                        @csrf
+                        <div class="form-group mb-4">
+                            <label class="font-weight-bold text-dark">NO. KAD PENGENALAN :</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text bg-white border-right-0" style="border-radius: 10px 0 0 10px;">
+                                        <i class="fas fa-id-card text-muted"></i>
+                                    </span>
+                                </div>
+                                <input type="text" 
+                                       name="ic" 
+                                       class="form-control form-control-lg border-left-0" 
+                                       placeholder="Contoh: 900101105522" 
+                                       maxlength="12" 
+                                       required 
+                                       style="border-radius: 0 10px 10px 0; font-size: 1.1rem; letter-spacing: 2px;">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block shadow-sm" style="border-radius: 10px; font-weight: 700; height: 55px; background: #3051a0;">
+                            <i class="fas fa-search mr-2"></i> SEMAK PENEMPATAN
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">Portal Penolong Pegawai Perubatan &copy; {{ date('Y') }}</small>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a href="{{ url('/') }}" class="text-secondary"><i class="fas fa-arrow-left mr-1"></i> Kembali ke Laman Utama</a>
             </div>
         </div>
     </div>
 </div>
 
-{{-- --- MASUKKAN KOD POPUP DI BAWAH INI --- --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-@if(session('error_tempat'))
-<script>
-    Swal.fire({
-        toast: false,
-        icon: 'error',
-        title: 'MAKLUMAN PENEMPATAN',
-        // Guna 'html' supaya tulisan <b> (bold) Afif berfungsi
-        html: "{!! session('error_tempat') !!}", 
-        position: 'center',
-        showConfirmButton: true,
-        confirmButtonText: 'SAYA FAHAM',
-        confirmButtonColor: '#3051a0',
-        
-        /* GAYA GLASSMORPHISM */
-        background: 'rgba(220, 38, 38, 0.95)', 
-        color: '#fff',
-        width: '550px',
-        padding: '2rem',
-        
-        didOpen: (modal) => {
-            modal.style.backdropFilter = 'blur(15px)';
-            modal.style.webkitBackdropFilter = 'blur(15px)';
-            modal.style.border = '1px solid rgba(255, 255, 255, 0.3)';
-            modal.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.5)';
-            modal.style.borderRadius = '20px';
-
-            const content = modal.querySelector('.swal2-html-container');
-            if (content) {
-                content.style.fontSize = '16px';
-                content.style.lineHeight = '1.6';
-                content.style.textAlign = 'center';
-            }
-        }
-    });
-</script>
-@endif
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .form-control:focus {
+        border-color: #3051a0;
+        box-shadow: none;
+    }
+    .btn-primary:hover {
+        background: #254080 !important;
+        transform: translateY(-2px);
+        transition: 0.3s;
+    }
+</style>
 @endsection
