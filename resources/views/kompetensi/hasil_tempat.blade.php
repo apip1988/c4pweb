@@ -1,92 +1,87 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="card shadow border-0 mx-auto" style="max-width: 800px; border-radius: 15px;">
-        <div class="card-header bg-white py-4 text-center border-0">
-            <h4 class="font-weight-bold" style="color: #3051a0;">MAKLUMAT PENEMPATAN UJIAN</h4>
-        </div>
-        <div class="card-body p-5">
-            
-            <div class="mb-4">
-                <p class="mb-1 text-muted small text-uppercase">Nama Calon:</p>
-                <h5 class="font-weight-bold">{{ $carian->nama }}</h5>
-                
-                <p class="mb-1 text-muted small text-uppercase mt-3">No. Kad Pengenalan:</p>
-                <h5 class="font-weight-bold">{{ $carian->ic_number }}</h5>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="text-center mb-4">
+                <img src="{{ asset('img/logo_kkm.png') }}" alt="Logo KKM" style="width: 120px;" class="mb-3">
+                <h5 class="font-weight-bold mb-0">CAWANGAN PERKHIDMATAN PENOLONG PEGAWAI PERUBATAN</h5>
+                <p class="mb-0">BAHAGIAN AMALAN PERUBATAN</p>
+                <p class="mb-0">ARAS 6, BLOK E1, KOMPLEK E</p>
+                <p class="mb-0">PUSAT PENTADBIRAN KERAJAAN PERSEKUTUAN, 62590 PUTRAJAYA</p>
+                <p>Tel: 03-88831370/1373/1378</p>
             </div>
 
-            <hr>
+            <div class="card border-primary mb-4" style="border: 2px solid #3051a0; border-radius: 15px;">
+                <div class="card-body text-center py-5">
+                    <h3 class="font-weight-bold" style="color: #3051a0;">SEMAKAN</h3>
+                    <h4 class="font-weight-bold" style="color: #3051a0;">MAKLUMAT PENEMPATAN UJIAN</h4>
+                    <p class="text-muted font-italic mb-4">
+                        ** CALON DIKEHENDAKI BERADA DI LOKASI 30 MINIT SEBELUM UJIAN BERMULA **
+                    </p>
 
-            <div class="p-4 my-4 rounded" style="background: #f8f9fa; border-left: 5px solid #3051a0;">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="small font-weight-bold text-muted">TARIKH UJIAN</label>
-                        {{-- Guna isset() supaya tidak ralat jika kolum tiada --}}
-                        <h6 class="font-weight-bold">{{ isset($carian->tarikh_ujian) ? $carian->tarikh_ujian : 'Akan Dimaklumkan' }}</h6>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="small font-weight-bold text-muted">MASA / SESI</label>
-                        <h6 class="font-weight-bold">{{ isset($carian->masa_ujian) ? $carian->masa_ujian : 'Akan Dimaklumkan' }}</h6>
-                    </div>
-                    <div class="col-md-12">
-                        <label class="small font-weight-bold text-muted">LOKASI / TEMPAT</label>
-                        <h5 class="font-weight-bold text-primary">
-                            @if($carian->jenis_ujian == 'MAYA')
-                                <i class="fas fa-laptop-house mr-2"></i> SECARA MAYA (ONLINE)
-                            @else
-                                {{ isset($carian->tempat_ujian) ? $carian->tempat_ujian : 'Bilik Mesyuarat KKM' }}
-                            @endif
-                        </h5>
-                    </div>
-                </div>
-            </div>
-
-            @if($carian->jenis_ujian == 'MAYA')
-                <div class="alert alert-warning border-0 shadow-sm mb-4">
-                    <p class="small mb-2 text-dark font-weight-bold">Ujian anda secara MAYA. Sila masukkan emel untuk pautan ujian:</p>
-                    <form action="{{ url('/kompetensi/hantar-emel') }}" method="POST">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="ic_number" value="{{ $carian->ic_number }}">
-                        <div class="input-group">
-                            <input type="email" name="email_calon" class="form-control" placeholder="Emel anda..." required>
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-dark font-weight-bold">HANTAR</button>
-                            </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-8 text-left bg-light p-4 rounded shadow-sm">
+                            <table class="table table-borderless mb-0">
+                                <tr>
+                                    <th width="40%">NAMA CALON</th>
+                                    <td>: {{ strtoupper($calon->nama) }}</td>
+                                </tr>
+                                <tr>
+                                    <th>NO. KAD PENGENALAN</th>
+                                    <td>: {{ $calon->no_ic }}</td>
+                                </tr>
+                                <tr>
+                                    <th>LOKASI UJIAN</th>
+                                    <td class="text-danger font-weight-bold">: {{ strtoupper($calon->tempat_peperiksaan ?? 'DALAM PROSES') }}</td>
+                                </tr>
+                                <tr>
+                                    <th>STATUS KELAYAKAN</th>
+                                    <td>: 
+                                        <span class="badge {{ $calon->status_kelayakan == 'LAYAK' ? 'badge-success' : 'badge-warning' }}">
+                                            {{ $calon->status_kelayakan ?? 'DALAM PROSES' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            @else
-                <div class="text-center mt-4 no-print">
-                    <button onclick="window.print()" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
-                        <i class="fas fa-print mr-2"></i> CETAK SURAT
-                    </button>
-                </div>
-            @endif
+            </div>
 
-            {{-- --- BAHAGIAN BUTANG NAVIGASI (YANG AFIF MINTA) --- --}}
-            <div class="text-center mt-5 no-print">
-                <hr>
-                <div class="d-flex justify-content-center mt-4">
-                    <a href="{{ url('/kompetensi/tempat') }}" class="btn btn-outline-primary px-4 mx-2 font-weight-bold shadow-sm" style="border-radius: 10px;">
-                        <i class="fas fa-search mr-1"></i> SEMAK IC LAIN
-                    </a>
-                    <a href="{{ url('/') }}" class="btn btn-outline-secondary px-4 mx-2 font-weight-bold shadow-sm" style="border-radius: 10px;">
-                        <i class="fas fa-home mr-1"></i> KEMBALI KE UTAMA
+            <div class="text-center mt-5">
+                <p class="mb-4">
+                    Sila cetak slip maklumat penempatan ini untuk rujukan semasa hari peperiksaan.
+                </p>
+                
+                <div class="alert alert-info d-inline-block">
+                    <i class="fas fa-print mr-2"></i> 
+                    <strong>SILA TEKAN <span class="text-danger">Ctrl + P</span> UNTUK CETAK SURAT PANGGULAN DALAM PDF</strong>
+                </div>
+
+                <div class="mt-4 no-print">
+                    <a href="{{ route('kompetensi.tempat') }}" class="btn btn-secondary px-4">
+                        <i class="fas fa-arrow-left mr-1"></i> Kembali
                     </a>
                 </div>
             </div>
 
-            <p class="text-center small text-muted mt-5">Sebarang pertanyaan sila hubungi: 03-8883-1477</p>
+            <p class="text-center text-muted mt-5 small">
+                Sekiranya ada sebarang pertanyaan, sila hubungi Cawangan Perkhidmatan Penolong Pegawai Perubatan, Kementerian Kesihatan Malaysia. <br>
+                Dokumen ini dijana melalui cetakan komputer. Tiada tanda tangan diperlukan.
+            </p>
         </div>
     </div>
 </div>
 
 <style>
-@media print {
-    .no-print { display: none !important; }
-    body { background: white !important; }
-    .card { border: none !important; box-shadow: none !important; }
-}
+    @media print {
+        .no-print, #top-nav, footer { display: none !important; }
+        body { padding-top: 0 !important; background: white !important; }
+        .container { width: 100% !important; max-width: 100% !important; }
+        .card { border: none !important; box-shadow: none !important; }
+        .card-body { padding: 0 !important; }
+    }
 </style>
 @endsection

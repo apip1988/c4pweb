@@ -193,12 +193,20 @@ class KompetensiController extends Controller
         return view('kompetensi.keputusan', ['data' => $hasil, 'hasil' => $hasil]);
     }
 
-    public function proses_semak_tempat(Request $request) {
-        $ic = $request->ic_search;
-        $carian = DB::table('keputusan_penilaian')->where('ic_number', $ic)->first();
-        if(!$carian) return redirect()->back()->with('error_tempat', "IC tidak wujud.");
-        return view('kompetensi.hasil_tempat', compact('carian'));
+    public function proses_semak_tempat(Request $request)
+{
+    $ic = $request->ic;
+
+    // Cari data calon guna IC
+    // Pastikan nama model dan column betul (contoh: PermohonanKompetensi & no_ic)
+    $calon = \App\Models\PermohonanKompetensi::where('no_ic', $ic)->first();
+
+    if (!$calon) {
+        return back()->with('error', 'Maaf, No. Kad Pengenalan tidak dijumpai.');
     }
+
+    return view('kompetensi.hasil_semakan_tempat', compact('calon'));
+}
 
     public function cetak_slip($ic)
     {
