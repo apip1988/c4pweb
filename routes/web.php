@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (FIXED: PENGGUNA VS DOKUMEN)
+| Web Routes - MASTER COPY AFIF (FIX: PENGURUSAN PENGGUNA)
 |--------------------------------------------------------------------------
 */
 
@@ -36,6 +36,7 @@ Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_s
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
+    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
     Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
@@ -46,7 +47,7 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. PENGURUSAN DOKUMEN (POINT KE CREATE BLADE) ---
+// --- 6. PENGURUSAN DOKUMEN (FIX: POINT KE CREATE BLADE) ---
 Route::get('/credentialing', function () { 
     return view('credentialing.create'); 
 })->name('credentialing.index');
@@ -71,15 +72,29 @@ Route::get('/rujukan', function () {
 
 Route::delete('/rujukan/delete/{id}', function ($id) { return "Padam Rujukan"; })->name('admin.rujukan.destroy');
 
-// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIXED: SEPARATE ROUTE) ---
+// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIX: ROUTES FOR INDEX.BLADE) ---
 Route::get('/admin/users', function () { 
-    if (class_exists('\App\Models\User')) {
-        $users = \App\Models\User::all();
-    } else {
-        $users = \App\User::all();
-    }
+    $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
     return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
+
+// PINTU UNTUK TUKAR ROLE (Mesti ada sebab Blade kau panggil route ni!)
+Route::post('/admin/users/update-role/{id}', function (\Illuminate\Http\Request $request, $id) {
+    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
+    if($user) {
+        $user->role = $request->role;
+        $user->save();
+    }
+    return back()->with('success', 'Role berjaya dikemaskini!');
+})->name('admin.users.updateRole');
+
+// PINTU UNTUK PADAM USER (Mesti ada sebab Blade kau panggil route ni!)
+Route::get('/admin/users/delete/{id}', function ($id) {
+    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
+    if($user) { $user->delete(); }
+    return back()->with('success', 'Pengguna berjaya dipadam!');
+})->name('admin.users.destroy');
+
 
 // --- 9. LAIN-LAIN ---
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); });
