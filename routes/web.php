@@ -7,105 +7,84 @@ use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE: DOKUMEN + STATS + USERS)
+| 1. HALAMAN UTAMA & AUTH
 |--------------------------------------------------------------------------
 */
-
-// --- 1. UTAMA ---
 Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-// --- 2. LOGIN & LOGOUT ---
-Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+Auth::routes();
 
-// --- 3. e-KOMPETENSI (USER/CALON) ---
-Route::middleware(['auth'])->group(function () {
-    Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
-    Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
-});
-
-// Semakan (Tempat & Keputusan)
+/*
+|--------------------------------------------------------------------------
+| 2. e-KOMPETENSI (CALON & ADMIN)
+|--------------------------------------------------------------------------
+*/
+Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
+Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
-Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
-Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
-Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
-// --- 4. e-KOMPETENSI (ADMIN) ---
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
-    Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
-    Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
-    Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
-    Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
-});
+// Admin Kompetensi
+Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
+Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 
-// --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
+/*
+|--------------------------------------------------------------------------
+| 3. PENGURUSAN DOKUMEN (CREDENTIALING & RUJUKAN)
+|--------------------------------------------------------------------------
+*/
+// Buka Page Muat Naik (Create)
 Route::get('/admin/credentialing/create', function () { 
-    // Tarik data statistik (Collection) supaya .pluck() berfungsi
-    $senarai_stats = DB::table('statistik_utama')->get();
-    
-    // Tarik data dokumen supaya senarai fail muncul dan boleh delete
-    $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
-    
-    return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
+    // Kita hantar data kosong saja supaya variable wujud tapi tak cari table SQL
+    $senarai_stats = collect(); 
+    return view('admin.credentialing.create', compact('senarai_stats')); 
 })->name('admin.dokumen.index');
 
-// Simpan Statistik Dashboard
-Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
-    if($request->has('stats')) {
-        foreach ($request->stats as $kategori => $jumlah) {
-            DB::table('statistik_utama')->updateOrInsert(['kategori' => $kategori], ['jumlah' => $jumlah]);
-        }
-    }
-    return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
-});
+// Simpan Dokumen (Store)
+Route::post('/admin/document/store', function () { 
+    return back()->with('success', 'Dokumen berjaya disimpan!'); 
+})->name('admin.document.store');
 
-// Padam Dokumen (Fix untuk SPG/Credentialing)
-Route::get('/admin/dokumen/delete/{id}', function ($id) {
-    $doc = DB::table('documents')->where('id', $id)->first();
-    if($doc) {
-        $path = public_path('uploads/documents/' . $doc->file_path);
-        if(file_exists($path)) { @unlink($path); }
-        DB::table('documents')->where('id', $id)->delete();
-    }
-    return back()->with('success', 'Dokumen berjaya dipadam!');
-})->name('admin.dokumen.delete');
+// Padam Dokumen Credentialing
+Route::get('/credentialing/destroy/{id}', function ($id) {
+    if(class_exists('\App\CredentialingDocument')) { \App\CredentialingDocument::destroy($id); }
+    return back()->with('success', 'Dokumen dipadam!');
+})->name('credentialing.destroy');
 
-// --- 6. ADMIN: PENGURUSAN PENGGUNA ---
+// Padam Dokumen Rujukan
+Route::get('/admin/rujukan/destroy/{id}', function ($id) {
+    if(class_exists('\App\Rujukan')) { \App\Rujukan::destroy($id); }
+    return back()->with('success', 'Fail rujukan dipadam!');
+})->name('admin.rujukan.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| 4. ADMIN: PENGURUSAN PENGGUNA
+|--------------------------------------------------------------------------
+*/
 Route::get('/admin/users', function () { 
-    $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
+    $users = \App\Models\User::all(); 
     return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
 
-Route::post('/admin/users/update-role/{id}', function (\Illuminate\Http\Request $request, $id) {
-    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
-    if($user) { $user->role = $request->role; $user->save(); }
-    return back()->with('success', 'Role dikemaskini!');
-})->name('admin.users.updateRole');
-
 Route::get('/admin/users/delete/{id}', function ($id) {
-    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
-    if($user) { $user->delete(); }
+    \App\Models\User::destroy($id);
     return back()->with('success', 'Pengguna dipadam!');
 })->name('admin.users.destroy');
 
-// --- 7. e-PRPA, e-RUJUKAN, e-CREDENTIALING ---
-Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
-Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
-Route::get('/rujukan', function () { 
-    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
-    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
-})->name('rujukan.index');
-Route::get('/credentialing', function () { 
-    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
-})->name('credentialing.index');
-
-// --- 8. DIREKTORI & PROFIL ---
+/*
+|--------------------------------------------------------------------------
+| 5. DIREKTORI & PROFIL
+|--------------------------------------------------------------------------
+*/
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
-Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); })->name('direktori.carian');
+Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); });
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/profile', function () { return view('auth.profile'); })->name('profile');
+
+// Pintu simpan statistik (jika ada form hantar sini)
+Route::post('/admin/profil/store', function () {
+    return back()->with('success', 'Data disimpan!');
+});

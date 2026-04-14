@@ -186,11 +186,11 @@
                                 <ul class="dropdown-content">
                                     @if(in_array(strtoupper(Auth::user()->role), ['ADMIN', 'SUPER ADMIN']))
                                         <li class="header">Pentadbiran</li>
-                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Dashboard admin</a></li>
-                                        <li><a href="{{ url('/admin/kompetensi/pengurusan-calon') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan calon</a></li>
+                                        <li><a href="{{ url('/admin/dashboard') }}"><i class="fas fa-user-shield mr-2 text-primary"></i> Pengurusan Data</a></li>
+                                        <li><a href="{{ url('/admin/kompetensi/pengurusan-calon') }}"><i class="fas fa-users-cog mr-2 text-danger"></i> Pengurusan Calon</a></li>
                                         
                                         @if(strtoupper(Auth::user()->role) == 'SUPER ADMIN')
-                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users mr-2 text-dark"></i> Pengurusan pengguna</a></li>
+                                            <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users mr-2 text-dark"></i> Pengurusan Pengguna</a></li>
                                         @endif
                                         
                                         <li><a href="{{ route('admin.dokumen.index') }}"><i class="fas fa-file-medical mr-2 text-info"></i> Pengurusan Dokumen</a></li>
