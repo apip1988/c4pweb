@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (VERSI LENGKAP & FIX DELETE USER)
+| Web Routes - SISTEM AMOPPP (FIX: ASINGKAN CREDENTIALING & DOKUMEN)
 |--------------------------------------------------------------------------
 */
 
@@ -15,7 +15,7 @@ Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-// --- 2. AUTHENTICATION MANUAL (FIX LARAVEL/UI ERROR) ---
+// --- 2. AUTHENTICATION MANUAL ---
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
@@ -25,12 +25,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
     Route::post('/kompetensi/hantar-permohonan', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
-
-// Semakan Tempat (Surat Panggilan)
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
-
-// Semakan Keputusan
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
@@ -49,8 +45,19 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. PENGURUSAN DOKUMEN ---
-Route::get('/credentialing', function () { return view('credentialing.create'); })->name('credentialing.index');
+// --- 6. ASINGKAN: e-CREDENTIALING VS PENGURUSAN DOKUMEN ---
+
+// Page e-Credentialing (Buka Senarai/Index)
+Route::get('/credentialing', function () { 
+    $disciplines = collect(); 
+    return view('credentialing.index', compact('disciplines')); 
+})->name('credentialing.index');
+
+// Page Pengurusan Dokumen (Terus buka Borang Create)
+Route::get('/pengurusan-dokumen/tambah', function () { 
+    return view('credentialing.create'); 
+})->name('credentialing.create');
+
 Route::post('/credentialing/store', function () { return "Simpan"; })->name('admin.document.store');
 Route::delete('/credentialing/delete/{id}', function ($id) { return "Padam"; })->name('credentialing.destroy');
 
@@ -61,24 +68,22 @@ Route::get('/rujukan', function () {
 })->name('rujukan.index');
 Route::delete('/rujukan/delete/{id}', function ($id) { return back(); })->name('admin.rujukan.destroy');
 
-// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIXED ALL ROUTES) ---
+// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIXED: DESTROY & UPDATE) ---
 Route::get('/admin/users', function () { 
     $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
     return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
 
-// Pintu Update Role
 Route::post('/admin/users/update-role/{id}', function (\Illuminate\Http\Request $request, $id) {
     $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
     if($user) { $user->role = $request->role; $user->save(); }
     return back()->with('success', 'Role dikemaskini!');
 })->name('admin.users.updateRole');
 
-// PINTU DELETE USER (FIX ERROR admin.users.destroy)
 Route::get('/admin/users/delete/{id}', function ($id) {
     $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
     if($user) { $user->delete(); }
-    return back()->with('success', 'Pengguna berjaya dipadam!');
+    return back()->with('success', 'Pengguna dipadam!');
 })->name('admin.users.destroy');
 
 // --- 9. LAIN-LAIN ---
