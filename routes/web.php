@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FIX TOTAL: PENGURUSAN DOKUMEN CREATE)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE: DOKUMEN + STATS + USERS)
 |--------------------------------------------------------------------------
 */
 
-// --- 1. UTAMA & DASHBOARD ---
+// --- 1. UTAMA ---
 Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
@@ -34,7 +34,7 @@ Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->na
 Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
 Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
-// --- 4. e-KOMPETENSI (ADMIN: PENGURUSAN CALON) ---
+// --- 4. e-KOMPETENSI (ADMIN) ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
     Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
@@ -43,19 +43,18 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// --- 5. e-PRPA ---
-Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
-Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
-
-// --- 6. PENGURUSAN DOKUMEN (FIX: resources/views/admin/credentialing/create.blade.php) ---
+// --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
 Route::get('/admin/credentialing/create', function () { 
-    // Data statistik dari table 'statistik_utama' untuk kegunaan pluck() kat Blade
+    // Tarik data statistik (Collection) supaya .pluck() berfungsi
     $senarai_stats = DB::table('statistik_utama')->get();
     
-    return view('admin.credentialing.create', compact('senarai_stats')); 
+    // Tarik data dokumen supaya senarai fail muncul dan boleh delete
+    $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
+    
+    return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
-// Laluan Simpan Statistik Dashboard
+// Simpan Statistik Dashboard
 Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
     if($request->has('stats')) {
         foreach ($request->stats as $kategori => $jumlah) {
@@ -65,19 +64,18 @@ Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) 
     return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
 });
 
-// --- 7. e-CREDENTIALING (INDEX/SENARAI) ---
-Route::get('/credentialing', function () { 
-    $disciplines = collect(); 
-    return view('credentialing.index', compact('disciplines')); 
-})->name('credentialing.index');
+// Padam Dokumen (Fix untuk SPG/Credentialing)
+Route::get('/admin/dokumen/delete/{id}', function ($id) {
+    $doc = DB::table('documents')->where('id', $id)->first();
+    if($doc) {
+        $path = public_path('uploads/documents/' . $doc->file_path);
+        if(file_exists($path)) { @unlink($path); }
+        DB::table('documents')->where('id', $id)->delete();
+    }
+    return back()->with('success', 'Dokumen berjaya dipadam!');
+})->name('admin.dokumen.delete');
 
-// --- 8. e-RUJUKAN ---
-Route::get('/rujukan', function () { 
-    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
-    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
-})->name('rujukan.index');
-
-// --- 9. ADMIN: PENGURUSAN PENGGUNA ---
+// --- 6. ADMIN: PENGURUSAN PENGGUNA ---
 Route::get('/admin/users', function () { 
     $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
     return view('admin.users.index', compact('users')); 
@@ -95,7 +93,18 @@ Route::get('/admin/users/delete/{id}', function ($id) {
     return back()->with('success', 'Pengguna dipadam!');
 })->name('admin.users.destroy');
 
-// --- 10. DIREKTORI & PROFIL ---
+// --- 7. e-PRPA, e-RUJUKAN, e-CREDENTIALING ---
+Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
+Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
+Route::get('/rujukan', function () { 
+    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
+    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
+})->name('rujukan.index');
+Route::get('/credentialing', function () { 
+    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
+})->name('credentialing.index');
+
+// --- 8. DIREKTORI & PROFIL ---
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); })->name('direktori.carian');
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
