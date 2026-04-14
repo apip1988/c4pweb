@@ -9,20 +9,17 @@
             <p class="text-muted">Sila masukkan No. Kad Pengenalan tanpa tanda '-'</p>
             
             {{-- Pastikan action dan method sepadan dengan web.php --}}
-            <form action="{{ url('/kompetensi/tempat/hasil') }}" method="POST" class="mt-4">
-                {{ csrf_field() }} 
-                
-                <div class="form-group mb-4">
-                    <input type="text" name="ic_search" class="form-control form-control-lg text-center" 
-                           placeholder="Contoh: 880101105544" required 
-                           style="border-radius: 10px; border: 2px solid #ced4da;">
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-lg btn-block shadow font-weight-bold" 
-                        style="background-color: #3051a0; border-radius: 10px;">
-                    <i class="fas fa-search-location mr-2"></i> SEMAK LOKASI
-                </button>
-            </form>
+            <form action="{{ route('kompetensi.proses_semak_tempat') }}" method="POST">
+    @csrf
+    <div class="form-group">
+        <label class="font-weight-bold">MASUKKAN NO. KAD PENGENALAN (TANPA '-') :</label>
+        <input type="text" name="ic" class="form-control form-control-lg text-center" 
+               placeholder="Contoh: 900101105522" maxlength="12" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg btn-block shadow">
+        <i class="fas fa-search mr-2"></i> SEMAK TEMPAT UJIAN
+    </button>
+</form>
 
             <div class="mt-4">
                 <a href="{{ url('/') }}" class="text-muted small"><i class="fas fa-arrow-left"></i> Kembali ke Halaman Utama</a>

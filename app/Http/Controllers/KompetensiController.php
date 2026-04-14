@@ -193,19 +193,23 @@ class KompetensiController extends Controller
 
     // FIX: SEMAKAN TEMPAT (LINKED TO KEPUTUSAN_PENILAIAN)
     public function proses_semak_tempat(Request $request)
-    {
-        $ic = $request->ic;
+{
+    $ic = $request->ic;
 
-        // Kita cari data dari table keputusan_penilaian (data yang admin dah set)
-        $calon = DB::table('keputusan_penilaian')->where('ic_number', $ic)->first();
-
-        if (!$calon) {
-            return back()->with('error', 'Maaf, No. Kad Pengenalan tidak dijumpai dalam senarai calon.');
-        }
-
-        // Return view yang ada template surat panggilan
-        return view('kompetensi.hasil_semakan_tempat', compact('calon'));
+    if (!$ic) {
+        return back()->with('error', 'Sila masukkan Nombor Kad Pengenalan.');
     }
+
+    // Cari data dalam table keputusan_penilaian
+    $calon = DB::table('keputusan_penilaian')->where('ic_number', $ic)->first();
+
+    if (!$calon) {
+        return back()->with('error', 'Maaf, rekod No. IC ' . $ic . ' tidak dijumpai.');
+    }
+
+    // PENTING: Nama fail kena ngam dengan resources/views/kompetensi/hasil_tempat.blade.php
+    return view('kompetensi.hasil_tempat', compact('calon'));
+}
 
     public function cetak_slip($ic)
     {
