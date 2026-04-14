@@ -6,25 +6,27 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FIX: ASINGKAN CREDENTIALING & DOKUMEN)
+| Web Routes - SISTEM AMOPPP (FIX: ASINGKAN DOKUMEN & CREDENTIALING)
 |--------------------------------------------------------------------------
 */
 
-// --- 1. UTAMA & DASHBOARD ---
+// --- 1. UTAMA ---
 Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-// --- 2. AUTHENTICATION MANUAL ---
+// --- 2. LOGIN & LOGOUT (MANUAL) ---
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-// --- 3. e-KOMPETENSI (USER/CALON) ---
+// --- 3. e-KOMPETENSI (CALON) ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
     Route::post('/kompetensi/hantar-permohonan', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
+
+// Semakan (Tempat & Keputusan)
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
@@ -45,16 +47,16 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. ASINGKAN: e-CREDENTIALING VS PENGURUSAN DOKUMEN ---
+// --- 6. PENGURUSAN DOKUMEN VS e-CREDENTIALING (DIASINGKAN) ---
 
-// Page e-Credentialing (Buka Senarai/Index)
+// Ini e-Credentialing (Buka Senarai)
 Route::get('/credentialing', function () { 
     $disciplines = collect(); 
     return view('credentialing.index', compact('disciplines')); 
 })->name('credentialing.index');
 
-// Page Pengurusan Dokumen (Terus buka Borang Create)
-Route::get('/pengurusan-dokumen/tambah', function () { 
+// Ini Pengurusan Dokumen (Buka Borang Tambah)
+Route::get('/pengurusan-dokumen', function () { 
     return view('credentialing.create'); 
 })->name('credentialing.create');
 
@@ -68,7 +70,7 @@ Route::get('/rujukan', function () {
 })->name('rujukan.index');
 Route::delete('/rujukan/delete/{id}', function ($id) { return back(); })->name('admin.rujukan.destroy');
 
-// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIXED: DESTROY & UPDATE) ---
+// --- 8. ADMIN: PENGURUSAN PENGGUNA (LENGKAP) ---
 Route::get('/admin/users', function () { 
     $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
     return view('admin.users.index', compact('users')); 
