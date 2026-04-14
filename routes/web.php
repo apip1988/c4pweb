@@ -49,7 +49,12 @@ Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })
 
 // --- 6. PENGURUSAN DOKUMEN VS e-CREDENTIALING (TOTAL FIX) ---
 
-// Ini e-Credentialing (Buka resources/views/credentialing/index.blade.php)
+// --- PENGURUSAN DOKUMEN (ASINGKAN URL) ---
+Route::get('/pengurusan-dokumen-utama', function () { 
+    return view('admin.kompetensi_index'); 
+})->name('admin.dokumen.utama');
+
+// --- e-CREDENTIALING ---
 Route::get('/credentialing', function () { 
     $disciplines = collect(); 
     return view('credentialing.index', compact('disciplines')); 
