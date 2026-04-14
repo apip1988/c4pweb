@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - MASTER COPY AFIF (PULIHKAN URL ASAL & SEMUA DATA)
+| Web Routes - MASTER COPY AFIF (FIXED: PENGGUNA VS DOKUMEN)
 |--------------------------------------------------------------------------
 */
 
@@ -15,9 +15,10 @@ Route::get('/', [KompetensiController::class, 'index']);
 Route::get('/dashboard', [KompetensiController::class, 'dashboard']);
 Route::get('/hubungi', function () { return view('hubungi'); });
 
-// --- 2. AUTHENTICATION ---
-Auth::routes(); 
-Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+// --- 2. AUTHENTICATION (MANUAL FIX - NO ERROR LARAVEL/UI) ---
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 // --- 3. e-KOMPETENSI (USER & SEMAKAN) ---
 Route::middleware(['auth'])->group(function () {
@@ -45,15 +46,10 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. PENGURUSAN DOKUMEN / e-CREDENTIALING (URL ASAL FIX 404) ---
+// --- 6. PENGURUSAN DOKUMEN (POINT KE CREATE BLADE) ---
 Route::get('/credentialing', function () { 
-    $disciplines = collect(); // Fix Undefined variable $disciplines
-    return view('credentialing.index', compact('disciplines')); 
-})->name('credentialing.index');
-
-Route::get('/credentialing/create', function () { 
     return view('credentialing.create'); 
-})->name('credentialing.create');
+})->name('credentialing.index');
 
 Route::post('/credentialing/store', function () { 
     return "Proses Simpan Dokumen"; 
@@ -63,21 +59,25 @@ Route::delete('/credentialing/delete/{id}', function ($id) {
     return "Proses Padam Dokumen"; 
 })->name('credentialing.destroy');
 
-// --- 7. e-RUJUKAN (FIX $STATS & $RESULTS) ---
+// --- 7. e-RUJUKAN ---
 Route::get('/rujukan', function () { 
     $stats = [
         'total' => 0, 'baru' => 0, 'arkib' => 0, 'spg' => 0, 
         'surat' => 0, 'guideline' => 0, 'minit' => 0, 'aktif' => 0
     ];
-    $results = collect(); // Fix Undefined variable $results
+    $results = collect(); 
     return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
 Route::delete('/rujukan/delete/{id}', function ($id) { return "Padam Rujukan"; })->name('admin.rujukan.destroy');
 
-// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIX count() ERROR) ---
+// --- 8. ADMIN: PENGURUSAN PENGGUNA (FIXED: SEPARATE ROUTE) ---
 Route::get('/admin/users', function () { 
-    $users = \App\Models\User::all(); 
+    if (class_exists('\App\Models\User')) {
+        $users = \App\Models\User::all();
+    } else {
+        $users = \App\User::all();
+    }
     return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
 
