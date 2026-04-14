@@ -193,9 +193,8 @@
                                             <li><a href="{{ route('admin.users.index') }}"><i class="fas fa-users mr-2 text-dark"></i> Pengurusan pengguna</a></li>
                                         @endif
                                         
-                                        <li><a class="nav-link" href="{{ route('admin.dokumen.utama') }}">
-    <i class="fas fa-file-alt"></i> Pengurusan Dokumen
-</a></li>
+                                        <li><a href="{{ route('admin.dokumen.index') }}"><i class="fas fa-file-medical mr-2 text-info"></i> Pengurusan Dokumen</a></li>
+                                        
                                         <hr class="my-1">
                                     @endif
 
