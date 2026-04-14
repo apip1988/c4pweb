@@ -6,16 +6,16 @@ use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FIX: ASINGKAN DOKUMEN & CREDENTIALING)
+| Web Routes - SISTEM AMOPPP (FIX: PENGURUSAN DOKUMEN VS CREDENTIALING)
 |--------------------------------------------------------------------------
 */
 
-// --- 1. UTAMA ---
+// --- 1. UTAMA & DASHBOARD ---
 Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-// --- 2. LOGIN & LOGOUT (MANUAL) ---
+// --- 2. AUTHENTICATION MANUAL ---
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
@@ -47,18 +47,18 @@ Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.inde
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })->name('prpa.semak.hasil');
 
-// --- 6. PENGURUSAN DOKUMEN VS e-CREDENTIALING (DIASINGKAN) ---
+// --- 6. PENGURUSAN DOKUMEN VS e-CREDENTIALING (TOTAL FIX) ---
 
-// Ini e-Credentialing (Buka Senarai)
+// Ini e-Credentialing (Buka resources/views/credentialing/index.blade.php)
 Route::get('/credentialing', function () { 
     $disciplines = collect(); 
     return view('credentialing.index', compact('disciplines')); 
 })->name('credentialing.index');
 
-// Ini Pengurusan Dokumen (Buka Borang Tambah)
-Route::get('/pengurusan-dokumen', function () { 
-    return view('credentialing.create'); 
-})->name('credentialing.create');
+// Ini Pengurusan Dokumen (Buka resources/views/admin/kompetensi_index.blade.php)
+Route::get('/admin/pengurusan-dokumen', function () { 
+    return view('admin.kompetensi_index'); 
+})->name('admin.dokumen.index');
 
 Route::post('/credentialing/store', function () { return "Simpan"; })->name('admin.document.store');
 Route::delete('/credentialing/delete/{id}', function ($id) { return "Padam"; })->name('credentialing.destroy');
