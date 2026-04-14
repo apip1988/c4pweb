@@ -93,30 +93,28 @@ class KompetensiController extends Controller
 
     // --- FUNGSI ADMIN: PENGURUSAN CALON ---
     public function admin_pengurusan_calon(Request $request)
-{
-    // KOD PAKSA: Jika table tak wujud, buat sekarang juga!
-    DB::statement("CREATE TABLE IF NOT EXISTS keputusan_penilaian (
-        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        nama VARCHAR(191),
-        ic_number VARCHAR(191),
-        phone VARCHAR(191),
-        alamat_ptj TEXT,
-        jenis_ujian VARCHAR(191),
-        tarikh_ujian DATE NULL,
-        masa_ujian TIME NULL,
-        tempat_ujian VARCHAR(191) DEFAULT 'BELUM DITETAPKAN',
-        keputusan VARCHAR(191) DEFAULT 'DALAM PROSES',
-        created_at TIMESTAMP NULL,
-        updated_at TIMESTAMP NULL
-    )");
+    {
+        DB::statement("CREATE TABLE IF NOT EXISTS keputusan_penilaian (
+            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            nama VARCHAR(191),
+            ic_number VARCHAR(191),
+            phone VARCHAR(191),
+            alamat_ptj TEXT,
+            jenis_ujian VARCHAR(191),
+            tarikh_ujian DATE NULL,
+            masa_ujian TIME NULL,
+            tempat_ujian VARCHAR(191) DEFAULT 'BELUM DITETAPKAN',
+            keputusan VARCHAR(191) DEFAULT 'DALAM PROSES',
+            created_at TIMESTAMP NULL,
+            updated_at TIMESTAMP NULL
+        )");
 
-    // Ambil data untuk paparan table
-    $senarai_baru = DB::table('permohonans')->where('status', 'PENDING')->get();
-    $senarai_tempat = DB::table('keputusan_penilaian')->where('tempat_ujian', 'BELUM DITETAPKAN')->get();
-    $senarai_keputusan = DB::table('keputusan_penilaian')->where('tempat_ujian', '!=', 'BELUM DITETAPKAN')->get();
+        $senarai_baru = DB::table('permohonans')->where('status', 'PENDING')->get();
+        $senarai_tempat = DB::table('keputusan_penilaian')->where('tempat_ujian', 'BELUM DITETAPKAN')->get();
+        $senarai_keputusan = DB::table('keputusan_penilaian')->where('tempat_ujian', '!=', 'BELUM DITETAPKAN')->get();
 
-    return view('kompetensi.admin_permohonan', compact('senarai_baru', 'senarai_tempat', 'senarai_keputusan'));
-}
+        return view('kompetensi.admin_permohonan', compact('senarai_baru', 'senarai_tempat', 'senarai_keputusan'));
+    }
 
     public function sahkan_permohonan(Request $request)
     {
@@ -193,20 +191,21 @@ class KompetensiController extends Controller
         return view('kompetensi.keputusan', ['data' => $hasil, 'hasil' => $hasil]);
     }
 
+    // FIX: SEMAKAN TEMPAT (LINKED TO KEPUTUSAN_PENILAIAN)
     public function proses_semak_tempat(Request $request)
-{
-    $ic = $request->ic;
+    {
+        $ic = $request->ic;
 
-    // Cari data calon guna IC
-    // Pastikan nama model dan column betul (contoh: PermohonanKompetensi & no_ic)
-    $calon = \App\Models\PermohonanKompetensi::where('no_ic', $ic)->first();
+        // Kita cari data dari table keputusan_penilaian (data yang admin dah set)
+        $calon = DB::table('keputusan_penilaian')->where('ic_number', $ic)->first();
 
-    if (!$calon) {
-        return back()->with('error', 'Maaf, No. Kad Pengenalan tidak dijumpai.');
+        if (!$calon) {
+            return back()->with('error', 'Maaf, No. Kad Pengenalan tidak dijumpai dalam senarai calon.');
+        }
+
+        // Return view yang ada template surat panggilan
+        return view('kompetensi.hasil_semakan_tempat', compact('calon'));
     }
-
-    return view('kompetensi.hasil_semakan_tempat', compact('calon'));
-}
 
     public function cetak_slip($ic)
     {
