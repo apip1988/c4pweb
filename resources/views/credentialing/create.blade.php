@@ -1,242 +1,111 @@
-@extends('layouts.app')
+<?php
 
-@section('content')
-<div class="container py-4">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-    @endif
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KompetensiController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-    @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <ul class="mb-0">
-                @foreach($errors->all() as $error)
-                    <li><i class="fas fa-exclamation-triangle mr-2"></i> {{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-        </div>
-    @endif
+/*
+|--------------------------------------------------------------------------
+| Web Routes - SISTEM AMOPPP (FULL RESTORE: DOKUMEN + STATS + USERS)
+|--------------------------------------------------------------------------
+*/
 
-    <div class="row justify-content-center">
-        <div class="col-md-9">
-            <h4 class="section-title mb-4">
-                <i class="fas fa-upload mr-2"></i> PENGURUSAN MUAT NAIK DOKUMEN
-            </h4>
+// --- 1. UTAMA ---
+Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
+Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
+Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-            <div class="card card-custom shadow-sm border-0">
-                <div class="card-body p-4 p-md-5">
-                    <form action="{{ route('admin.document.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
+// --- 2. LOGIN & LOGOUT ---
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
-                        <div class="form-group mb-4">
-                            <label class="font-weight-bold text-primary">Muat Naik Untuk Modul:</label>
-                            <select name="module_type" id="module_type" class="form-control form-control-lg custom-select border-primary" onchange="toggleForm()" style="font-size: 16px; height: 50px;">
-                                <option value="CREDENTIALING">e-CREDENTIALING</option>
-                                <option value="RUJUKAN">e-RUJUKAN (SPG/Surat/Guideline/Minit)</option>
-                            </select>
-                        </div>
+// --- 3. e-KOMPETENSI (USER/CALON) ---
+Route::middleware(['auth'])->group(function () {
+    Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
+    Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
+});
 
-                        <hr class="my-4">
+// Semakan (Tempat & Keputusan)
+Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
+Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
+Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
+Route::post('/kompetensi/proses-semak', [KompetensiController::class, 'proses_semak_keputusan'])->name('kompetensi.proses_semak');
+Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_slip'])->name('kompetensi.cetak_slip');
 
-                        <div class="form-group mb-4">
-                            <label class="font-weight-bold">Tajuk Penuh Dokumen</label>
-                            <input type="text" name="title" class="form-control form-control-lg" placeholder="Cth: SPG Perkhidmatan PPP Bil 1/2026" required value="{{ old('title') }}">
-                        </div>
+// --- 4. e-KOMPETENSI (ADMIN) ---
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
+    Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
+    Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
+    Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
+    Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
+});
 
-                        <div class="row">
-                            <div class="col-md-6 field-rujukan" style="display:none;">
-                                <div class="form-group mb-4">
-                                    <label class="font-weight-bold">Jenis Dokumen (e-Rujukan)</label>
-                                    <select name="type" class="form-control">
-                                        <option value="SPG">SPG</option>
-                                        <option value="Surat">Surat / Polisi / Pekeliling</option>
-                                        <option value="Guideline">Guideline</option>
-                                        <option value="Minit Mesyuarat">Minit Mesyuarat</option>
-                                    </select>
-                                </div>
-                            </div>
+// --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
+Route::get('/admin/credentialing/create', function () { 
+    // Tarik data statistik (Collection) supaya .pluck() berfungsi
+    $senarai_stats = DB::table('statistik_utama')->get();
+    
+    // Tarik data dokumen supaya senarai fail muncul dan boleh delete
+    $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
+    
+    return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
+})->name('admin.dokumen.index');
 
-                            <div class="col-md-6 field-rujukan" style="display:none;">
-                                <div class="form-group mb-4">
-                                    <label class="font-weight-bold">Tahun</label>
-                                    <input type="number" name="year" class="form-control" value="{{ date('Y') }}">
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 field-rujukan" style="display:none;">
-                                <div class="form-group mb-4">
-                                    <label class="font-weight-bold">Dikeluarkan Oleh / Dari Siapa</label>
-                                    <input type="text" name="publisher" class="form-control" placeholder="Cth: KKM / C4P">
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 field-credentialing">
-                                <div class="form-group mb-4">
-                                    <label class="font-weight-bold">Pilih Disiplin</label>
-                                    <select name="discipline" class="form-control">
-                                        <option value="Peri-Operative Care">Peri-Operative Care</option>
-                                        <option value="Emergency Medicine & Trauma Services (AMO & Nurses)">Emergency Medicine & Trauma Services (AMO & Nurses)</option>
-                                        <option value="Emergency Medicine & Trauma Services (Lecturer & Clinical Instructor)">Emergency Medicine & Trauma Services (Lecturer & Clinical Instructor)</option>
-                                        <option value="Ophthalmology">Ophthalmology</option>
-                                        <option value="Dialysis Care (Haemodialysis)">Dialysis Care (Haemodialysis)</option>
-                                        <option value="Pre Hospital Care Services">Pre Hospital Care Services</option>
-                                        <option value="Anaesthesiology & Intensive Care (Anaesthesia)">Anaesthesiology & Intensive Care (Anaesthesia)</option>
-                                        <option value="Anaesthesiology & Intensive Care (Peri-Anaesthesia)">Anaesthesiology & Intensive Care (Peri-Anaesthesia)</option>
-                                        <option value="Anaesthesiology & Intensive Care (Intensive Care)">Anaesthesiology & Intensive Care (Intensive Care)</option>
-                                        <option value="Orthopaedics Services">Orthopaedics Services</option>
-                                        <option value="Cardio (Cardiovascular Perfusion)">Cardio (Cardiovascular Perfusion)</option>
-                                        <option value="Cardio (Cardiology)">Cardio (Cardiology)</option>
-                                        <option value="Endoscopy Services">Endoscopy Services</option>
-                                        <option value="Peri-Anaesthesia Care (P.A.C)">Peri-Anaesthesia Care (P.A.C)</option>
-                                        <option value="Circumcision (Dorsal Slit Technique)">Circumcision (Dorsal Slit Technique)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 field-credentialing">
-                                <div class="form-group mb-4">
-                                    <label class="font-weight-bold">Jenis Dokumen (Credentialing)</label>
-                                    <select name="document_type" class="form-control">
-                                        <option value="Borang Credentialing">Borang Credentialing</option>
-                                        <option value="Borang Recredentialing">Borang Recredentialing</option>
-                                        <option value="Carta Alir">Carta Alir</option>
-                                        <option value="Buku Log">Buku Log</option>
-                                        <option value="Kriteria">Kriteria</option>
-                                        <option value="Garis Panduan">Garis Panduan</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-5">
-                            <label class="font-weight-bold">Muat Naik Fail (PDF Sahaja)</label>
-                            <div class="custom-file">
-                                <input type="file" name="file" class="custom-file-input" id="customFile" accept="application/pdf" required>
-                                <label class="custom-file-label" for="customFile" style="height: 45px; line-height: 30px;">Pilih fail PDF...</label>
-                            </div>
-                            <small class="text-muted"><i class="fas fa-info-circle mt-2"></i> Pastikan saiz fail tidak melebihi 20MB.</small>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg btn-block shadow font-weight-bold py-3" style="border-radius: 12px; background: linear-gradient(45deg, #3051a0, #4a90e2); border: none;">
-                            <i class="fas fa-save mr-2"></i> SIMPAN & PAPARKAN DOKUMEN
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    function toggleForm() {
-        var type = document.getElementById('module_type').value;
-        var rujukanFields = document.querySelectorAll('.field-rujukan');
-        var credentialFields = document.querySelectorAll('.field-credentialing');
-
-        if (type === 'RUJUKAN') {
-            rujukanFields.forEach(f => { f.style.display = 'block'; });
-            credentialFields.forEach(f => { f.style.display = 'none'; });
-            // Disable required validation for hidden fields if needed
-        } else {
-            rujukanFields.forEach(f => { f.style.display = 'none'; });
-            credentialFields.forEach(f => { f.style.display = 'block'; });
+// Simpan Statistik Dashboard
+Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
+    if($request->has('stats')) {
+        foreach ($request->stats as $kategori => $jumlah) {
+            DB::table('statistik_utama')->updateOrInsert(['kategori' => $kategori], ['jumlah' => $jumlah]);
         }
     }
+    return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
+});
 
-    // Nama fail muncul bila dipilih
-    document.querySelector('.custom-file-input').addEventListener('change',function(e){
-        var fileName = document.getElementById("customFile").files[0].name;
-        var nextSibling = e.target.nextElementSibling;
-        nextSibling.innerText = fileName;
-    });
+// Padam Dokumen (Fix untuk SPG/Credentialing)
+Route::get('/admin/dokumen/delete/{id}', function ($id) {
+    $doc = DB::table('documents')->where('id', $id)->first();
+    if($doc) {
+        $path = public_path('uploads/documents/' . $doc->file_path);
+        if(file_exists($path)) { @unlink($path); }
+        DB::table('documents')->where('id', $id)->delete();
+    }
+    return back()->with('success', 'Dokumen berjaya dipadam!');
+})->name('admin.dokumen.delete');
 
-    // Jalankan sekali masa page load
-    window.onload = toggleForm;
-</script>
-<div class="row justify-content-center mt-5">
-    <div class="col-md-10">
-        <h4 class="section-title mb-4">
-            <i class="fas fa-list mr-2"></i> SENARAI DOKUMEN MUAT NAIK
-        </h4>
+// --- 6. ADMIN: PENGURUSAN PENGGUNA ---
+Route::get('/admin/users', function () { 
+    $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
+    return view('admin.users.index', compact('users')); 
+})->name('admin.users.index');
 
-        <div class="card card-custom shadow-sm border-0">
-            <div class="card-body p-4">
-                
-                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="pills-cre-tab" data-toggle="pill" href="#pills-cre" role="tab">e-Credentialing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-ruj-tab" data-toggle="pill" href="#pills-ruj" role="tab">e-Rujukan</a>
-                    </li>
-                </ul>
+Route::post('/admin/users/update-role/{id}', function (\Illuminate\Http\Request $request, $id) {
+    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
+    if($user) { $user->role = $request->role; $user->save(); }
+    return back()->with('success', 'Role dikemaskini!');
+})->name('admin.users.updateRole');
 
-                <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade show active" id="pills-cre" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-hover border">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th>Tajuk / Jenis</th>
-                                        <th>Disiplin</th>
-                                        <th class="text-center">Tindakan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach(\App\CredentialingDocument::orderBy('created_at','desc')->get() as $cre)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $cre->title }}</strong><br>
-                                            <small class="text-muted">{{ $cre->document_type }}</small>
-                                        </td>
-                                        <td><span class="badge badge-secondary">{{ $cre->discipline }}</span></td>
-                                        <td class="text-center">
-                                            <a href="{{ asset($cre->file_path) }}" target="_blank" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                                            <a href="{{ route('credentialing.destroy', $cre->id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Padam dokumen ini?')"><i class="fas fa-trash"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+Route::get('/admin/users/delete/{id}', function ($id) {
+    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
+    if($user) { $user->delete(); }
+    return back()->with('success', 'Pengguna dipadam!');
+})->name('admin.users.destroy');
 
-                    <div class="tab-pane fade" id="pills-ruj" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-hover border">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th>Tajuk / Tahun</th>
-                                        <th>Jenis / Penerbit</th>
-                                        <th class="text-center">Tindakan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach(\App\Rujukan::orderBy('created_at','desc')->get() as $ruj)
-                                    <tr>
-                                        <td>
-                                            <strong>{{ $ruj->title }}</strong><br>
-                                            <small class="text-muted">Tahun: {{ $ruj->year }}</small>
-                                        </td>
-                                        <td>
-                                            <span class="badge badge-primary">{{ $ruj->type }}</span><br>
-                                            <small>{{ $ruj->publisher }}</small>
-                                        </td>
-                                        <td class="text-center">
-                                            <a href="{{ asset($ruj->file_path) }}" target="_blank" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
-                                            <a href="{{ route('admin.rujukan.destroy', $ruj->id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Padam dokumen ini?')"><i class="fas fa-trash"></i></a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div> </div>
-        </div>
-    </div>
-</div>
-@endsection
+// --- 7. e-PRPA, e-RUJUKAN, e-CREDENTIALING ---
+Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
+Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
+Route::get('/rujukan', function () { 
+    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
+    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
+})->name('rujukan.index');
+Route::get('/credentialing', function () { 
+    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
+})->name('credentialing.index');
+
+// --- 8. DIREKTORI & PROFIL ---
+Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
+Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); })->name('direktori.carian');
+Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
+Route::get('/profile', function () { return view('auth.profile'); })->name('profile');
