@@ -48,8 +48,8 @@ Route::post('/prpa/hasil-semakan', function () { return "Hasil Semakan PRPA"; })
 // --- 6. PENGURUSAN DOKUMEN / e-CREDENTIALING (URL ASAL FIX 404) ---
 Route::get('/credentialing', function () { 
     $disciplines = collect(); // Fix Undefined variable $disciplines
-    return view('credentialing.index', compact('disciplines')); 
-})->name('credentialing.index');
+    return view('create.blade', compact('disciplines')); 
+})->name('create.blade');
 
 Route::get('/credentialing/create', function () { 
     return view('credentialing.create'); 
