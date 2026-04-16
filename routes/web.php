@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\DB;
 use App\QuizData\Set1;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FINAL STABLE MASTERCOPY)
+| Web Routes - SISTEM AMOPPP (FINAL STABLE & SECURE MASTERCOPY)
 |--------------------------------------------------------------------------
 */
 
@@ -48,10 +49,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// --- 5. PENGURUSAN DOKUMEN & STATS ---
+// --- 5. PENGURUSAN DOKUMEN & STATS (FIXED TABLE: rujukan_documents) ---
 Route::get('/admin/credentialing/create', function () { 
     $senarai_stats = collect(); 
-    $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
+    // Menggunakan rujukan_documents berdasarkan migration anda
+    $documents = Schema::hasTable('rujukan_documents') 
+                 ? DB::table('rujukan_documents')->orderBy('created_at', 'desc')->get() 
+                 : collect();
     return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
@@ -100,7 +104,7 @@ Route::get('/prpa/quiz/{id}', function ($id) {
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// 7.2 Submit Exam
+// 7.2 Submit Exam (Auto-Calculate & Timezone Malaysia)
 Route::post('/phcals/submit', function (Request $request) {
     $user_answers = $request->input('ans'); 
     $questions = Set1::questions();
@@ -131,7 +135,7 @@ Route::post('/phcals/submit', function (Request $request) {
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod telah dikemaskini.');
 })->name('phcals.submit');
 
-// 7.3 Paparan History (PRIVASI TOTAL: Guna Auth ID)
+// 7.3 Paparan History (PRIVASI TOTAL: Guna Auth ID + Fix Timezone)
 Route::get('/prpa/history', function () {
     if (!Auth::check()) return redirect('/login');
 
@@ -140,7 +144,7 @@ Route::get('/prpa/history', function () {
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function($res) {
-                    $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Lumpur');
+                    $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Kalam_Lumpur');
                     $res->expiry_date = Carbon::parse($res->expiry_date)->timezone('Asia/Kuala_Lumpur');
                     return $res;
                 });
@@ -148,14 +152,14 @@ Route::get('/prpa/history', function () {
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// 7.4 Hasil Semakan (Redirect ke History Bersih)
+// 7.4 Hasil Semakan (Redirect ke History Bersih - Sembunyi IC)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function () {
     return redirect()->route('prpa.history');
 })->name('prpa.semak.hasil');
 
 // --- 8. ACTION ROUTES ---
 
-// Route Re-attempt (Hantar balik ke pilihan set soalan)
+// Route Re-attempt (Balik ke pilihan set)
 Route::get('/prpa/re-attempt', function() {
     return redirect()->route('prpa.index');
 })->name('phcals.reattempt');
@@ -180,7 +184,8 @@ Route::get('/phcals/print/{id}', function($id) {
 })->name('phcals.print');
 
 // --- 9. LAIN-LAIN ---
-Route::get('/rujukan', [KompetensiController::class, 'index'])->name('rujukan.index'); // Placeholder
+Route::get('/rujukan', [KompetensiController::class, 'index'])->name('rujukan.index');
+
 Route::get('/credentialing', function () { 
     return view('credentialing.index', ['disciplines' => collect()]); 
 })->name('credentialing.index');
