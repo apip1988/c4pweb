@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE + RE-ATTEMPT FIXED)
+| Web Routes - SISTEM AMOPPP (FINAL STABLE MASTERCOPY)
 |--------------------------------------------------------------------------
 */
 
@@ -100,7 +100,7 @@ Route::get('/prpa/quiz/{id}', function ($id) {
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// 7.2 Submit Exam (Calculate & Save)
+// 7.2 Submit Exam
 Route::post('/phcals/submit', function (Request $request) {
     $user_answers = $request->input('ans'); 
     $questions = Set1::questions();
@@ -128,10 +128,10 @@ Route::post('/phcals/submit', function (Request $request) {
         'updated_at'   => $now,
     ]);
 
-    return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Sila semak keputusan anda.');
+    return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod telah dikemaskini.');
 })->name('phcals.submit');
 
-// 7.3 Paparan History (PRIVASI TOTAL)
+// 7.3 Paparan History (PRIVASI TOTAL: Guna Auth ID)
 Route::get('/prpa/history', function () {
     if (!Auth::check()) return redirect('/login');
 
@@ -148,7 +148,7 @@ Route::get('/prpa/history', function () {
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// 7.4 Hasil Semakan (Redirect ke URL Bersih)
+// 7.4 Hasil Semakan (Redirect ke History Bersih)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function () {
     return redirect()->route('prpa.history');
 })->name('prpa.semak.hasil');
@@ -162,10 +162,10 @@ Route::get('/prpa/re-attempt', function() {
 
 // Review DIBUANG (Redirect ke History)
 Route::get('/phcals/review/{id}', function($id) {
-    return redirect()->route('prpa.history')->with('error', 'Fungsi review telah ditutup untuk keselamatan.');
+    return redirect()->route('prpa.history')->with('error', 'Fungsi review telah ditutup.');
 })->name('phcals.review');
 
-// Print (Hanya benarkan jika Skor 100%)
+// Print (Hanya jika Skor 100%)
 Route::get('/phcals/print/{id}', function($id) {
     $result = DB::table('phcals_results')
                 ->where('id', $id)
@@ -173,18 +173,14 @@ Route::get('/phcals/print/{id}', function($id) {
                 ->first();
 
     if (!$result || $result->score < 100) {
-        return redirect()->route('prpa.history')->with('error', 'Cetak sijil hanya dibenarkan jika keputusan anda 100% (PASSED).');
+        return redirect()->route('prpa.history')->with('error', 'Cetak sijil hanya dibenarkan jika keputusan 100%.');
     }
 
     return view('phcals.print', compact('result', 'id'));
 })->name('phcals.print');
 
 // --- 9. LAIN-LAIN ---
-Route::get('/rujukan', function () { 
-    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
-    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
-})->name('rujukan.index');
-
+Route::get('/rujukan', [KompetensiController::class, 'index'])->name('rujukan.index'); // Placeholder
 Route::get('/credentialing', function () { 
     return view('credentialing.index', ['disciplines' => collect()]); 
 })->name('credentialing.index');
