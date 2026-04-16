@@ -49,14 +49,16 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// --- 5. PENGURUSAN DOKUMEN & STATS (FIXED TABLE: rujukan_documents) ---
+// --- 5. PENGURUSAN DOKUMEN & STATS (FIXED VIEW & TABLE) ---
 Route::get('/admin/credentialing/create', function () { 
     $senarai_stats = collect(); 
     // Menggunakan rujukan_documents berdasarkan migration anda
     $documents = Schema::hasTable('rujukan_documents') 
                  ? DB::table('rujukan_documents')->orderBy('created_at', 'desc')->get() 
                  : collect();
-    return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
+                 
+    // FIX: Dihalakan ke folder 'credentialing.create' mengikut struktur fail anda
+    return view('credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
 Route::post('/admin/document/store', function (Request $request) {
@@ -144,7 +146,7 @@ Route::get('/prpa/history', function () {
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function($res) {
-                    // FIX: Nama timezone yang betul ialah Asia/Kuala_Lumpur (Bukan Kuala_Kalam_Lumpur)
+                    // FIX: Zon masa Malaysia yang tepat
                     $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Lumpur');
                     $res->expiry_date = Carbon::parse($res->expiry_date)->timezone('Asia/Kuala_Lumpur');
                     return $res;
@@ -185,7 +187,7 @@ Route::get('/phcals/print/{id}', function($id) {
 })->name('phcals.print');
 
 // --- 9. LAIN-LAIN ---
-// FIX: Halakan ke view rujukan yang betul, bukan index controller utama
+// FIX: Halakan ke view rujukan yang betul
 Route::get('/rujukan', function () { 
     $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
     $results = collect(); 
