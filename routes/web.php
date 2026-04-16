@@ -8,7 +8,7 @@ use App\QuizData\Set1;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (VERSI BERSIH & FIX 404 QUIZ)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED VIEW PATH)
 |--------------------------------------------------------------------------
 */
 
@@ -103,19 +103,19 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// 7.1 MULA EXAM (FIXED 404: Ikut URL amoppp.com/prpa/quiz/1)
+// 7.1 MULA EXAM (FIXED: Point to phcals.exam)
 Route::get('/prpa/quiz/{id}', function ($id) {
     $questions = Set1::questions(); 
-    return view('prpa.exam', compact('questions', 'id')); 
+    return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// Backup route jika butang guna nama lain
-Route::get('/prpa/start-exam', function () {
-    $questions = Set1::questions(); 
-    return view('prpa.exam', compact('questions')); 
-});
+// 7.2 SUBMIT JAWAPAN (FIXED: RouteNotFound phcals.submit)
+Route::post('/phcals/submit', function (\Illuminate\Http\Request $request) {
+    // Logik pemarkahan akan diproses di sini
+    return "Jawapan anda telah diterima. Keputusan akan dipaparkan sebentar lagi.";
+})->name('phcals.submit');
 
-// 7.2 HASIL SEMAKAN
+// 7.3 HASIL SEMAKAN
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
     $ic = $request->input('ic'); 
     $results = DB::table('phcals_results')
