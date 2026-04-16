@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FINAL STABLE mastercopy)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE + 100% SCORE TO PRINT)
 |--------------------------------------------------------------------------
 */
 
@@ -135,7 +135,6 @@ Route::post('/phcals/submit', function (Request $request) {
 Route::get('/prpa/history', function () {
     if (!Auth::check()) return redirect('/login');
 
-    // Tarik data ikut ID yang tengah login sahaja
     $results = DB::table('phcals_results')
                 ->where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
@@ -151,19 +150,28 @@ Route::get('/prpa/history', function () {
 
 // Hasil Semakan (Redirect ke URL Bersih Tanpa IC)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
-    // Paksa buang IC dari URL dan pergi ke history bersih
     return redirect()->route('prpa.history');
 })->name('prpa.semak.hasil');
 
 // --- 8. ACTION ROUTES (Review & Print) ---
 
-// FIX: Masukkan balik nama route review supaya tak error, tapi hantar ke history (Security)
+// Dummy Route Review: Tendang balik ke History (Security)
 Route::get('/phcals/review/{id}', function($id) {
     return redirect()->route('prpa.history')->with('error', 'Fungsi review telah ditutup untuk keselamatan.');
 })->name('phcals.review');
 
+// Print Route: Hanya benarkan jika Skor 100%
 Route::get('/phcals/print/{id}', function($id) {
-    $result = DB::table('phcals_results')->where('id', $id)->first();
+    $result = DB::table('phcals_results')
+                ->where('id', $id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+    // VALIDASI KETAT: Mesti lulus 100%
+    if (!$result || $result->score < 100) {
+        return redirect()->route('prpa.history')->with('error', 'Cetak sijil hanya dibenarkan jika keputusan anda 100% (PASSED).');
+    }
+
     return view('phcals.print', compact('result', 'id'));
 })->name('phcals.print');
 
