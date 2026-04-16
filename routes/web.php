@@ -10,11 +10,10 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FIX TIMEZONE, PRIVACY & ACTION BUTTONS)
+| Web Routes - SISTEM AMOPPP (FIXED TIMEZONE, PRIVACY & ACTION BUTTONS)
 |--------------------------------------------------------------------------
 */
 
-// --- 0. AUTHENTICATION ---
 Auth::routes();
 
 // --- 1. UTAMA ---
@@ -95,13 +94,13 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// 7.1 Mula Exam
+// Mula Exam
 Route::get('/prpa/quiz/{id}', function ($id) {
     $questions = Set1::questions(); 
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// 7.2 Submit Exam (FIXED: Timezone Malaysia & Privacy)
+// Submit Exam (FIXED: Timezone Malaysia & Privacy)
 Route::post('/phcals/submit', function (Request $request) {
     $user_answers = $request->input('ans'); 
     $questions = Set1::questions();
@@ -116,7 +115,6 @@ Route::post('/phcals/submit', function (Request $request) {
     $score = ($correct_count / count($questions)) * 100;
     $status = ($score == 100) ? 'PASSED' : 'RE-ATTEMPT';
 
-    // Set Masa Malaysia (UTC+8)
     $now = Carbon::now('Asia/Kuala_Lumpur');
 
     DB::table('phcals_results')->insert([
@@ -131,14 +129,12 @@ Route::post('/phcals/submit', function (Request $request) {
         'updated_at'   => $now,
     ]);
 
-    // Redirect ke History tanpa pendedahan IC kat URL
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod telah dikemaskini.');
 })->name('phcals.submit');
 
-// 7.3 Paparan History (FIXED: Support search IC & Auth ID)
-Route::get('/prpa/history', function (Request $request) {
-    // Tangkap IC dari pelbagai sumber (URL query atau Auth)
-    $ic = $request->query('ic_number') ?? $request->query('ic') ?? (Auth::check() ? Auth::user()->ic_number : null);
+// Paparan History (FIXED: Support search IC & Auth ID + PRIVASI URL)
+Route::get('/prpa/history/{search_ic?}', function ($search_ic = null) {
+    $ic = $search_ic ?? (Auth::check() ? Auth::user()->ic_number : null);
 
     if (!$ic) return redirect()->route('prpa.semak.borang')->with('error', 'Sila masukkan No. IC');
 
@@ -157,9 +153,10 @@ Route::get('/prpa/history', function (Request $request) {
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// Route Alias untuk Semak Keputusan (Gambar 2 kau)
+// Route Alias untuk "Semak Keputusan" (Sembunyi IC dari URL)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
-    return redirect()->route('prpa.history', ['ic_number' => $request->ic_number ?? $request->ic]);
+    $ic = $request->input('ic_number') ?? $request->input('ic');
+    return redirect()->route('prpa.history', ['search_ic' => $ic]);
 })->name('prpa.semak.hasil');
 
 // --- 8. REVIEW & PRINT (POINT TO YOUR FILES) ---
