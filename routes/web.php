@@ -74,9 +74,11 @@ Route::post('/admin/profil/store', function (Request $request) {
     return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
 });
 
+// FIX: Menamakan route ini kepada admin.rujukan.destroy supaya sepadan dengan panggilan di Blade
 Route::get('/credentialing/destroy/{id}', function ($id) {
+    DB::table('rujukan_documents')->where('id', $id)->delete();
     return back()->with('success', 'Dokumen berjaya dipadam!');
-})->name('credentialing.destroy');
+})->name('admin.rujukan.destroy');
 
 // --- 6. ADMIN: PENGURUSAN PENGGUNA ---
 Route::get('/admin/users', function () { 
