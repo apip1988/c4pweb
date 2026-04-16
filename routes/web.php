@@ -48,19 +48,13 @@ Route::middleware(['auth'])->group(function () {
 
 // --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
 Route::get('/admin/credentialing/create', function () { 
-    // Kita bagi umpan kosong JIKA table statistik_utama tak wujud lagi dalam database webc4p kau
-    // Kalau table dah ada, kau boleh guna: $senarai_stats = DB::table('statistik_utama')->get();
     $senarai_stats = collect(); 
-    
-    // Ambil data dokumen supaya senarai fail muncul
     $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
-    
     return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
 // TAMBAHAN: Route Store untuk Form Muat Naik (PENTING!)
 Route::post('/admin/document/store', function (\Illuminate\Http\Request $request) {
-    // Logik simpan dokumen kau di sini
     return back()->with('success', 'Dokumen berjaya dimuat naik!');
 })->name('admin.document.store');
 
@@ -76,7 +70,6 @@ Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) 
 
 // Padam Dokumen (Fix untuk link credentialing.destroy dlm Blade kau)
 Route::get('/credentialing/destroy/{id}', function ($id) {
-    // Logik delete ikut model kau
     return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('credentialing.destroy');
 
@@ -112,6 +105,12 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 // --- 7. e-PRPA, e-RUJUKAN, e-CREDENTIALING ---
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
+
+// FIX: Route untuk hasil semakan PRPA yang kau minta
+Route::post('/prpa/hasil-semakan', function () {
+    return "Halaman Keputusan PRPA";
+})->name('prpa.semak.hasil');
+
 Route::get('/rujukan', function () { 
     $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
     $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
