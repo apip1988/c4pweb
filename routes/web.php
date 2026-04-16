@@ -8,7 +8,7 @@ use App\QuizData\Set1;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (VERSI BERSIH & STABIL)
+| Web Routes - SISTEM AMOPPP (VERSI BERSIH & FIX 404 QUIZ)
 |--------------------------------------------------------------------------
 */
 
@@ -103,13 +103,14 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// 7.1 MULA EXAM
-Route::get('/prpa/start-exam', function () {
+// 7.1 MULA EXAM (FIXED 404: Ikut URL amoppp.com/prpa/quiz/1)
+Route::get('/prpa/quiz/{id}', function ($id) {
     $questions = Set1::questions(); 
-    return view('prpa.exam', compact('questions')); 
+    return view('prpa.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-Route::get('/prpa/exam', function () {
+// Backup route jika butang guna nama lain
+Route::get('/prpa/start-exam', function () {
     $questions = Set1::questions(); 
     return view('prpa.exam', compact('questions')); 
 });
