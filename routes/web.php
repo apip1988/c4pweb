@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED DATABASE SEARCH)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED IC_NUMBER)
 |--------------------------------------------------------------------------
 */
 
@@ -19,7 +19,7 @@ Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-// --- 2. LOGIN & LOGOUT ---
+// --- 2. LOGIN & LOGOUT (KEKALKAN KOD ASAL KAU) ---
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
@@ -46,17 +46,19 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// --- 5. PENGURUSAN DOKUMEN ---
+// --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
 Route::get('/admin/credentialing/create', function () { 
     $senarai_stats = collect(); 
     $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
     return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
+// TAMBAHAN: Route Store untuk Form Muat Naik (PENTING!)
 Route::post('/admin/document/store', function (\Illuminate\Http\Request $request) {
     return back()->with('success', 'Dokumen berjaya dimuat naik!');
 })->name('admin.document.store');
 
+// Simpan Statistik Dashboard
 Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
     if($request->has('stats')) {
         foreach ($request->stats as $kategori => $jumlah) {
@@ -66,10 +68,12 @@ Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) 
     return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
 });
 
+// Padam Dokumen (Fix untuk link credentialing.destroy dlm Blade kau)
 Route::get('/credentialing/destroy/{id}', function ($id) {
     return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('credentialing.destroy');
 
+// Route Padam asal yang kau bagi (Guna /delete/{id})
 Route::get('/admin/dokumen/delete/{id}', function ($id) {
     $doc = DB::table('documents')->where('id', $id)->first();
     if($doc) {
@@ -102,15 +106,13 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// FIX: Guna match (GET/POST) dan tarik data dari table phcals_results
+// FIX: Guna ic_number (ikut migration users Afif) untuk Join
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
     $ic = $request->input('ic'); 
 
-    // Guna Join antara phcals_results dan users
-    // PERHATIAN: Aku tukar 'ic' kepada 'username'. Jika masih error, tukar 'username' di bawah kepada column IC kau.
     $results = DB::table('phcals_results')
                 ->join('users', 'phcals_results.user_id', '=', 'users.id')
-                ->where('users.username', $ic) 
+                ->where('users.ic_number', $ic) // <-- MENGGUNAKAN KOLUM ic_number SEPERTI MIGRATION
                 ->select('phcals_results.*', 'users.name')
                 ->orderBy('phcals_results.attempt_date', 'desc')
                 ->get();
@@ -123,6 +125,7 @@ Route::get('/rujukan', function () {
     $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
+// TAMBAHAN: Fix delete rujukan dlm Blade kau
 Route::get('/admin/rujukan/destroy/{id}', function ($id) {
     return back()->with('success', 'Rujukan dipadam!');
 })->name('admin.rujukan.destroy');
