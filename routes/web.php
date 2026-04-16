@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FINAL STABLE MASTERCOPY)
+| Web Routes - SISTEM AMOPPP (FIX TIMEZONE, PRIVACY & ACTION BUTTONS)
 |--------------------------------------------------------------------------
 */
 
@@ -95,13 +95,13 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// Mula Exam
+// 7.1 Mula Exam
 Route::get('/prpa/quiz/{id}', function ($id) {
     $questions = Set1::questions(); 
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// Submit Exam (Calculate & Save)
+// 7.2 Submit Exam (FIXED: Timezone Malaysia & Privacy)
 Route::post('/phcals/submit', function (Request $request) {
     $user_answers = $request->input('ans'); 
     $questions = Set1::questions();
@@ -116,38 +116,32 @@ Route::post('/phcals/submit', function (Request $request) {
     $score = ($correct_count / count($questions)) * 100;
     $status = ($score == 100) ? 'PASSED' : 'RE-ATTEMPT';
 
+    // Set Masa Malaysia (UTC+8)
+    $now = Carbon::now('Asia/Kuala_Lumpur');
+
     DB::table('phcals_results')->insert([
         'user_id'      => Auth::id(),
         'set_id'       => $request->input('set_id'),
         'score'        => $score,
         'status'       => $status,
         'review_data'  => json_encode($user_answers),
-        'attempt_date' => Carbon::now(),
-        'expiry_date'  => Carbon::now()->addYears(3),
-        'created_at'   => Carbon::now(),
-        'updated_at'   => Carbon::now(),
+        'attempt_date' => $now,
+        'expiry_date'  => $now->copy()->addYears(3),
+        'created_at'   => $now,
+        'updated_at'   => $now,
     ]);
 
+    // Redirect ke History tanpa pendedahan IC kat URL
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod telah dikemaskini.');
 })->name('phcals.submit');
 
-// Paparan History Peribadi (FIXED: Parse Tarikh kpd Carbon Object)
-Route::get('/prpa/history', function () {
-    $results = DB::table('phcals_results')
-                ->where('user_id', Auth::id())
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->map(function($res) {
-                    $res->created_at = Carbon::parse($res->created_at);
-                    $res->expiry_date = Carbon::parse($res->expiry_date);
-                    return $res;
-                });
-    return view('phcals.history', compact('results'));
-})->name('prpa.history');
+// 7.3 Paparan History (FIXED: Support search IC & Auth ID)
+Route::get('/prpa/history', function (Request $request) {
+    // Tangkap IC dari pelbagai sumber (URL query atau Auth)
+    $ic = $request->query('ic_number') ?? $request->query('ic') ?? (Auth::check() ? Auth::user()->ic_number : null);
 
-// Semakan Manual (FIXED: Parse Tarikh kpd Carbon Object)
-Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
-    $ic = $request->input('ic'); 
+    if (!$ic) return redirect()->route('prpa.semak.borang')->with('error', 'Sila masukkan No. IC');
+
     $results = DB::table('phcals_results')
                 ->join('users', 'phcals_results.user_id', '=', 'users.id')
                 ->where('users.ic_number', $ic)
@@ -155,20 +149,36 @@ Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request)
                 ->orderBy('phcals_results.created_at', 'desc')
                 ->get()
                 ->map(function($res) {
-                    $res->created_at = Carbon::parse($res->created_at);
-                    $res->expiry_date = Carbon::parse($res->expiry_date);
+                    $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Lumpur');
+                    $res->expiry_date = Carbon::parse($res->expiry_date)->timezone('Asia/Kuala_Lumpur');
                     return $res;
                 });
+
     return view('phcals.history', compact('results'));
+})->name('prpa.history');
+
+// Route Alias untuk Semak Keputusan (Gambar 2 kau)
+Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
+    return redirect()->route('prpa.history', ['ic_number' => $request->ic_number ?? $request->ic]);
 })->name('prpa.semak.hasil');
 
-// --- 8. e-RUJUKAN, e-CREDENTIALING, DIREKTORI & PROFIL ---
+// --- 8. REVIEW & PRINT (POINT TO YOUR FILES) ---
+Route::get('/phcals/review/{id}', function($id) {
+    $result = DB::table('phcals_results')->where('id', $id)->first();
+    return view('phcals.review', compact('result', 'id'));
+})->name('phcals.review');
+
+Route::get('/phcals/print/{id}', function($id) {
+    $result = DB::table('phcals_results')->where('id', $id)->first();
+    return view('phcals.print', compact('result', 'id'));
+})->name('phcals.print');
+
+// --- 9. e-RUJUKAN, DIREKTORI & PROFIL ---
 Route::get('/rujukan', function () { 
     $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
     $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
-// FIX: Beri nama 'credentialing.index' supaya Navbar/Sidebar tidak error
 Route::get('/credentialing', function () { 
     $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
 })->name('credentialing.index');
@@ -177,7 +187,3 @@ Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })-
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); })->name('direktori.carian');
 Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/profile', function () { return view('auth.profile'); })->name('profile');
-
-// --- 9. EXTRA (Review & Print) ---
-Route::get('/phcals/review/{id}', function($id) { return "Review ID: $id"; })->name('phcals.review');
-Route::get('/phcals/print/{id}', function($id) { return "Print ID: $id"; })->name('phcals.print');
