@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Schema;
 |--------------------------------------------------------------------------
 | Web Routes - SISTEM AMOPPP (FINAL STABLE & SECURE MASTERCOPY)
 |--------------------------------------------------------------------------
+| Pengemaskinian: 1. Penyelarasan Nama Jadual (rujukan_documents)
+|                 2. Penyelarasan Route Destroy (Avoid RouteNotFound)
+|                 3. Kekal Privasi IC & Skor 100% Sijil
+|--------------------------------------------------------------------------
 */
 
 Auth::routes();
@@ -52,12 +56,11 @@ Route::middleware(['auth'])->group(function () {
 // --- 5. PENGURUSAN DOKUMEN & STATS (FIXED VIEW & TABLE) ---
 Route::get('/admin/credentialing/create', function () { 
     $senarai_stats = collect(); 
-    // Menggunakan rujukan_documents berdasarkan migration anda
     $documents = Schema::hasTable('rujukan_documents') 
                  ? DB::table('rujukan_documents')->orderBy('created_at', 'desc')->get() 
                  : collect();
-                 
-    // FIX: Dihalakan ke folder 'credentialing.create' mengikut struktur fail anda
+    
+    // Pastikan fail rujukan ini betul arahnya
     return view('credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
@@ -74,8 +77,13 @@ Route::post('/admin/profil/store', function (Request $request) {
     return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
 });
 
-// FIX: Menamakan route ini kepada admin.rujukan.destroy supaya sepadan dengan panggilan di Blade
+// FIX: Guna dua-dua nama route supaya tak error RouteNotFound (Compatibility)
 Route::get('/credentialing/destroy/{id}', function ($id) {
+    DB::table('rujukan_documents')->where('id', $id)->delete();
+    return back()->with('success', 'Dokumen berjaya dipadam!');
+})->name('credentialing.destroy');
+
+Route::get('/admin/rujukan/destroy/{id}', function ($id) {
     DB::table('rujukan_documents')->where('id', $id)->delete();
     return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('admin.rujukan.destroy');
@@ -148,7 +156,6 @@ Route::get('/prpa/history', function () {
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function($res) {
-                    // FIX: Zon masa Malaysia yang tepat
                     $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Lumpur');
                     $res->expiry_date = Carbon::parse($res->expiry_date)->timezone('Asia/Kuala_Lumpur');
                     return $res;
@@ -189,7 +196,6 @@ Route::get('/phcals/print/{id}', function($id) {
 })->name('phcals.print');
 
 // --- 9. LAIN-LAIN ---
-// FIX: Halakan ke view rujukan yang betul
 Route::get('/rujukan', function () { 
     $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
     $results = collect(); 
