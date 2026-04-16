@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED PRPA DATABASE)
 |--------------------------------------------------------------------------
 */
 
@@ -49,7 +49,6 @@ Route::middleware(['auth'])->group(function () {
 // --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
 Route::get('/admin/credentialing/create', function () { 
     // Kita bagi umpan kosong JIKA table statistik_utama tak wujud lagi dalam database webc4p kau
-    // Kalau table dah ada, kau boleh guna: $senarai_stats = DB::table('statistik_utama')->get();
     $senarai_stats = collect(); 
     
     // Ambil data dokumen supaya senarai fail muncul
@@ -113,9 +112,19 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// FIX: Guna match (GET/POST) dan return view phcals.history
-Route::match(['get', 'post'], '/prpa/hasil-semakan', function () {
-    return view('phcals.history');
+// FIX: Guna match (GET/POST) dan tarik data dari table phcals_results
+Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
+    $ic = $request->input('ic'); // Ambil input No. IC dari form semakan
+
+    // Cari data join antara users dan phcals_results berdasarkan IC
+    $results = DB::table('phcals_results')
+                ->join('users', 'phcals_results.user_id', '=', 'users.id')
+                ->where('users.ic', $ic) // Pastikan column dalam table users adalah 'ic' atau 'no_ic'
+                ->select('phcals_results.*', 'users.name')
+                ->orderBy('phcals_results.attempt_date', 'desc')
+                ->get();
+
+    return view('phcals.history', compact('results'));
 })->name('prpa.semak.hasil');
 
 Route::get('/rujukan', function () { 
