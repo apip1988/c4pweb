@@ -10,10 +10,11 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (VERSI BERSIH & FINAL)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE + FIXED DATE FORMATTING)
 |--------------------------------------------------------------------------
 */
 
+// --- 0. AUTHENTICATION ---
 Auth::routes();
 
 // --- 1. UTAMA ---
@@ -130,16 +131,21 @@ Route::post('/phcals/submit', function (Request $request) {
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod telah dikemaskini.');
 })->name('phcals.submit');
 
-// Paparan History Peribadi
+// Paparan History Peribadi (FIX: Parse Tarikh kpd Carbon)
 Route::get('/prpa/history', function () {
     $results = DB::table('phcals_results')
                 ->where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get()
+                ->map(function($res) {
+                    $res->created_at = Carbon::parse($res->created_at);
+                    $res->expiry_date = Carbon::parse($res->expiry_date);
+                    return $res;
+                });
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// Semakan Manual (Carian No IC)
+// Semakan Manual (FIX: Parse Tarikh kpd Carbon)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
     $ic = $request->input('ic'); 
     $results = DB::table('phcals_results')
@@ -147,7 +153,12 @@ Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request)
                 ->where('users.ic_number', $ic)
                 ->select('phcals_results.*', 'users.name')
                 ->orderBy('phcals_results.created_at', 'desc')
-                ->get();
+                ->get()
+                ->map(function($res) {
+                    $res->created_at = Carbon::parse($res->created_at);
+                    $res->expiry_date = Carbon::parse($res->expiry_date);
+                    return $res;
+                });
     return view('phcals.history', compact('results'));
 })->name('prpa.semak.hasil');
 
