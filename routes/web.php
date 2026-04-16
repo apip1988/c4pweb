@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FINAL STABLE MASTERCOPY)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE + RE-ATTEMPT FIXED)
 |--------------------------------------------------------------------------
 */
 
@@ -131,7 +131,7 @@ Route::post('/phcals/submit', function (Request $request) {
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Sila semak keputusan anda.');
 })->name('phcals.submit');
 
-// 7.3 Paparan History (PRIVASI TOTAL: Guna Auth ID + Fix Tarikh)
+// 7.3 Paparan History (PRIVASI TOTAL)
 Route::get('/prpa/history', function () {
     if (!Auth::check()) return redirect('/login');
 
@@ -148,19 +148,19 @@ Route::get('/prpa/history', function () {
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// 7.4 Hasil Semakan (Redirect ke History Bersih Tanpa IC di URL)
+// 7.4 Hasil Semakan (Redirect ke URL Bersih)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function () {
     return redirect()->route('prpa.history');
 })->name('prpa.semak.hasil');
 
 // --- 8. ACTION ROUTES ---
 
-// FIX: Route Re-attempt (Hantar balik ke pilihan set soalan)
+// Route Re-attempt (Hantar balik ke pilihan set soalan)
 Route::get('/prpa/re-attempt', function() {
     return redirect()->route('prpa.index');
 })->name('phcals.reattempt');
 
-// Review DIBUANG (Redirect ke History untuk elak tiru)
+// Review DIBUANG (Redirect ke History)
 Route::get('/phcals/review/{id}', function($id) {
     return redirect()->route('prpa.history')->with('error', 'Fungsi review telah ditutup untuk keselamatan.');
 })->name('phcals.review');
