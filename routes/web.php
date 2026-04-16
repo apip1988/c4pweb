@@ -156,4 +156,9 @@ Route::get('/prpa/history', function () {
 // Route Semakan Manual (Carian No IC)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
     $ic = $request->input('ic'); 
-    $results = DB::table('phcals_
+    $results = DB::table('phcals_results')
+                ->join('users', 'phcals_results.user_id', '=', 'users.id')
+                ->where('users.ic_number', $ic)
+                ->select('phcals_results.*', 'users.name')
+                ->orderBy('phcals_results.created_at', 'desc')
+                ->get();
