@@ -8,7 +8,7 @@ use App\QuizData\Set1;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED VIEW PATH)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE + REDIRECT TO HISTORY)
 |--------------------------------------------------------------------------
 */
 
@@ -103,26 +103,28 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// 7.1 MULA EXAM (FIXED: Point to phcals.exam)
+// 7.1 MULA EXAM
 Route::get('/prpa/quiz/{id}', function ($id) {
     $questions = Set1::questions(); 
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// 7.2 SUBMIT JAWAPAN (FIXED: RouteNotFound phcals.submit)
+// 7.2 SUBMIT JAWAPAN (FIXED: Redirect ke History)
 Route::post('/phcals/submit', function (\Illuminate\Http\Request $request) {
-    // Logik pemarkahan akan diproses di sini
-    return "Jawapan anda telah diterima. Keputusan akan dipaparkan sebentar lagi.";
+    // Logik simpan keputusan ke database patut ada di sini
+    // Selepas simpan, kita redirect ke page history guna IC user yang login
+    $ic = Auth::user()->ic_number;
+    return redirect()->route('prpa.semak.hasil', ['ic' => $ic])->with('success', 'Ujian tamat! Sila semak keputusan anda.');
 })->name('phcals.submit');
 
-// 7.3 HASIL SEMAKAN
+// 7.3 HASIL SEMAKAN (HISTORY)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
     $ic = $request->input('ic'); 
     $results = DB::table('phcals_results')
                 ->join('users', 'phcals_results.user_id', '=', 'users.id')
                 ->where('users.ic_number', $ic)
                 ->select('phcals_results.*', 'users.name')
-                ->orderBy('phcals_results.attempt_date', 'desc')
+                ->orderBy('phcals_results.created_at', 'desc')
                 ->get();
     return view('phcals.history', compact('results'));
 })->name('prpa.semak.hasil');
