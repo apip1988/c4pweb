@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KompetensiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\QuizData\Set1; // <-- PENTING: Untuk panggil soalan exam kau
+use App\QuizData\Set1;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE + START EXAM PRPA)
+| Web Routes - SISTEM AMOPPP (VERSI BERSIH & STABIL)
 |--------------------------------------------------------------------------
 */
 
@@ -27,8 +27,8 @@ Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logou
 
 // --- 3. e-KOMPETENSI (USER/CALON) ---
 Route::middleware(['auth'])->group(function () {
-    Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
-    Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
+    Route::get('/kompetensi/permohonan', [KompetensiController::class, 'borang_permohonan'])->name('kompetensi.permohonan');
+    Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
 // Semakan (Tempat & Keputusan)
@@ -40,105 +40,104 @@ Route::get('/kompetensi/cetak-slip/{ic}', [KompetensiController::class, 'cetak_s
 
 // --- 4. e-KOMPETENSI (ADMIN) ---
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
-    Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
-    Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
-    Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
-    Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
+    Route::get('/admin/kompetensi/pengurusan-calon', [KompetensiController::class, 'admin_pengurusan_calon'])->name('kompetensi.admin_pengurusan');
+    Route::post('/admin/kompetensi/sahkan', [KompetensiController::class, 'sahkan_permohonan'])->name('kompetensi.sahkan');
+    Route::post('/admin/kompetensi/kemaskini-penempatan', [KompetensiController::class, 'kemaskini_penempatan'])->name('kompetensi.kemaskini_penempatan');
+    Route::post('/admin/kompetensi/kemaskini-keputusan', [KompetensiController::class, 'kemaskini_keputusan_akhir'])->name('kompetensi.kemaskini_keputusan');
+    Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
 // --- 5. PENGURUSAN DOKUMEN ---
 Route::get('/admin/credentialing/create', function () { 
-    $senarai_stats = collect(); 
-    $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
-    return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
+    $senarai_stats = collect(); 
+    $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
+    return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
 Route::post('/admin/document/store', function (\Illuminate\Http\Request $request) {
-    return back()->with('success', 'Dokumen berjaya dimuat naik!');
+    return back()->with('success', 'Dokumen berjaya dimuat naik!');
 })->name('admin.document.store');
 
 Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
-    if($request->has('stats')) {
-        foreach ($request->stats as $kategori => $jumlah) {
-            DB::table('statistik_utama')->updateOrInsert(['kategori' => $kategori], ['jumlah' => $jumlah]);
-        }
-    }
-    return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
+    if($request->has('stats')) {
+        foreach ($request->stats as $kategori => $jumlah) {
+            DB::table('statistik_utama')->updateOrInsert(['kategori' => $kategori], ['jumlah' => $jumlah]);
+        }
+    }
+    return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
 });
 
 Route::get('/credentialing/destroy/{id}', function ($id) {
-    return back()->with('success', 'Dokumen berjaya dipadam!');
+    return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('credentialing.destroy');
 
 Route::get('/admin/dokumen/delete/{id}', function ($id) {
-    $doc = DB::table('documents')->where('id', $id)->first();
-    if($doc) {
-        $path = public_path('uploads/documents/' . $doc->file_path);
-        if(file_exists($path)) { @unlink($path); }
-        DB::table('documents')->where('id', $id)->delete();
-    }
-    return back()->with('success', 'Dokumen berjaya dipadam!');
+    $doc = DB::table('documents')->where('id', $id)->first();
+    if($doc) {
+        $path = public_path('uploads/documents/' . $doc->file_path);
+        if(file_exists($path)) { @unlink($path); }
+        DB::table('documents')->where('id', $id)->delete();
+    }
+    return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('admin.dokumen.delete');
 
 // --- 6. ADMIN: PENGURUSAN PENGGUNA ---
 Route::get('/admin/users', function () { 
-    $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
-    return view('admin.users.index', compact('users')); 
+    $users = class_exists('\App\Models\User') ? \App\Models\User::all() : \App\User::all();
+    return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
 
 Route::post('/admin/users/update-role/{id}', function (\Illuminate\Http\Request $request, $id) {
-    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
-    if($user) { $user->role = $request->role; $user->save(); }
-    return back()->with('success', 'Role dikemaskini!');
+    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
+    if($user) { $user->role = $request->role; $user->save(); }
+    return back()->with('success', 'Role dikemaskini!');
 })->name('admin.users.updateRole');
 
 Route::get('/admin/users/delete/{id}', function ($id) {
-    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
-    if($user) { $user->delete(); }
-    return back()->with('success', 'Pengguna dipadam!');
+    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
+    if($user) { $user->delete(); }
+    return back()->with('success', 'Pengguna dipadam!');
 })->name('admin.users.destroy');
 
 // --- 7. e-PRPA (QUIZ SYSTEM) ---
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// 7.1 MULA EXAM (FIXED 404)
-// Kita buat dua pautan supaya mana-mana butang kau tekan tetap jumpa jalan
+// 7.1 MULA EXAM
 Route::get('/prpa/start-exam', function () {
-    $questions = Set1::questions(); 
-    return view('prpa.exam', compact('questions')); 
+    $questions = Set1::questions(); 
+    return view('prpa.exam', compact('questions')); 
 })->name('prpa.start_exam');
 
 Route::get('/prpa/exam', function () {
-    $questions = Set1::questions(); 
-    return view('prpa.exam', compact('questions')); 
+    $questions = Set1::questions(); 
+    return view('prpa.exam', compact('questions')); 
 });
 
 // 7.2 HASIL SEMAKAN
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
-    $ic = $request->input('ic'); 
-    $results = DB::table('phcals_results')
-                ->join('users', 'phcals_results.user_id', '=', 'users.id')
-                ->where('users.ic_number', $ic)
-                ->select('phcals_results.*', 'users.name')
-                ->orderBy('phcals_results.attempt_date', 'desc')
-                ->get();
-    return view('phcals.history', compact('results'));
+    $ic = $request->input('ic'); 
+    $results = DB::table('phcals_results')
+                ->join('users', 'phcals_results.user_id', '=', 'users.id')
+                ->where('users.ic_number', $ic)
+                ->select('phcals_results.*', 'users.name')
+                ->orderBy('phcals_results.attempt_date', 'desc')
+                ->get();
+    return view('phcals.history', compact('results'));
 })->name('prpa.semak.hasil');
 
 // --- 8. e-RUJUKAN & e-CREDENTIALING ---
 Route::get('/rujukan', function () { 
-    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
-    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
+    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
+    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
 Route::get('/admin/rujukan/destroy/{id}', function ($id) {
-    return back()->with('success', 'Rujukan dipadam!');
+    return back()->with('success', 'Rujukan dipadam!');
 })->name('admin.rujukan.destroy');
 
 Route::get('/credentialing', function () { 
-    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
+    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
 })->name('credentialing.index');
 
 // --- 9. DIREKTORI & PROFIL ---
