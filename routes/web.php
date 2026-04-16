@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE + TOTAL PRIVACY)
+| Web Routes - SISTEM AMOPPP (FINAL STABLE mastercopy)
 |--------------------------------------------------------------------------
 */
 
@@ -32,6 +32,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
+// Semakan Kompetensi
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
@@ -93,13 +94,13 @@ Route::get('/admin/users/delete/{id}', function ($id) {
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
 Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })->name('prpa.semak.borang');
 
-// 7.1 Mula Exam
+// Mula Exam
 Route::get('/prpa/quiz/{id}', function ($id) {
     $questions = Set1::questions(); 
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// 7.2 Submit Exam (AUTO-CALCULATE + HIDDEN IC)
+// Submit Exam (Calculate & Save)
 Route::post('/phcals/submit', function (Request $request) {
     $user_answers = $request->input('ans'); 
     $questions = Set1::questions();
@@ -130,10 +131,11 @@ Route::post('/phcals/submit', function (Request $request) {
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat!');
 })->name('phcals.submit');
 
-// 7.3 Paparan History (PRIVASI TOTAL: Guna Auth::id())
+// Paparan History Peribadi (DENGAN FIX PRIVASI URL)
 Route::get('/prpa/history', function () {
     if (!Auth::check()) return redirect('/login');
 
+    // Tarik data ikut ID yang tengah login sahaja
     $results = DB::table('phcals_results')
                 ->where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
@@ -147,18 +149,25 @@ Route::get('/prpa/history', function () {
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// 7.4 Hasil Semakan (Redirect ke URL Bersih)
+// Hasil Semakan (Redirect ke URL Bersih Tanpa IC)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
+    // Paksa buang IC dari URL dan pergi ke history bersih
     return redirect()->route('prpa.history');
 })->name('prpa.semak.hasil');
 
-// --- 8. PRINT (Review Dibuang Atas Permintaan) ---
+// --- 8. ACTION ROUTES (Review & Print) ---
+
+// FIX: Masukkan balik nama route review supaya tak error, tapi hantar ke history (Security)
+Route::get('/phcals/review/{id}', function($id) {
+    return redirect()->route('prpa.history')->with('error', 'Fungsi review telah ditutup untuk keselamatan.');
+})->name('phcals.review');
+
 Route::get('/phcals/print/{id}', function($id) {
     $result = DB::table('phcals_results')->where('id', $id)->first();
     return view('phcals.print', compact('result', 'id'));
 })->name('phcals.print');
 
-// --- 9. e-RUJUKAN, DIREKTORI & PROFIL ---
+// --- 9. LAIN-LAIN MODUL ---
 Route::get('/rujukan', function () { 
     $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
     $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
