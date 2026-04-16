@@ -10,11 +10,10 @@ use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE + FIXED DATE FORMATTING)
+| Web Routes - SISTEM AMOPPP (FIXED ROUTE DEPENDENCY)
 |--------------------------------------------------------------------------
 */
 
-// --- 0. AUTHENTICATION ---
 Auth::routes();
 
 // --- 1. UTAMA ---
@@ -33,7 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kompetensi/hantar', [KompetensiController::class, 'hantar_permohonan'])->name('kompetensi.hantar');
 });
 
-// Semakan Kompetensi
 Route::get('/kompetensi/tempat', [KompetensiController::class, 'halaman_semak_tempat'])->name('kompetensi.tempat');
 Route::post('/kompetensi/proses-semak-tempat', [KompetensiController::class, 'proses_semak_tempat'])->name('kompetensi.proses_semak_tempat');
 Route::get('/kompetensi/semak', [KompetensiController::class, 'user_index'])->name('kompetensi.semak');
@@ -60,15 +58,6 @@ Route::post('/admin/document/store', function (Request $request) {
     return back()->with('success', 'Dokumen berjaya dimuat naik!');
 })->name('admin.document.store');
 
-Route::post('/admin/profil/store', function (Request $request) {
-    if($request->has('stats')) {
-        foreach ($request->stats as $kategori => $jumlah) {
-            DB::table('statistik_utama')->updateOrInsert(['kategori' => $kategori], ['jumlah' => $jumlah]);
-        }
-    }
-    return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
-});
-
 Route::get('/credentialing/destroy/{id}', function ($id) {
     return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('credentialing.destroy');
@@ -84,12 +73,6 @@ Route::post('/admin/users/update-role/{id}', function (Request $request, $id) {
     if($user) { $user->role = $request->role; $user->save(); }
     return back()->with('success', 'Role dikemaskini!');
 })->name('admin.users.updateRole');
-
-Route::get('/admin/users/delete/{id}', function ($id) {
-    $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
-    if($user) { $user->delete(); }
-    return back()->with('success', 'Pengguna dipadam!');
-})->name('admin.users.destroy');
 
 // --- 7. e-PRPA (QUIZ SYSTEM) ---
 Route::get('/prpa', function () { return view('prpa.index'); })->name('prpa.index');
@@ -131,7 +114,7 @@ Route::post('/phcals/submit', function (Request $request) {
     return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod telah dikemaskini.');
 })->name('phcals.submit');
 
-// Paparan History Peribadi (FIX: Parse Tarikh kpd Carbon)
+// Paparan History Peribadi (Fix Carbon)
 Route::get('/prpa/history', function () {
     $results = DB::table('phcals_results')
                 ->where('user_id', Auth::id())
@@ -145,7 +128,7 @@ Route::get('/prpa/history', function () {
     return view('phcals.history', compact('results'));
 })->name('prpa.history');
 
-// Semakan Manual (FIX: Parse Tarikh kpd Carbon)
+// Semakan Manual (Carian No IC)
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
     $ic = $request->input('ic'); 
     $results = DB::table('phcals_results')
@@ -162,17 +145,21 @@ Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request)
     return view('phcals.history', compact('results'));
 })->name('prpa.semak.hasil');
 
-// --- 8. e-RUJUKAN, DIREKTORI & PROFIL ---
+// --- 8. e-RUJUKAN, e-CREDENTIALING, DIREKTORI & PROFIL ---
 Route::get('/rujukan', function () { 
     $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
     $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
+// PENTING: Nama route ni mesti ada supaya layout/sidebar tak error
+Route::get('/credentialing', function () { 
+    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
+})->name('credentialing.index');
+
 Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
 Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); })->name('direktori.carian');
-Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
 Route::get('/profile', function () { return view('auth.profile'); })->name('profile');
 
-// --- 9. EXTRA (Placeholder) ---
+// --- 9. EXTRA (Review & Print) ---
 Route::get('/phcals/review/{id}', function($id) { return "Review ID: $id"; })->name('phcals.review');
 Route::get('/phcals/print/{id}', function($id) { return "Print ID: $id"; })->name('phcals.print');
