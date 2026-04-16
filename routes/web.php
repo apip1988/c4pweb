@@ -144,7 +144,8 @@ Route::get('/prpa/history', function () {
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function($res) {
-                    $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Kalam_Lumpur');
+                    // FIX: Nama timezone yang betul ialah Asia/Kuala_Lumpur (Bukan Kuala_Kalam_Lumpur)
+                    $res->created_at = Carbon::parse($res->created_at)->timezone('Asia/Kuala_Lumpur');
                     $res->expiry_date = Carbon::parse($res->expiry_date)->timezone('Asia/Kuala_Lumpur');
                     return $res;
                 });
@@ -184,7 +185,12 @@ Route::get('/phcals/print/{id}', function($id) {
 })->name('phcals.print');
 
 // --- 9. LAIN-LAIN ---
-Route::get('/rujukan', [KompetensiController::class, 'index'])->name('rujukan.index');
+// FIX: Halakan ke view rujukan yang betul, bukan index controller utama
+Route::get('/rujukan', function () { 
+    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
+    $results = collect(); 
+    return view('rujukan.index', compact('stats', 'results')); 
+})->name('rujukan.index');
 
 Route::get('/credentialing', function () { 
     return view('credentialing.index', ['disciplines' => collect()]); 
