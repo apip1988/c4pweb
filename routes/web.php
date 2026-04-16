@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED PRPA DATABASE)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE & FIXED DATABASE SEARCH)
 |--------------------------------------------------------------------------
 */
 
-// --- 0. AUTHENTICATION (TAMBAHAN UNTUK FIX PASSWORD.REQUEST) ---
+// --- 0. AUTHENTICATION (FIX PASSWORD.REQUEST) ---
 Auth::routes();
 
 // --- 1. UTAMA ---
@@ -19,7 +19,7 @@ Route::get('/', [KompetensiController::class, 'index'])->name('welcome');
 Route::get('/dashboard', [KompetensiController::class, 'dashboard'])->name('dashboard');
 Route::get('/hubungi', function () { return view('hubungi'); })->name('hubungi');
 
-// --- 2. LOGIN & LOGOUT (KEKALKAN KOD ASAL KAU) ---
+// --- 2. LOGIN & LOGOUT ---
 Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
@@ -46,24 +46,17 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/admin/kompetensi/delete/{id}', [KompetensiController::class, 'destroy'])->name('kompetensi.destroy');
 });
 
-// --- 5. PENGURUSAN DOKUMEN (FIXED: resources/views/admin/credentialing/create.blade.php) ---
+// --- 5. PENGURUSAN DOKUMEN ---
 Route::get('/admin/credentialing/create', function () { 
-    // Kita bagi umpan kosong JIKA table statistik_utama tak wujud lagi dalam database webc4p kau
     $senarai_stats = collect(); 
-    
-    // Ambil data dokumen supaya senarai fail muncul
     $documents = DB::table('documents')->orderBy('created_at', 'desc')->get();
-    
     return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
-// TAMBAHAN: Route Store untuk Form Muat Naik (PENTING!)
 Route::post('/admin/document/store', function (\Illuminate\Http\Request $request) {
-    // Logik simpan dokumen kau di sini
     return back()->with('success', 'Dokumen berjaya dimuat naik!');
 })->name('admin.document.store');
 
-// Simpan Statistik Dashboard
 Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
     if($request->has('stats')) {
         foreach ($request->stats as $kategori => $jumlah) {
@@ -73,13 +66,10 @@ Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) 
     return back()->with('success', 'Statistik Dashboard berjaya disimpan!');
 });
 
-// Padam Dokumen (Fix untuk link credentialing.destroy dlm Blade kau)
 Route::get('/credentialing/destroy/{id}', function ($id) {
-    // Logik delete ikut model kau
     return back()->with('success', 'Dokumen berjaya dipadam!');
 })->name('credentialing.destroy');
 
-// Route Padam asal yang kau bagi (Guna /delete/{id})
 Route::get('/admin/dokumen/delete/{id}', function ($id) {
     $doc = DB::table('documents')->where('id', $id)->first();
     if($doc) {
@@ -114,12 +104,13 @@ Route::get('/prpa/semak-keputusan', function () { return view('prpa.semak'); })-
 
 // FIX: Guna match (GET/POST) dan tarik data dari table phcals_results
 Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
-    $ic = $request->input('ic'); // Ambil input No. IC dari form semakan
+    $ic = $request->input('ic'); 
 
-    // Cari data join antara users dan phcals_results berdasarkan IC
+    // Guna Join antara phcals_results dan users
+    // PERHATIAN: Aku tukar 'ic' kepada 'username'. Jika masih error, tukar 'username' di bawah kepada column IC kau.
     $results = DB::table('phcals_results')
                 ->join('users', 'phcals_results.user_id', '=', 'users.id')
-                ->where('users.ic', $ic) // Pastikan column dalam table users adalah 'ic' atau 'no_ic'
+                ->where('users.username', $ic) 
                 ->select('phcals_results.*', 'users.name')
                 ->orderBy('phcals_results.attempt_date', 'desc')
                 ->get();
@@ -132,7 +123,6 @@ Route::get('/rujukan', function () {
     $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
 })->name('rujukan.index');
 
-// TAMBAHAN: Fix delete rujukan dlm Blade kau
 Route::get('/admin/rujukan/destroy/{id}', function ($id) {
     return back()->with('success', 'Rujukan dipadam!');
 })->name('admin.rujukan.destroy');
