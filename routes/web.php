@@ -5,10 +5,12 @@ use App\Http\Controllers\KompetensiController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\QuizData\Set1;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - SISTEM AMOPPP (FULL RESTORE + REDIRECT TO HISTORY)
+| Web Routes - SISTEM AMOPPP (FULL RESTORE + AUTO-CALCULATE)
 |--------------------------------------------------------------------------
 */
 
@@ -54,11 +56,11 @@ Route::get('/admin/credentialing/create', function () {
     return view('admin.credentialing.create', compact('senarai_stats', 'documents')); 
 })->name('admin.dokumen.index');
 
-Route::post('/admin/document/store', function (\Illuminate\Http\Request $request) {
+Route::post('/admin/document/store', function (Request $request) {
     return back()->with('success', 'Dokumen berjaya dimuat naik!');
 })->name('admin.document.store');
 
-Route::post('/admin/profil/store', function (\Illuminate\Http\Request $request) {
+Route::post('/admin/profil/store', function (Request $request) {
     if($request->has('stats')) {
         foreach ($request->stats as $kategori => $jumlah) {
             DB::table('statistik_utama')->updateOrInsert(['kategori' => $kategori], ['jumlah' => $jumlah]);
@@ -87,7 +89,7 @@ Route::get('/admin/users', function () {
     return view('admin.users.index', compact('users')); 
 })->name('admin.users.index');
 
-Route::post('/admin/users/update-role/{id}', function (\Illuminate\Http\Request $request, $id) {
+Route::post('/admin/users/update-role/{id}', function (Request $request, $id) {
     $user = class_exists('\App\Models\User') ? \App\Models\User::find($id) : \App\User::find($id);
     if($user) { $user->role = $request->role; $user->save(); }
     return back()->with('success', 'Role dikemaskini!');
@@ -109,42 +111,49 @@ Route::get('/prpa/quiz/{id}', function ($id) {
     return view('phcals.exam', compact('questions', 'id')); 
 })->name('prpa.start_exam');
 
-// 7.2 SUBMIT JAWAPAN (FIXED: Redirect ke History)
-Route::post('/phcals/submit', function (\Illuminate\Http\Request $request) {
-    // Logik simpan keputusan ke database patut ada di sini
-    // Selepas simpan, kita redirect ke page history guna IC user yang login
-    $ic = Auth::user()->ic_number;
-    return redirect()->route('prpa.semak.hasil', ['ic' => $ic])->with('success', 'Ujian tamat! Sila semak keputusan anda.');
+// 7.2 SUBMIT JAWAPAN (FIXED: Kira Markah & Simpan DB)
+Route::post('/phcals/submit', function (Request $request) {
+    $user_answers = $request->input('ans'); 
+    $questions = Set1::questions();
+    $correct_count = 0;
+    
+    // Logik Kira Markah
+    foreach ($questions as $index => $q) {
+        if (isset($user_answers[$index]) && $user_answers[$index] === $q['answer']) {
+            $correct_count++;
+        }
+    }
+    
+    $score = ($correct_count / count($questions)) * 100;
+    $status = ($score == 100) ? 'PASSED' : 'RE-ATTEMPT';
+
+    // Simpan ke Table phcals_results
+    DB::table('phcals_results')->insert([
+        'user_id'      => Auth::id(),
+        'set_id'       => $request->input('set_id'),
+        'score'        => $score,
+        'status'       => $status,
+        'review_data'  => json_encode($user_answers),
+        'attempt_date' => Carbon::now(),
+        'expiry_date'  => Carbon::now()->addYears(3),
+        'created_at'   => Carbon::now(),
+        'updated_at'   => Carbon::now(),
+    ]);
+
+    // Redirect guna ID login (Privasi: Sembunyi No IC dlm URL)
+    return redirect()->route('prpa.history')->with('success', 'Ujian tamat! Rekod anda telah dikemaskini.');
 })->name('phcals.submit');
 
-// 7.3 HASIL SEMAKAN (HISTORY)
-Route::match(['get', 'post'], '/prpa/hasil-semakan', function (\Illuminate\Http\Request $request) {
-    $ic = $request->input('ic'); 
+// 7.3 HISTORY (Paparan Rekod Peribadi)
+Route::get('/prpa/history', function () {
     $results = DB::table('phcals_results')
-                ->join('users', 'phcals_results.user_id', '=', 'users.id')
-                ->where('users.ic_number', $ic)
-                ->select('phcals_results.*', 'users.name')
-                ->orderBy('phcals_results.created_at', 'desc')
+                ->where('user_id', Auth::id())
+                ->orderBy('created_at', 'desc')
                 ->get();
     return view('phcals.history', compact('results'));
-})->name('prpa.semak.hasil');
+})->name('prpa.history');
 
-// --- 8. e-RUJUKAN & e-CREDENTIALING ---
-Route::get('/rujukan', function () { 
-    $stats = ['total'=>0, 'baru'=>0, 'arkib'=>0, 'spg'=>0, 'surat'=>0, 'guideline'=>0, 'minit'=>0, 'aktif'=>0];
-    $results = collect(); return view('rujukan.index', compact('stats', 'results')); 
-})->name('rujukan.index');
-
-Route::get('/admin/rujukan/destroy/{id}', function ($id) {
-    return back()->with('success', 'Rujukan dipadam!');
-})->name('admin.rujukan.destroy');
-
-Route::get('/credentialing', function () { 
-    $disciplines = collect(); return view('credentialing.index', compact('disciplines')); 
-})->name('credentialing.index');
-
-// --- 9. DIREKTORI & PROFIL ---
-Route::get('/admin/dashboard', function () { return view('admin.dashboard'); })->name('admin.dashboard');
-Route::get('/direktori/carian-ppp', function () { return view('direktori.carian'); })->name('direktori.carian');
-Route::get('/direktori/carta-organisasi', function () { return view('direktori.carta'); })->name('direktori.carta-organisasi');
-Route::get('/profile', function () { return view('auth.profile'); })->name('profile');
+// Route Semakan Manual (Carian No IC)
+Route::match(['get', 'post'], '/prpa/hasil-semakan', function (Request $request) {
+    $ic = $request->input('ic'); 
+    $results = DB::table('phcals_
